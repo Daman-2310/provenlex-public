@@ -27,7 +27,7 @@
     "pdf-parse": "^1.1.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "recharts": "2.12.7",
+    "recharts": "3.8.1",
     "resend": "^6.12.4",
     "stripe": "^22.2.0",
     "three": "^0.171.0",
