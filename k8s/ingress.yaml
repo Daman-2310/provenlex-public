@@ -1,0 +1,80 @@
+# Genesis Swarm — Ingress
+#
+# Routes external HTTPS traffic to the API gateway.
+# Requires:
+#   - nginx ingress controller (kubernetes/ingress-nginx)
+#   - cert-manager with a ClusterIssuer named "letsencrypt-prod"
+#   - DNS: api.genesisswarm.io → ingress controller LoadBalancer IP
+#
+# WebSocket support: nginx passes Upgrade/Connection headers for live feeds
+# and the PBFT coordinator WebSocket endpoint.
+#
+# Rate limiting (nginx annotations):
+#   - 200 req/s per source IP at the ingress layer (hard cap before billing)
+#   - Burst of 50 requests — smooths reconnection storms
+#
+# Security headers: HSTS, X-Frame-Options, CSP injected via snippet.
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: genesis-api
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: genesis-api
+    app.kubernetes.io/component: ingress
+  annotations:
+    # ── TLS certificate management ────────────────────────────────────────────
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+
+    # ── nginx ingress class ───────────────────────────────────────────────────
+    kubernetes.io/ingress.class: "nginx"
+
+    # ── WebSocket passthrough ─────────────────────────────────────────────────
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+
+    # ── Rate limiting (ingress-layer hard cap before billing middleware) ───────
+    nginx.ingress.kubernetes.io/limit-rps: "200"
+    nginx.ingress.kubernetes.io/limit-burst-multiplier: "50"
+    nginx.ingress.kubernetes.io/limit-connections: "50"
+
+    # ── Request body size (for large audit export payloads) ───────────────────
+    nginx.ingress.kubernetes.io/proxy-body-size: "16m"
+
+    # ── Security headers ──────────────────────────────────────────────────────
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "Strict-Transport-Security: max-age=31536000; includeSubDomains; preload";
+      more_set_headers "X-Content-Type-Options: nosniff";
+      more_set_headers "X-Frame-Options: DENY";
+      more_set_headers "X-XSS-Protection: 1; mode=block";
+      more_set_headers "Referrer-Policy: strict-origin-when-cross-origin";
+      more_set_headers "Permissions-Policy: geolocation=(), microphone=(), camera=()";
+      more_set_headers "Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' wss:";
+
+    # ── CORS (allow dashboard origins — restrict in production) ───────────────
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://dashboard.genesisswarm.io"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Authorization, Content-Type, X-Tenant-ID"
+
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - api.genesisswarm.io
+      secretName: genesis-tls-cert
+
+  rules:
+    - host: api.genesisswarm.io
+      http:
+        paths:
+          # ── Main API ─────────────────────────────────────────────────────────
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: genesis-api
+                port:
+                  name: http

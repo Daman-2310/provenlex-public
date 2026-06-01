@@ -1,0 +1,349 @@
+# =============================================================================
+# GENESIS SWARM -- BARE-METAL KERNEL-BYPASS DEPLOYMENT ENGINE
+# docker-compose.yml
+#
+# Regulatory basis:
+#   DORA Regulation 2022/2554/EU -- Art.9  (ICT risk management)
+#   DORA Regulation 2022/2554/EU -- Art.10 (Protection and detection)
+#   AIFMD 2011/61/EU             -- Art.18 (Operational requirements)
+#
+# Hardware topology assumptions (Luxembourg data centre):
+#   Node:    Dual-socket Intel Xeon Gold 6338 (2 x 32 cores, 64 total)
+#   NIC:     Intel X710-DA4 25GbE (PCIe slot 0000:01:00.0)
+#   VFIO:    IOMMU groups pre-configured; vfio-pci bound at node boot
+#   Hugepages: 2048 x 2MB pre-allocated in /etc/sysctl.conf
+#              vm.nr_hugepages = 2048
+#   IRQ affinity: NIC queues pinned to CPU 4-7 by irqbalance or ethtool
+#
+# CPU pinning strategy (NUMA-aware):
+#   genesis-engine: CPUs 0-3   (NUMA node 0, isolated via isolcpus=0-3)
+#   monitor:        CPU  8      (NUMA node 0, non-isolated)
+#   prometheus:     CPU  9      (NUMA node 0, non-isolated)
+#
+# Memory strategy:
+#   memlock: unlimited (-1) -- required for mlockall(MCL_CURRENT | MCL_FUTURE)
+#   shm_size: 2gb           -- anonymous hugepage-backed ring buffers
+# =============================================================================
+
+version: "3.9"
+
+# ── SHARED NETWORK ──────────────────────────────────────────────────────────
+
+networks:
+  sovereign_mesh:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+# ── NAMED VOLUMES ──────────────────────────────────────────────────────────
+
+volumes:
+  ledger_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /mnt/nvme0/genesis/ledger      # NVMe SSD mount -- low-latency fsync
+  audit_log:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /mnt/nvme0/genesis/audit
+  vk_store:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /mnt/nvme0/genesis/vk          # Verification keys (read-only at runtime)
+  prometheus_data:
+    driver: local
+
+# =============================================================================
+# SERVICES
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # genesis-engine: primary HFT compliance node
+  #
+  # Network mode:   host  -- bypasses Docker bridge NAT; DPDK/VFIO requires
+  #                          direct PCIe access through /dev/vfio.
+  # CPUs:           0-3   -- isolated via isolcpus kernel cmdline; no other
+  #                          processes scheduled here except by this container.
+  # Memory:         16gb hard limit; 14gb reservation (leaves 2gb for OS).
+  # Hugepages:      mapped via /dev/hugepages bind-mount for DPDK DPDK mempool.
+  # VFIO:           /dev/vfio/0 exposes PCIe NIC to userspace DPDK PMD.
+  # CAP_SYS_NICE:   required for SCHED_FIFO real-time thread scheduling.
+  # CAP_NET_RAW:    required for DPDK raw socket fallback path.
+  # CAP_IPC_LOCK:   required for mlockall() -- prevents swap of hot structures.
+  # ---------------------------------------------------------------------------
+  genesis-engine:
+    image: genesis-engine:0.6.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_DATE: "${BUILD_DATE:-unknown}"
+        GIT_SHA:    "${GIT_SHA:-unknown}"
+        VERSION:    "0.6.0"
+    container_name: genesis-engine
+    restart: unless-stopped
+
+    # DPDK / VFIO requires host networking -- bridge NAT adds >10µs latency
+    network_mode: "host"
+
+    # CPU pinning: isolcpus=0-3 in /etc/default/grub GRUB_CMDLINE_LINUX
+    cpuset: "0-3"
+
+    # Memory limits
+    mem_limit:        "16g"
+    mem_reservation:  "14g"
+    memswap_limit:    "16g"    # disable swap (equal to mem_limit)
+
+    # Shared memory for hugepage-backed ring buffers
+    shm_size: "2gb"
+
+    ulimits:
+      # Unlimited memory lock -- required for mlockall(MCL_CURRENT | MCL_FUTURE)
+      memlock:
+        soft: -1
+        hard: -1
+      # Unlimited open files -- ledger segments + ZK proof FIFOs
+      nofile:
+        soft: 1048576
+        hard: 1048576
+      # Real-time priority ceiling (SCHED_FIFO priority 99)
+      rtprio:
+        soft: 99
+        hard: 99
+      # Core dump size (disabled in production -- CSSF requires no core leaks)
+      core:
+        soft: 0
+        hard: 0
+
+    # Security: minimal capability set
+    cap_add:
+      - SYS_NICE        # SCHED_FIFO real-time scheduling
+      - NET_RAW         # DPDK raw socket fallback
+      - IPC_LOCK        # mlockall() for memory-locking
+      - SYS_RESOURCE    # setrlimit() for per-thread limits
+    cap_drop:
+      - ALL             # drop all first, then add back only the above
+
+    security_opt:
+      - no-new-privileges:true
+      - seccomp:unconfined   # DPDK bypasses standard system call filters
+
+    # Device access
+    devices:
+      # VFIO container -- grants userspace access to IOMMU-mapped PCIe pages
+      - /dev/vfio/vfio:/dev/vfio/vfio
+      # VFIO group for Intel X710-DA4 NIC on PCIe bus 0000:01:00.0
+      # Group number: check `ls /dev/vfio/` after `vfio-pci` binding
+      - /dev/vfio/0:/dev/vfio/0
+      # CPU performance counters (for quanta TSC timing)
+      - /dev/cpu/0/msr:/dev/cpu/0/msr
+      - /dev/cpu/1/msr:/dev/cpu/1/msr
+      - /dev/cpu/2/msr:/dev/cpu/2/msr
+      - /dev/cpu/3/msr:/dev/cpu/3/msr
+
+    # Volume mounts
+    volumes:
+      # Hugepages: DPDK pre-allocates 2MB hugepages for zero-copy DMA ring
+      - /dev/hugepages:/dev/hugepages
+      # Immutable ledger: NVMe-backed persistent storage
+      - ledger_data:/data/ledger
+      # DORA Art.9 tamper-evident audit log
+      - audit_log:/data/audit
+      # ZK verification keys (read-only at runtime; loaded once at startup)
+      - vk_store:/data/vk:ro
+      # DORA incident reports output directory
+      - /mnt/nvme0/genesis/dora_reports:/data/dora:rw
+
+    # Runtime configuration (injected without rebuilding the image)
+    environment:
+      # Core protocol settings
+      GENESIS_N_AGENTS:          "11"
+      GENESIS_BFT_QUORUM:        "8"
+      GENESIS_BFT_TIMEOUT_MS:    "50"
+
+      # AIFMD regulatory limits (basis points)
+      GENESIS_AIFMD_GROSS_LIMIT: "30000"
+      GENESIS_AIFMD_NET_LIMIT:   "20000"
+      GENESIS_CSSF_CONC_CAP:     "2000"
+
+      # DORA ICT incident threshold (fixed-point score * 100)
+      GENESIS_DORA_CRITICAL_THRESHOLD: "8000"
+
+      # ZK proof mode: "stub" = zero-sentinel bypass; "real" = BN254 Groth16
+      GENESIS_ZK_MODE:           "${GENESIS_ZK_MODE:-real}"   # real=BN254 Groth16, stub=zero-sentinel bypass
+      GENESIS_VK_PATH:           "/data/vk/portfolio_circuit.vk"
+
+      # Ledger storage
+      GENESIS_LEDGER_PATH:       "/data/ledger"
+      GENESIS_AUDIT_LOG_PATH:    "/data/audit/dora_audit.jsonl"
+      GENESIS_DORA_REPORT_DIR:   "/data/dora"
+
+      # Network
+      GENESIS_COMPLIANCE_API_PORT: "8443"
+      GENESIS_METRICS_PORT:        "9090"
+
+      # CPU/real-time configuration
+      GENESIS_SCHED_FIFO:        "true"
+      GENESIS_SCHED_PRIORITY:    "80"
+      GENESIS_CPU_AFFINITY:      "0-3"
+      GENESIS_NUMA_NODE:         "0"
+
+      # Logging (DORA Art.17: structured JSON for SIEM ingestion)
+      RUST_LOG: "genesis_engine=info,warn"
+      RUST_BACKTRACE: "1"
+
+    # Health check: poll the compliance API readiness endpoint
+    healthcheck:
+      test:     ["CMD-SHELL", "curl -sf https://localhost:8443/health || exit 1"]
+      interval: 10s
+      timeout:  5s
+      retries:  3
+      start_period: 30s
+
+    # Dependency ordering
+    depends_on:
+      prometheus:
+        condition: service_healthy
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10"
+        labels: "service,version"
+
+    labels:
+      service: "genesis-engine"
+      version: "0.6.0"
+      regulatory: "DORA AIFMD CSSF"
+      environment: "production"
+
+  # ---------------------------------------------------------------------------
+  # zk-worker: off-chain ZK proof generation (Noir + nargo + arkworks)
+  #
+  # Runs the portfolio_circuit on real trade data, produces BN254 Groth16 proofs,
+  # and pushes them via UNIX socket to genesis-engine for verification.
+  # CPU: 4-7 (separate isolation group from the engine)
+  # ---------------------------------------------------------------------------
+  zk-worker:
+    image: genesis-zk-worker:0.6.0
+    container_name: zk-worker
+    restart: unless-stopped
+    network_mode: "host"
+    cpuset: "4-7"
+    mem_limit: "8g"
+    mem_reservation: "6g"
+
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 524288
+        hard: 524288
+
+    volumes:
+      - vk_store:/data/vk:ro
+      - /mnt/nvme0/genesis/proofs:/data/proofs:rw
+      - /tmp/genesis_zk.sock:/tmp/genesis_zk.sock
+
+    environment:
+      ZK_CIRCUIT_PATH: "/data/vk/portfolio_circuit"
+      ZK_PROOF_SOCKET: "/tmp/genesis_zk.sock"
+      ZK_BATCH_SIZE:   "8"
+      RUST_LOG: "zk_worker=info"
+
+    labels:
+      service: "zk-worker"
+      version: "0.6.0"
+
+  # ---------------------------------------------------------------------------
+  # prometheus: metrics scraping for DORA ICT availability reporting
+  # CPU: 8 (non-isolated, normal scheduling)
+  # ---------------------------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: prometheus
+    restart: unless-stopped
+    cpuset: "8"
+    mem_limit: "2g"
+
+    networks:
+      - sovereign_mesh
+
+    ports:
+      - "127.0.0.1:9091:9090"
+
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=90d"   # DORA Art.17: 90-day retention
+      - "--web.enable-lifecycle"
+      - "--web.listen-address=0.0.0.0:9090"
+
+    healthcheck:
+      test:     ["CMD-SHELL", "wget -qO- http://localhost:9090/-/healthy | grep -q ok || exit 1"]
+      interval: 15s
+      timeout:  5s
+      retries:  3
+      start_period: 10s
+
+    labels:
+      service: "prometheus"
+
+  # ---------------------------------------------------------------------------
+  # grafana: DORA Art.17 incident dashboard
+  # ---------------------------------------------------------------------------
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: grafana
+    restart: unless-stopped
+    cpuset: "9"
+    mem_limit: "1g"
+
+    networks:
+      - sovereign_mesh
+
+    ports:
+      - "127.0.0.1:3000:3000"
+
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_admin_password
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SERVER_ROOT_URL: "https://grafana.genesisswarm.lu"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+
+    secrets:
+      - grafana_admin_password
+
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+
+    depends_on:
+      prometheus:
+        condition: service_healthy
+
+    labels:
+      service: "grafana"
+
+# =============================================================================
+# SECRETS
+# =============================================================================
+
+secrets:
+  grafana_admin_password:
+    file: ./secrets/grafana_admin_password.txt

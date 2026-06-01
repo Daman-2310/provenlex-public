@@ -1,0 +1,144 @@
+name: "Mutation Testing — Consensus Core"
+# Runs weekly to verify the PBFT consensus test suite actually catches bugs.
+# A mutation kill rate below 80% means tests are passing through logic errors —
+# a serious quality risk in the highest-stakes module in the codebase.
+#
+# Deliberately NOT wired to every PR (5-30 min runtime).
+# Results feed back via auto-opened GitHub issues on regression.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"      # Monday 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Source file to mutate (relative to repo root)"
+        required: false
+        default: "src/genesis_swarm/consensus/pbft_consensus.py"
+      test_dir:
+        description: "Test directory to run against mutations"
+        required: false
+        default: "tests/consensus/"
+      min_kill_rate:
+        description: "Minimum kill rate % before failing the build"
+        required: false
+        default: "80"
+
+permissions:
+  contents: read
+  issues: write               # auto-open issue on kill-rate regression
+
+jobs:
+  mutmut:
+    name: "Mutmut — PBFT consensus"
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    env:
+      GENESIS_JWT_SECRET: "ci-test-secret-mutation"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install project + mutmut
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install mutmut
+
+      - name: Restore mutmut cache
+        uses: actions/cache@v4
+        with:
+          path: .mutmut-cache
+          key: mutmut-${{ hashFiles('src/genesis_swarm/consensus/pbft_consensus.py', 'tests/consensus/**') }}
+          restore-keys: mutmut-
+
+      - name: Run mutation testing
+        id: mutmut
+        env:
+          MIN_RATE: "${{ github.event.inputs.min_kill_rate || '80' }}"
+          TARGET: "${{ github.event.inputs.target || 'src/genesis_swarm/consensus/pbft_consensus.py' }}"
+          TEST_DIR: "${{ github.event.inputs.test_dir || 'tests/consensus/' }}"
+        run: |
+          echo "Mutating:  $TARGET"
+          echo "Tests:     $TEST_DIR"
+          echo "Min kill:  $MIN_RATE%"
+
+          mutmut run \
+            --paths-to-mutate "$TARGET" \
+            --tests-dir "$TEST_DIR" \
+            --runner "pytest $TEST_DIR --tb=no -q --no-header" \
+            --no-progress \
+            --dict-synonyms || true
+
+          python3 scripts/check_mutation_rate.py
+
+      - name: Generate HTML report
+        if: always()
+        run: mutmut html || true
+
+      - name: Upload mutmut artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mutmut-${{ github.run_id }}
+          path: |
+            .mutmut-cache
+            html/
+          retention-days: 30
+
+      - name: Open issue on kill-rate regression
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const today  = new Date().toISOString().split("T")[0];
+
+            const { data: open } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              labels: "mutation-regression",
+              state: "open",
+            });
+            if (open.length > 0) {
+              console.log(`Existing open issue #${open[0].number} — skipping duplicate`);
+              return;
+            }
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              title: `[Mutation] Kill rate below 80% — ${today}`,
+              body: [
+                "## Mutation Testing Regression",
+                "",
+                "**Module:** `src/genesis_swarm/consensus/pbft_consensus.py`",
+                `**Run:** [${context.runId}](${runUrl})`,
+                "",
+                "## What this means",
+                "Surviving mutants are logic errors that the test suite failed to detect.",
+                "Each one represents a code change that makes the PBFT algorithm incorrect",
+                "without any test failing — a critical gap in the consensus verification layer.",
+                "",
+                "## How to fix",
+                "```bash",
+                "pip install mutmut",
+                "mutmut run --paths-to-mutate src/genesis_swarm/consensus/pbft_consensus.py",
+                "mutmut results          # list all surviving mutants",
+                "mutmut show <id>        # inspect a surviving mutant",
+                "mutmut apply <id>       # apply it to examine what test is missing",
+                "mutmut unapply          # restore original",
+                "```",
+                "",
+                "Add targeted tests to `tests/consensus/` that exercise the uncovered paths.",
+              ].join("\n"),
+              labels: ["mutation-regression", "test-quality", "consensus"],
+            });

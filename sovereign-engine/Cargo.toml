@@ -1,0 +1,144 @@
+[package]
+name        = "genesis-swarm-engine"
+version     = "0.6.0"
+edition     = "2021"
+authors     = ["Genesis Swarm Sovereign Consortium"]
+description = "AIFMD/MiFID II/DORA real-time compliance engine — Luxembourg sovereign grade"
+license     = "PROPRIETARY"
+resolver    = "2"
+
+# ── PRODUCTION RELEASE PROFILE ─────────────────────────────────────────────────
+[profile.release]
+opt-level       = 3
+lto             = true
+codegen-units   = 1
+panic           = "abort"
+strip           = "symbols"
+overflow-checks = false
+debug           = false
+incremental     = false
+rpath           = false
+
+[profile.bench]
+opt-level       = 3
+lto             = "thin"
+codegen-units   = 1
+debug           = true
+overflow-checks = false
+inherits        = "release"
+
+[profile.dev]
+opt-level       = 1
+overflow-checks = true
+debug           = true
+incremental     = true
+
+# ── DEPENDENCIES ───────────────────────────────────────────────────────────────
+
+[dependencies]
+
+crossbeam-channel = { version = "0.5.13" }
+crossbeam-utils   = { version = "0.8.20", default-features = false }
+crossbeam-epoch   = { version = "0.9.18", default-features = false }
+
+tokio = { version = "1.37", features = [
+    "rt-multi-thread",
+    "net",
+    "io-util",
+    "sync",
+    "time",
+    "macros",
+    "signal",
+    "fs",
+] }
+
+sha2      = { version = "0.10.8", default-features = false }
+sha3      = { version = "0.10.8", default-features = false }
+crc32fast = { version = "1.4.2",  default-features = false }
+hmac      = { version = "0.12.1", default-features = false }
+zeroize   = { version = "1.7",    default-features = false }
+
+ark-bn254      = { version = "0.4.0", default-features = false, features = ["curve"] }
+ark-groth16    = { version = "0.4.0", default-features = false }
+ark-snark      = { version = "0.4.0", default-features = false }
+ark-ff         = { version = "0.4.2", default-features = false }
+ark-ec         = { version = "0.4.2", default-features = false }
+ark-serialize  = { version = "0.4.2", default-features = false, features = ["derive"] }
+ark-relations  = { version = "0.4.0", default-features = false }
+ark-r1cs-std   = { version = "0.4.0", default-features = false }
+ark-std        = { version = "0.4.0", default-features = false }
+
+serde            = { version = "1.0.197", features = ["derive"] }
+serde_json       = { version = "1.0.115", default-features = false, features = ["alloc"] }
+bincode          = { version = "1.3.3" }
+
+tracing            = { version = "0.1.40", default-features = false, features = ["std"] }
+tracing-subscriber = { version = "0.3.18", features = ["fmt", "env-filter", "json"] }
+
+anyhow    = { version = "1.0.81", features = ["backtrace"] }
+thiserror = { version = "1.0.58" }
+
+rayon = { version = "1.10.0" }
+
+dashmap   = { version = "5.5.3", default-features = false }
+once_cell = { version = "1.19.0", default-features = false, features = ["std"] }
+
+bytes = { version = "1.6.0" }
+hex   = { version = "0.4.3", default-features = false, features = ["alloc"] }
+
+quanta = { version = "0.12.3" }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+libc = { version = "0.2.153", default-features = false }
+nix  = { version = "0.28.0",  features = ["sched", "mman", "signal"], default-features = false }
+
+# ── Benchmarking ──────────────────────────────────────────────────────────────
+[dev-dependencies]
+criterion = { version = "0.5.1", features = ["html_reports", "async_tokio"] }
+proptest  = { version = "1.4.0" }
+tempfile  = { version = "3.10.1" }
+
+# ── Feature flags ──────────────────────────────────────────────────────────────
+[features]
+default        = ["production"]
+production     = []
+integration    = []
+real-zk-proofs = []
+
+# ── Binary targets ────────────────────────────────────────────────────────────
+[[bin]]
+name = "genesis-engine"
+path = "src/main.rs"
+
+# ── Benchmark targets ─────────────────────────────────────────────────────────
+[[bench]]
+name    = "hot_path_bench"
+harness = false
+path    = "benches/hot_path_bench.rs"
+
+[[bench]]
+name    = "zk_verify_bench"
+harness = false
+path    = "benches/zk_verify_bench.rs"
+
+[[bench]]
+name    = "swarm_perf"
+harness = false
+path    = "benches/swarm_perf.rs"
+
+# ── PyO3 native extension (optional — build with: maturin develop) ─────────────
+[dependencies.pyo3]
+version  = "0.21"
+features = ["extension-module", "abi3-py38"]
+optional = true
+
+# ── Library target (exposes PyO3 module when built with --features pyo3) ──────
+[lib]
+name              = "genesis_native"
+path              = "src/lib.rs"
+crate-type        = ["cdylib", "rlib"]
+
+[[bin]]
+name = "zk-worker"
+path = "src/zk_worker.rs"
+required-features = ["real-zk-proofs"]

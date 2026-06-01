@@ -1,0 +1,274 @@
+# Genesis Swarm — 11-node distributed PBFT cluster
+#
+# Architecture
+# ------------
+# 11 replica containers (pbft-0 … pbft-10) + 1 API gateway container.
+# All replicas share a private Docker bridge network (pbft-net) and
+# communicate over TLS WebSockets on ports 50050–50060.
+# The API gateway exposes port 8080 externally.
+#
+# Before starting
+# ---------------
+#   # 1. Generate mTLS certificates (run once)
+#   python scripts/gen_pbft_certs.py --out certs --nodes 11
+#
+#   # 2. Copy .env.example to .env and fill in secrets
+#   cp .env.example .env
+#
+#   # 3. Start the cluster
+#   docker compose -f docker-compose.pbft.yml up --build -d
+#
+#   # 4. Watch consensus rounds
+#   docker compose -f docker-compose.pbft.yml logs -f api
+#
+# Fault-tolerance
+# ---------------
+#   N=11, f=3 — the cluster tolerates up to 3 Byzantine-faulty or
+#   crashed containers and still reaches consensus.  Kill any 3 replicas
+#   and the swarm continues operating.
+#
+# Environment toggles
+# -------------------
+#   Set in .env or pass via `-e` at runtime:
+#     GENESIS_LIVE_AIS_ENABLED=true    → CargoBot uses AISStream.io
+#     GENESIS_LIVE_ADSB_ENABLED=true   → OrbitalBot uses OpenSky Network
+#     GENESIS_PBFT_MTLS_ENABLED=true   → Inter-node TLS mutual auth
+#     GENESIS_JWT_SECRET=<strong-secret>
+
+x-pbft-env: &pbft-env
+  GENESIS_ENVIRONMENT: production
+  GENESIS_PBFT_MODE: websocket
+  GENESIS_PBFT_MTLS_ENABLED: "${GENESIS_PBFT_MTLS_ENABLED:-false}"
+  GENESIS_PBFT_CA_CERT_PATH: /certs/pbft/ca.crt
+  GENESIS_LOG_LEVEL: "${LOG_LEVEL:-INFO}"
+  GENESIS_LOG_FORMAT: json
+  PYTHONUNBUFFERED: "1"
+
+x-pbft-peers: &pbft-peers
+  GENESIS_PBFT_PEERS: >-
+    {"replica-0":"ws://pbft-0:50050",
+     "replica-1":"ws://pbft-1:50051",
+     "replica-2":"ws://pbft-2:50052",
+     "replica-3":"ws://pbft-3:50053",
+     "replica-4":"ws://pbft-4:50054",
+     "replica-5":"ws://pbft-5:50055",
+     "replica-6":"ws://pbft-6:50056",
+     "replica-7":"ws://pbft-7:50057",
+     "replica-8":"ws://pbft-8:50058",
+     "replica-9":"ws://pbft-9:50059",
+     "replica-10":"ws://pbft-10:50060"}
+
+x-pbft-replica: &pbft-replica
+  build:
+    context: .
+    dockerfile: Dockerfile.api
+  restart: unless-stopped
+  networks:
+    - pbft-net
+  volumes:
+    - ./certs:/certs:ro
+    - pbft-data:/app/data
+  healthcheck:
+    test: ["CMD", "python3", "-c",
+           "import socket; socket.create_connection(('localhost', 8090), 3)"]
+    interval: 15s
+    timeout: 5s
+    retries: 3
+    start_period: 20s
+  command: >
+    python -m genesis_swarm.consensus.grpc.pbft_entrypoint
+
+services:
+
+  # ── PBFT Replicas ─────────────────────────────────────────────────────────
+
+  pbft-0:
+    <<: *pbft-replica
+    container_name: pbft-0
+    hostname: pbft-0
+    environment:
+      <<: [*pbft-env, *pbft-peers]
+      GENESIS_PBFT_NODE_ID: replica-0
+      GENESIS_PBFT_BASE_PORT: "50050"
+      GENESIS_PBFT_TLS_CERT_PATH: /certs/pbft/replica-0/node.crt
+      GENESIS_PBFT_TLS_KEY_PATH: /certs/pbft/replica-0/node.key
+      GENESIS_PBFT_SIGNING_KEY_PATH: /certs/pbft/replica-0/signing.key
+
+  pbft-1:
+    <<: *pbft-replica
+    container_name: pbft-1
+    hostname: pbft-1
+    environment:
+      <<: [*pbft-env, *pbft-peers]
+      GENESIS_PBFT_NODE_ID: replica-1
+      GENESIS_PBFT_BASE_PORT: "50051"
+      GENESIS_PBFT_TLS_CERT_PATH: /certs/pbft/replica-1/node.crt
+      GENESIS_PBFT_TLS_KEY_PATH: /certs/pbft/replica-1/node.key
+      GENESIS_PBFT_SIGNING_KEY_PATH: /certs/pbft/replica-1/signing.key
+
+  pbft-2:
+    <<: *pbft-replica
+    container_name: pbft-2
+    hostname: pbft-2
+    environment:
+      <<: [*pbft-env, *pbft-peers]
+      GENESIS_PBFT_NODE_ID: replica-2
+      GENESIS_PBFT_BASE_PORT: "50052"
+      GENESIS_PBFT_TLS_CERT_PATH: /certs/pbft/replica-2/node.crt
+      GENESIS_PBFT_TLS_KEY_PATH: /certs/pbft/replica-2/node.key
+      GENESIS_PBFT_SIGNING_KEY_PATH: /certs/pbft/replica-2/signing.key
+
+  pbft-3:
+    <<: *pbft-replica
+    container_name: pbft-3
+    hostname: pbft-3
+    environment:
+      <<: [*pbft-env, *pbft-peers]
+      GENESIS_PBFT_NODE_ID: replica-3
+      GENESIS_PBFT_BASE_PORT: "50053"
+      GENESIS_PBFT_TLS_CERT_PATH: /certs/pbft/replica-3/node.crt
+      GENESIS_PBFT_TLS_KEY_PATH: /certs/pbft/replica-3/node.key
+      GENESIS_PBFT_SIGNING_KEY_PATH: /certs/pbft/replica-3/signing.key
+
+  pbft-4:
+    <<: *pbft-replica
+    container_name: pbft-4
+    hostname: pbft-4
+    environment:
+      <<: [*pbft-env, *pbft-peers]
+      GENESIS_PBFT_NODE_ID: replica-4
+      GENESIS_PBFT_BASE_PORT: "50054"
+      GENESIS_PBFT_TLS_CERT_PATH: /certs/pbft/replica-4/node.crt
+      GENESIS_PBFT_TLS_KEY_PATH: /certs/pbft/replica-4/node.key
+      GENESIS_PBFT_SIGNING_KEY_PATH: /certs/pbft/replica-4/signing.key
+
+  pbft-5:
+    <<: *pbft-replica
+    container_name: pbft-5
+    hostname: pbft-5
+    environment:
+      <<: [*pbft-env, *pbft-peers]
+      GENESIS_PBFT_NODE_ID: replica-5
+      GENESIS_PBFT_BASE_PORT: "50055"
+      GENESIS_PBFT_TLS_CERT_PATH: /certs/pbft/replica-5/node.crt
+      GENESIS_PBFT_TLS_KEY_PATH: /certs/pbft/replica-5/node.key
+      GENESIS_PBFT_SIGNING_KEY_PATH: /certs/pbft/replica-5/signing.key
+
+  pbft-6:
+    <<: *pbft-replica
+    container_name: pbft-6
+    hostname: pbft-6
+    environment:
+      <<: [*pbft-env, *pbft-peers]
+      GENESIS_PBFT_NODE_ID: replica-6
+      GENESIS_PBFT_BASE_PORT: "50056"
+      GENESIS_PBFT_TLS_CERT_PATH: /certs/pbft/replica-6/node.crt
+      GENESIS_PBFT_TLS_KEY_PATH: /certs/pbft/replica-6/node.key
+      GENESIS_PBFT_SIGNING_KEY_PATH: /certs/pbft/replica-6/signing.key
+
+  pbft-7:
+    <<: *pbft-replica
+    container_name: pbft-7
+    hostname: pbft-7
+    environment:
+      <<: [*pbft-env, *pbft-peers]
+      GENESIS_PBFT_NODE_ID: replica-7
+      GENESIS_PBFT_BASE_PORT: "50057"
+      GENESIS_PBFT_TLS_CERT_PATH: /certs/pbft/replica-7/node.crt
+      GENESIS_PBFT_TLS_KEY_PATH: /certs/pbft/replica-7/node.key
+      GENESIS_PBFT_SIGNING_KEY_PATH: /certs/pbft/replica-7/signing.key
+
+  pbft-8:
+    <<: *pbft-replica
+    container_name: pbft-8
+    hostname: pbft-8
+    environment:
+      <<: [*pbft-env, *pbft-peers]
+      GENESIS_PBFT_NODE_ID: replica-8
+      GENESIS_PBFT_BASE_PORT: "50058"
+      GENESIS_PBFT_TLS_CERT_PATH: /certs/pbft/replica-8/node.crt
+      GENESIS_PBFT_TLS_KEY_PATH: /certs/pbft/replica-8/node.key
+      GENESIS_PBFT_SIGNING_KEY_PATH: /certs/pbft/replica-8/signing.key
+
+  pbft-9:
+    <<: *pbft-replica
+    container_name: pbft-9
+    hostname: pbft-9
+    environment:
+      <<: [*pbft-env, *pbft-peers]
+      GENESIS_PBFT_NODE_ID: replica-9
+      GENESIS_PBFT_BASE_PORT: "50059"
+      GENESIS_PBFT_TLS_CERT_PATH: /certs/pbft/replica-9/node.crt
+      GENESIS_PBFT_TLS_KEY_PATH: /certs/pbft/replica-9/node.key
+      GENESIS_PBFT_SIGNING_KEY_PATH: /certs/pbft/replica-9/signing.key
+
+  pbft-10:
+    <<: *pbft-replica
+    container_name: pbft-10
+    hostname: pbft-10
+    environment:
+      <<: [*pbft-env, *pbft-peers]
+      GENESIS_PBFT_NODE_ID: replica-10
+      GENESIS_PBFT_BASE_PORT: "50060"
+      GENESIS_PBFT_TLS_CERT_PATH: /certs/pbft/replica-10/node.crt
+      GENESIS_PBFT_TLS_KEY_PATH: /certs/pbft/replica-10/node.key
+      GENESIS_PBFT_SIGNING_KEY_PATH: /certs/pbft/replica-10/signing.key
+
+  # ── API Gateway ────────────────────────────────────────────────────────────
+  # Serves REST + WebSocket API; drives consensus via PBFTDistributedNode.
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: genesis-api
+    hostname: genesis-api
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-8080}:8080"
+    networks:
+      - pbft-net
+    volumes:
+      - ./certs:/certs:ro
+      - pbft-data:/app/data
+      - pbft-audit:/app/audit_log
+    environment:
+      <<: [*pbft-env, *pbft-peers]
+      GENESIS_PBFT_NODE_ID: coordinator
+      PORT: "8080"
+      GENESIS_JWT_SECRET: "${GENESIS_JWT_SECRET:?GENESIS_JWT_SECRET must be set in .env}"
+      AISSTREAM_API_KEY: "${AISSTREAM_API_KEY:-}"
+      OPENSKY_USERNAME: "${OPENSKY_USERNAME:-}"
+      OPENSKY_PASSWORD: "${OPENSKY_PASSWORD:-}"
+      GENESIS_LIVE_AIS_ENABLED: "${GENESIS_LIVE_AIS_ENABLED:-false}"
+      GENESIS_LIVE_ADSB_ENABLED: "${GENESIS_LIVE_ADSB_ENABLED:-false}"
+      ETHEREUM_PRIVATE_KEY: "${ETHEREUM_PRIVATE_KEY:-}"
+    depends_on:
+      pbft-0:
+        condition: service_healthy
+      pbft-1:
+        condition: service_healthy
+      pbft-2:
+        condition: service_healthy
+      pbft-3:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/api/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command: >
+      sh -c "python -m uvicorn genesis_swarm.api.cloud_app:app
+             --host 0.0.0.0 --port 8080 --workers 1"
+
+networks:
+  pbft-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+volumes:
+  pbft-data:
+  pbft-audit:

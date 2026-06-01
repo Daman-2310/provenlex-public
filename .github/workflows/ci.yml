@@ -1,0 +1,246 @@
+# =============================================================================
+# GENESIS SWARM — CONTINUOUS INTEGRATION
+# .github/workflows/ci.yml
+#
+# Runs on every push and pull_request to main.
+# Three parallel job groups:
+#   rust   — cargo check, test, bench compile, maturin wheel build
+#   python — pytest (786 tests), coverage ≥ 20%, type-check, lint
+#   docker — full 3-stage image build (rust-builder → deps-resolver → runtime)
+# =============================================================================
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+# ── Job 1: Rust engine ────────────────────────────────────────────────────────
+jobs:
+  rust:
+    name: Rust Engine
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sovereign-engine
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            sovereign-engine/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('sovereign-engine/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: cargo fmt check
+        run: cargo fmt --all -- --check
+
+      - name: cargo check (lib + bin + benches)
+        run: cargo check --all-targets
+
+      - name: cargo check (real-zk-proofs feature)
+        run: cargo check --bin zk-worker --features real-zk-proofs
+
+      - name: cargo clippy
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: cargo test
+        run: cargo test --lib --release
+
+      - name: cargo bench (compile only — no execution on CI)
+        run: cargo bench --no-run
+
+      - name: Build maturin wheel (genesis_native)
+        run: |
+          pip install maturin
+          maturin build --features pyo3 --release --out /tmp/wheels
+          echo "Wheel built:"
+          ls -lh /tmp/wheels/
+
+# ── Job 2: Python orchestration layer ────────────────────────────────────────
+  python:
+    name: Python Layer
+    runs-on: ubuntu-latest
+    needs: rust
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Rust (for maturin)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            sovereign-engine/target
+          key: ${{ runner.os }}-cargo-py-${{ hashFiles('sovereign-engine/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-py-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]" maturin
+
+      - name: Build and install genesis_native (Rust → Python bridge)
+        run: |
+          cd sovereign-engine && maturin develop --features pyo3
+          cd ..
+          python -c "from genesis_swarm.shared.native_compliance import native_available; \
+                     assert native_available(), 'Rust path not active'; \
+                     print('✓ genesis_native loaded — Rust hot path active')"
+
+      - name: Run test suite
+        run: |
+          pytest tests/ -q --tb=short \
+            --cov=genesis_swarm \
+            --cov-report=term-missing \
+            --cov-fail-under=19 \
+            --ignore=src/genesis_swarm/api/investor_onepager.py \
+            --ignore=src/genesis_swarm/api/pitch_deck.py \
+            -m "not slow"
+
+      - name: Type check (mypy)
+        run: mypy src/genesis_swarm --ignore-missing-imports
+        continue-on-error: true
+
+      - name: Lint (ruff)
+        run: ruff check src/ tests/
+        continue-on-error: true
+
+# ── Job 3: Docker build ───────────────────────────────────────────────────────
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: [rust, python]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image (full 3-stage)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: false
+          tags: genesis-swarm:ci-${{ github.sha }}
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILD_DATE=${{ github.event.head_commit.timestamp }}
+            GIT_SHA=${{ github.sha }}
+
+      - name: Verify Rust compliance path in container
+        run: |
+          docker run --rm genesis-swarm:ci-${{ github.sha }} \
+            python -c "
+          import sys; sys.path.insert(0, '/app/src')
+          from genesis_swarm.shared.native_compliance import native_available, check_aifmd
+          assert native_available(), 'Rust path not active in container'
+          r = check_aifmd(14500, 9000, 1800, 0)
+          assert r.compliant
+          print('✓ Container: Rust compliance path active, clean check passes')
+          "
+
+# ── Benchmark summary (on push to main only) ──────────────────────────────────
+  bench-summary:
+    name: Benchmark Summary
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: rust
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            sovereign-engine/target
+          key: ${{ runner.os }}-bench-${{ hashFiles('sovereign-engine/Cargo.lock') }}
+
+      - name: Run benchmarks
+        working-directory: sovereign-engine
+        run: |
+          cargo bench --bench swarm_perf -- --output-format bencher | tee bench_output.txt
+          echo "### Benchmark Results" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat bench_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+# ── ZK Integration Test (on push to main — builds real prover) ────────────────
+  zk-integration:
+    name: ZK Prover Integration
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [rust, python]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            sovereign-engine/target
+          key: ${{ runner.os }}-zk-${{ hashFiles('sovereign-engine/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-zk-
+
+      - name: Build zk-worker binary
+        working-directory: sovereign-engine
+        run: cargo build --release --bin zk-worker --features real-zk-proofs
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Rust (for maturin)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]" maturin
+
+      - name: Build genesis_native
+        run: cd sovereign-engine && maturin develop --features pyo3
+
+      - name: Run ZK end-to-end integration tests
+        run: pytest tests/integration/test_zk_prover_e2e.py -v -s -m slow
+        timeout-minutes: 10

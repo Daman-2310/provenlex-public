@@ -1,0 +1,46 @@
+# Genesis Swarm — Shared ConfigMap
+# Non-secret runtime configuration shared across all pods.
+# Secrets (JWT, API keys, DB passwords) go in k8s/secrets.yaml (NOT committed).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: genesis-config
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: genesis-swarm
+data:
+  # ── Environment ─────────────────────────────────────────────────────────────
+  GENESIS_ENVIRONMENT: "production"
+  GENESIS_LOG_LEVEL: "INFO"
+  GENESIS_LOG_FORMAT: "json"
+  PYTHONUNBUFFERED: "1"
+
+  # ── PBFT cluster ─────────────────────────────────────────────────────────────
+  # WebSocket transport — uses headless service DNS for stable peer addressing.
+  # Each replica resolves as pbft-{i}.pbft-headless.genesis.svc.cluster.local
+  GENESIS_PBFT_MODE: "websocket"
+  GENESIS_PBFT_MTLS_ENABLED: "true"
+  GENESIS_PBFT_CA_CERT_PATH: "/certs/pbft/ca.crt"
+  GENESIS_PBFT_PEERS: >-
+    {"replica-0":"ws://pbft-0.pbft-headless.genesis.svc.cluster.local:50050",
+     "replica-1":"ws://pbft-1.pbft-headless.genesis.svc.cluster.local:50051",
+     "replica-2":"ws://pbft-2.pbft-headless.genesis.svc.cluster.local:50052",
+     "replica-3":"ws://pbft-3.pbft-headless.genesis.svc.cluster.local:50053",
+     "replica-4":"ws://pbft-4.pbft-headless.genesis.svc.cluster.local:50054",
+     "replica-5":"ws://pbft-5.pbft-headless.genesis.svc.cluster.local:50055",
+     "replica-6":"ws://pbft-6.pbft-headless.genesis.svc.cluster.local:50056",
+     "replica-7":"ws://pbft-7.pbft-headless.genesis.svc.cluster.local:50057",
+     "replica-8":"ws://pbft-8.pbft-headless.genesis.svc.cluster.local:50058",
+     "replica-9":"ws://pbft-9.pbft-headless.genesis.svc.cluster.local:50059",
+     "replica-10":"ws://pbft-10.pbft-headless.genesis.svc.cluster.local:50060"}
+
+  # ── Live feeds ───────────────────────────────────────────────────────────────
+  GENESIS_LIVE_AIS_ENABLED: "true"
+  GENESIS_LIVE_ADSB_ENABLED: "true"
+
+  # ── Redis ────────────────────────────────────────────────────────────────────
+  REDIS_HOST: "redis-master.genesis.svc.cluster.local"
+  REDIS_PORT: "6379"
+
+  # ── Audit chain ──────────────────────────────────────────────────────────────
+  GENESIS_AUDIT_DB: "/app/data/audit_chain.db"

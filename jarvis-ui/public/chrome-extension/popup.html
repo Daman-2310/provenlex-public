@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Genesis Swarm</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    width: 340px;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: radial-gradient(ellipse at top, #0a0a1a, #050508);
+    color: #fff;
+  }
+  .header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(0,255,136,0.025);
+  }
+  .logo {
+    width: 22px; height: 22px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #00ff88, #00aa55);
+    border-radius: 5px; color: #000; font-size: 14px;
+    box-shadow: 0 0 12px rgba(0,255,136,0.4);
+  }
+  .brand-name { font-size: 12px; font-weight: 900; letter-spacing: 0.15em; }
+  .brand-sub { font-size: 8px; text-transform: uppercase; letter-spacing: 0.25em; color: #00ff88; }
+  .body { padding: 14px 16px; }
+  .input-row { display: flex; gap: 6px; margin-bottom: 12px; }
+  input {
+    flex: 1;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(0,255,136,0.3);
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    outline: none;
+  }
+  button {
+    background: linear-gradient(135deg, #00ff88, #00cc6a);
+    color: #000;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .result { font-size: 12px; line-height: 1.5; }
+  .hit {
+    background: rgba(255,51,102,0.06);
+    border: 1px solid rgba(255,51,102,0.3);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+  }
+  .hit-name { font-weight: 700; color: #fff; }
+  .hit-program { font-size: 9px; color: #ffaa00; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+  .score {
+    display: inline-block;
+    background: rgba(255,51,102,0.15);
+    color: #ff3366;
+    border: 1px solid #ff3366;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 900;
+    margin-right: 6px;
+  }
+  .pass {
+    background: rgba(0,255,136,0.06);
+    border: 1px solid rgba(0,255,136,0.3);
+    color: #00ff88;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .meta {
+    font-size: 9px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 8px;
+    text-align: center;
+  }
+  .footer {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 10px 16px;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    gap: 10px;
+    font-size: 10px;
+  }
+  .footer a { color: #00ff88; text-decoration: none; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+  .footer a:hover { text-decoration: underline; }
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(0,255,136,0.2);
+    border-top-color: #00ff88;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    margin: 16px auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+  <div class="header">
+    <span class="logo">⚡</span>
+    <div>
+      <div class="brand-name">GENESIS SWARM</div>
+      <div class="brand-sub">REGTECH AI</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="input-row">
+      <input id="q" type="text" placeholder="Entity name…" autofocus>
+      <button id="go">Screen</button>
+    </div>
+    <div id="result" class="result"></div>
+  </div>
+  <div class="footer">
+    <a href="https://genesis-swarm-rgq5.vercel.app/dashboard" target="_blank">Dashboard</a>
+    <a href="https://genesis-swarm-rgq5.vercel.app/audit" target="_blank">Audit Pack</a>
+    <a href="https://genesis-swarm-rgq5.vercel.app/docs" target="_blank">API Docs</a>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

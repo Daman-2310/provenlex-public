@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Genesis Swarm — Investor Deck</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+  :root {
+    --green: #00ff88;
+    --red: #ff3366;
+    --gold: #ffd700;
+    --blue: #4a9eff;
+    --bg: #050508;
+    --surface: #0d0d1a;
+    --border: rgba(0,255,136,0.15);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+  }
+
+  .slide {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 80px;
+    border-bottom: 1px solid rgba(0,255,136,0.08);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(0,255,136,0.03) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .slide-num {
+    position: absolute;
+    bottom: 24px;
+    right: 32px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(0,255,136,0.2);
+    letter-spacing: .1em;
+  }
+
+  .cover { background: var(--bg); align-items: flex-start; }
+  .cover .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cover .eyebrow::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  .cover h1 {
+    font-size: clamp(48px, 6.5vw, 84px);
+    font-weight: 900;
+    letter-spacing: -.03em;
+    line-height: 1.05;
+    margin-bottom: 12px;
+  }
+  .cover h1 .green { color: var(--green); }
+  .cover .tagline {
+    font-size: clamp(16px, 2vw, 22px);
+    color: rgba(255,255,255,0.5);
+    font-weight: 300;
+    margin-bottom: 48px;
+    max-width: 620px;
+    line-height: 1.6;
+  }
+  .cover .stats-row {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .cover .stat { border-left: 2px solid var(--green); padding-left: 16px; }
+  .cover .stat .val { font-size: 28px; font-weight: 800; color: var(--green); }
+  .cover .stat .lbl { font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: .08em; margin-top: 2px; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(0,255,136,0.4);
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-size: clamp(30px, 4vw, 50px);
+    font-weight: 800;
+    letter-spacing: -.02em;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  h2 .accent { color: var(--green); }
+  h2 .red { color: var(--red); }
+  h2 .gold { color: var(--gold); }
+
+  .subtitle {
+    font-size: 17px;
+    color: rgba(255,255,255,0.5);
+    max-width: 680px;
+    margin-bottom: 40px;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .timeline { display: flex; flex-direction: column; gap: 0; max-width: 720px; }
+  .timeline-item { display: flex; gap: 24px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.06); align-items: flex-start; }
+  .timeline-item:last-child { border-bottom: none; }
+  .t-year { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; min-width: 80px; padding-top: 2px; }
+  .t-year.red { color: var(--red); }
+  .t-year.normal { color: rgba(255,255,255,0.3); }
+  .t-event { font-size: 15px; color: rgba(255,255,255,0.65); }
+  .t-event strong { color: #fff; }
+
+  .big-number { font-size: clamp(56px, 9vw, 110px); font-weight: 900; color: var(--red); letter-spacing: -.04em; line-height: 1; margin: 16px 0 8px; }
+  .big-label { font-size: 15px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: .1em; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); padding: 22px; }
+  .card .card-icon { font-size: 22px; margin-bottom: 10px; }
+  .card h3 { font-size: 13px; font-weight: 700; color: var(--green); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 8px; }
+  .card p { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+  .compare-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  .compare-table th { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,0.3); padding: 10px 16px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); font-weight: 500; }
+  .compare-table th:last-child { color: var(--green); }
+  .compare-table td { padding: 13px 16px; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.6); }
+  .compare-table td:first-child { color: rgba(255,255,255,0.4); font-size: 13px; }
+  .compare-table td.bad { color: #ffaa00; }
+  .compare-table td.good { color: var(--green); font-weight: 700; }
+  .compare-table tr:last-child td { border-bottom: none; }
+
+  .market-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 8px; }
+  .market-card { padding: 24px; border: 1px solid rgba(0,255,136,0.12); background: rgba(0,255,136,0.03); }
+  .market-card .val { font-size: 34px; font-weight: 800; color: var(--green); letter-spacing: -.02em; margin-bottom: 6px; }
+  .market-card .desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.5; }
+
+  .steps { display: flex; flex-direction: column; gap: 0; max-width: 760px; }
+  .step { display: flex; gap: 24px; padding: 18px 0; border-bottom: 1px solid rgba(0,255,136,0.06); align-items: flex-start; }
+  .step:last-child { border-bottom: none; }
+  .step-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--green); min-width: 32px; padding-top: 3px; letter-spacing: .1em; }
+  .step-content h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; color: #fff; }
+  .step-content p { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.6; }
+  .step-time { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--green); white-space: nowrap; padding-top: 4px; min-width: 80px; text-align: right; }
+
+  .traction-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.1); margin-bottom: 36px; }
+  .traction-cell { background: var(--bg); padding: 24px 16px; text-align: center; }
+  .traction-cell .val { font-size: 32px; font-weight: 900; color: var(--green); letter-spacing: -.02em; }
+  .traction-cell .lbl { font-size: 10px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: .1em; margin-top: 4px; }
+
+  .ask-box { border: 1px solid rgba(0,255,136,0.3); background: rgba(0,255,136,0.04); padding: 36px 40px; max-width: 600px; margin-bottom: 36px; }
+  .ask-amount { font-size: clamp(38px, 5.5vw, 68px); font-weight: 900; color: var(--green); letter-spacing: -.03em; margin-bottom: 6px; }
+  .ask-label { font-size: 13px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 24px; }
+  .use-of-funds { display: flex; flex-direction: column; gap: 8px; }
+  .fund-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+  .fund-row .item { color: rgba(255,255,255,0.6); }
+  .fund-row .pct { color: var(--green); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .fund-bar { height: 2px; background: rgba(0,255,136,0.1); margin: 2px 0 4px; position: relative; }
+  .fund-bar-fill { position: absolute; top: 0; left: 0; height: 100%; background: var(--green); }
+
+  .founder-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 28px 32px;
+    margin-bottom: 32px;
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+  }
+  .founder-age {
+    font-size: 64px;
+    font-weight: 900;
+    color: var(--green);
+    letter-spacing: -.04em;
+    line-height: 1;
+    min-width: 80px;
+  }
+  .founder-details h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .founder-details .loc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--blue);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .founder-details p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.6;
+    max-width: 520px;
+  }
+
+  .contact-row { display: flex; gap: 36px; flex-wrap: wrap; margin-top: 8px; }
+  .contact-item { font-size: 15px; color: rgba(255,255,255,0.6); }
+  .contact-item strong { color: #fff; display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
+
+  .scanline {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none; z-index: 100;
+  }
+
+  @media print {
+    .slide { page-break-after: always; min-height: 100vh; }
+    .scanline { display: none; }
+  }
+  @media (max-width: 768px) {
+    .slide { padding: 40px 24px; }
+    .two-col, .three-col, .market-grid, .traction-grid { grid-template-columns: 1fr; }
+    .founder-box { flex-direction: column; gap: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="scanline"></div>
+
+<!-- SLIDE 1: COVER -->
+<div class="slide cover">
+  <div class="eyebrow">Genesis Swarm — Confidential Investor Deck — 2026</div>
+  <h1>The AI that catches<br><span class="green">the next Wirecard</span><br>in 340ms.</h1>
+  <p class="tagline">Sovereign-grade financial fraud detection for Luxembourg's €5.2T fund industry — built by a 17-year-old in India.</p>
+  <div class="stats-row">
+    <div class="stat"><div class="val">340ms</div><div class="lbl">Detection latency</div></div>
+    <div class="stat"><div class="val">&lt;2%</div><div class="lbl">False positive rate</div></div>
+    <div class="stat"><div class="val">11</div><div class="lbl">AI detection nodes</div></div>
+    <div class="stat"><div class="val">DORA</div><div class="lbl">Compliant</div></div>
+  </div>
+  <div class="slide-num">01 / 08</div>
+</div>
+
+<!-- SLIDE 2: PROBLEM -->
+<div class="slide">
+  <div class="section-label">The Problem</div>
+  <h2>€12.5 billion.<br><span class="red">Five years.</span><br>Nobody caught it.</h2>
+  <p class="subtitle">Wirecard collapsed in June 2020 after falsifying €1.9B in cash. Traditional compliance missed it for half a decade.</p>
+  <div class="two-col" style="gap:64px;">
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="t-year normal">2015</div>
+        <div class="t-event">First whistleblower report filed with regulators</div>
+      </div>
+      <div class="timeline-item">
+        <div class="t-year normal">2019</div>
+        <div class="t-event">Financial Times investigation published — <strong>still operating</strong></div>
+      </div>
+      <div class="timeline-item">
+        <div class="t-year normal">Jun 2020</div>
+        <div class="t-event">EY auditors discover €1.9B cash <strong>does not exist</strong></div>
+      </div>
+      <div class="timeline-item">
+        <div class="t-year red">Jun 25, 2020</div>
+        <div class="t-event"><strong>Wirecard files for insolvency. €12.5B in market cap wiped.</strong></div>
+      </div>
+      <div class="timeline-item">
+        <div class="t-year" style="color:var(--green)">T+340ms</div>
+        <div class="t-event" style="color:var(--green)"><strong>Genesis Swarm detects NAV manipulation. Alert fired.</strong></div>
+      </div>
+    </div>
+    <div>
+      <div class="big-number">€12.5B</div>
+      <div class="big-label">Lost to investors</div>
+      <div style="margin-top:32px;font-size:14px;color:rgba(255,255,255,0.4);line-height:2;">
+        Traditional compliance relies on<br>
+        <span style="color:#ffaa00">▸ Manual quarterly audits</span><br>
+        <span style="color:#ffaa00">▸ Human review cycles (48–72h)</span><br>
+        <span style="color:#ffaa00">▸ ~34% false positive rate</span><br>
+        <span style="color:#ffaa00">▸ No real-time cross-entity detection</span>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">02 / 08</div>
+</div>
+
+<!-- SLIDE 3: SOLUTION -->
+<div class="slide">
+  <div class="section-label">The Solution</div>
+  <h2>An <span class="accent">AI swarm</span> that never<br>sleeps, never misses,<br>never forgets.</h2>
+  <p class="subtitle">11 specialised AI agents in a Byzantine fault-tolerant consensus network — watching every risk vector simultaneously, 24/7.</p>
+  <div class="three-col">
+    <div class="card">
+      <div class="card-icon">⚡</div>
+      <h3>Real-time Detection</h3>
+      <p>11 AI bots scan NAV, FX, sanctions, cargo, compliance, sovereignty and more — every 2 seconds. Anomalies flagged in 340ms.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔐</div>
+      <h3>BFT Consensus</h3>
+      <p>No single bot triggers a false alarm. Byzantine fault-tolerant quorum requires agreement across multiple independent nodes before escalating.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">⛓</div>
+      <h3>Merkle Audit Trail</h3>
+      <p>Every detection event is cryptographically committed to a tamper-proof Merkle tree. Immutable evidence chain for regulators.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🤖</div>
+      <h3>JARVIS AI Memory</h3>
+      <p>RAG-powered institutional memory. Queries 5 years of precedents in milliseconds. Explains every decision in plain English.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🛡</div>
+      <h3>Self-Healing</h3>
+      <p>Bots monitor each other. If one fails or acts Byzantine, the swarm quarantines it and heals automatically — zero downtime.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📋</div>
+      <h3>DORA Compliant</h3>
+      <p>Built for CSSF Luxembourg. Automated regulatory reporting, incident export, and audit trail — DORA-ready out of the box.</p>
+    </div>
+  </div>
+  <div class="slide-num">03 / 08</div>
+</div>
+
+<!-- SLIDE 4: VS TRADITIONAL -->
+<div class="slide">
+  <div class="section-label">Competitive Advantage</div>
+  <h2>We don't compete with<br>compliance teams.<br><span class="accent">We make them superhuman.</span></h2>
+  <p class="subtitle">Head-to-head against traditional compliance infrastructure.</p>
+  <table class="compare-table">
+    <thead>
+      <tr><th>Metric</th><th>Traditional Compliance</th><th>Genesis Swarm</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Detection latency</td><td class="bad">48–72 hours</td><td class="good">340 milliseconds</td></tr>
+      <tr><td>False positive rate</td><td class="bad">~34%</td><td class="good">&lt;2%</td></tr>
+      <tr><td>Capital at risk (avg exposure)</td><td class="bad">€4.2B undetected</td><td class="good">€0 (quarantined immediately)</td></tr>
+      <tr><td>Audit trail</td><td class="bad">Manual spreadsheets</td><td class="good">Merkle-locked, tamper-proof</td></tr>
+      <tr><td>Consensus mechanism</td><td class="bad">Single analyst sign-off</td><td class="good">11-node BFT quorum</td></tr>
+      <tr><td>DORA regulatory SLA</td><td class="bad">Manual quarterly report</td><td class="good">Auto-export, real-time</td></tr>
+      <tr><td>Annual cost</td><td class="bad">€2M–8M (team + tooling)</td><td class="good">SaaS subscription</td></tr>
+    </tbody>
+  </table>
+  <div class="slide-num">04 / 08</div>
+</div>
+
+<!-- SLIDE 5: MARKET -->
+<div class="slide">
+  <div class="section-label">Market Opportunity</div>
+  <h2>A <span class="accent">€60B market</span><br>with a mandatory<br>regulatory deadline.</h2>
+  <p class="subtitle">EU DORA regulation (Jan 2025) mandates real-time digital resilience monitoring for every financial entity in Europe. Compliance is not optional.</p>
+  <div class="market-grid">
+    <div class="market-card">
+      <div class="val">€5.2T</div>
+      <div class="desc">Luxembourg AUM — the world's second largest fund domicile. Every fund needs DORA compliance.</div>
+    </div>
+    <div class="market-card">
+      <div class="val">€60B</div>
+      <div class="desc">Global RegTech market by 2030 (from €15.8B today). 18% CAGR driven by regulatory mandates.</div>
+    </div>
+    <div class="market-card">
+      <div class="val">3,900+</div>
+      <div class="desc">Fund managers registered with CSSF Luxembourg — each a direct prospect for Genesis Swarm.</div>
+    </div>
+    <div class="market-card">
+      <div class="val">€2M–8M</div>
+      <div class="desc">What large institutions currently spend annually on compliance teams and legacy tooling — our displacement target.</div>
+    </div>
+  </div>
+  <div class="slide-num">05 / 08</div>
+</div>
+
+<!-- SLIDE 6: HOW IT WORKS -->
+<div class="slide">
+  <div class="section-label">How It Works</div>
+  <h2>From anomaly to alert<br><span class="accent">in under a second.</span></h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-content">
+        <h4>Continuous Scanning</h4>
+        <p>11 specialised AI bots scan NAV data, FX feeds, sanctions lists, vessel AIS data, geopolitical risk, compliance filings, and more — every 2 seconds around the clock.</p>
+      </div>
+      <div class="step-time">T+0ms</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-content">
+        <h4>Anomaly Detection</h4>
+        <p>A bot detects a suspicious pattern — NAV manipulation, sanctions evasion, dark ship activity, round-trip FX. Score spikes above threshold.</p>
+      </div>
+      <div class="step-time">T+50ms</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-content">
+        <h4>BFT Consensus Round</h4>
+        <p>The flagging bot initiates a consensus round. 11 nodes vote. Byzantine fault tolerance ensures no single point of failure or manipulation.</p>
+      </div>
+      <div class="step-time">T+180ms</div>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-content">
+        <h4>Merkle Commit + Alert</h4>
+        <p>Confirmed anomaly cryptographically committed to the Merkle audit chain. Real-time email alert fired. Positions quarantined. DORA report generated.</p>
+      </div>
+      <div class="step-time">T+340ms</div>
+    </div>
+    <div class="step">
+      <div class="step-num">05</div>
+      <div class="step-content">
+        <h4>JARVIS Explains</h4>
+        <p>AI memory system queries historical precedents and delivers a plain-English explanation with confidence score and recommended action.</p>
+      </div>
+      <div class="step-time">T+1s</div>
+    </div>
+  </div>
+  <div class="slide-num">06 / 08</div>
+</div>
+
+<!-- SLIDE 7: TRACTION -->
+<div class="slide">
+  <div class="section-label">Traction &amp; Technology</div>
+  <h2>Working product.<br><span class="accent">Live demo.</span><br>Real alerts.</h2>
+  <p class="subtitle">Genesis Swarm is not a prototype. It is a fully running system with real-time detection, live consensus, and email alerts firing today.</p>
+  <div class="traction-grid">
+    <div class="traction-cell"><div class="val">11</div><div class="lbl">Live AI bots</div></div>
+    <div class="traction-cell"><div class="val">340ms</div><div class="lbl">Alert latency</div></div>
+    <div class="traction-cell"><div class="val">100%</div><div class="lbl">Uptime in testing</div></div>
+    <div class="traction-cell"><div class="val">DORA</div><div class="lbl">CSSF compliant</div></div>
+  </div>
+  <div class="three-col">
+    <div class="card">
+      <h3>Infrastructure</h3>
+      <p>Python 3.14, FastAPI, Next.js 15, ChromaDB RAG, D3 force graphs, Prometheus metrics. Fully dockerised.</p>
+    </div>
+    <div class="card">
+      <h3>Security</h3>
+      <p>Merkle audit chain, BFT consensus, PII masking, adversarial Shadow Bot for continuous hardening, cryptographic vote verification.</p>
+    </div>
+    <div class="card">
+      <h3>Regulatory</h3>
+      <p>Built against CSSF DORA requirements. Audit export, incident timeline, tamper-proof logs. Luxembourg-first go-to-market.</p>
+    </div>
+  </div>
+  <div class="slide-num">07 / 08</div>
+</div>
+
+<!-- SLIDE 8: ASK + FOUNDER -->
+<div class="slide">
+  <div class="section-label">The Ask</div>
+  <h2>Seed round.<br><span class="accent">Luxembourg-first.</span><br>€50M vision.</h2>
+
+  <div class="two-col" style="align-items:start; gap:48px;">
+    <div>
+      <div class="founder-box">
+        <div class="founder-age">17</div>
+        <div class="founder-details">
+          <h3>Daman Sharma</h3>
+          <div class="loc">📍 India (building remotely) → Luxembourg target market</div>
+          <p>Built Genesis Swarm entirely solo — backend AI swarm, BFT consensus, Merkle audit chain, RAG memory, Bloomberg-style terminal UI. No team. No funding. Just code.<br><br>
+          Geography is not a barrier. The product works. The market is real. The regulatory mandate is live.</p>
+        </div>
+      </div>
+
+      <div class="ask-box">
+        <div class="ask-amount">€500K</div>
+        <div class="ask-label">Seed Round — SAFE</div>
+        <div class="use-of-funds">
+          <div class="fund-row"><span class="item">Product &amp; Engineering</span><span class="pct">40%</span></div>
+          <div class="fund-bar"><div class="fund-bar-fill" style="width:40%"></div></div>
+          <div class="fund-row"><span class="item">CSSF Regulatory Licensing</span><span class="pct">25%</span></div>
+          <div class="fund-bar"><div class="fund-bar-fill" style="width:25%"></div></div>
+          <div class="fund-row"><span class="item">Sales &amp; First Pilots</span><span class="pct">25%</span></div>
+          <div class="fund-bar"><div class="fund-bar-fill" style="width:25%"></div></div>
+          <div class="fund-row"><span class="item">Operations</span><span class="pct">10%</span></div>
+          <div class="fund-bar"><div class="fund-bar-fill" style="width:10%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding-top:8px;">
+      <div style="margin-bottom:32px;">
+        <div class="section-label" style="margin-bottom:12px;">12-Month Milestones</div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;gap:12px;font-size:14px;">
+            <span style="color:var(--green);font-family:monospace;min-width:64px">Q3 2026</span>
+            <span style="color:rgba(255,255,255,0.6)">3 pilot agreements with Luxembourg fund managers</span>
+          </div>
+          <div style="display:flex;gap:12px;font-size:14px;">
+            <span style="color:var(--green);font-family:monospace;min-width:64px">Q4 2026</span>
+            <span style="color:rgba(255,255,255,0.6)">CSSF regulatory sandbox approval</span>
+          </div>
+          <div style="display:flex;gap:12px;font-size:14px;">
+            <span style="color:var(--green);font-family:monospace;min-width:64px">Q1 2027</span>
+            <span style="color:rgba(255,255,255,0.6)">First paying customers — €150K ARR</span>
+          </div>
+          <div style="display:flex;gap:12px;font-size:14px;">
+            <span style="color:var(--green);font-family:monospace;min-width:64px">Q2 2027</span>
+            <span style="color:rgba(255,255,255,0.6)">Series A raise — €3M target</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label" style="margin-bottom:12px;">Contact</div>
+        <div class="contact-row">
+          <div class="contact-item"><strong>Founder</strong>Daman Sharma, Age 17</div>
+          <div class="contact-item"><strong>Email</strong>daman.sharma.2310@gmail.com</div>
+          <div class="contact-item"><strong>Based</strong>India (remote)</div>
+          <div class="contact-item"><strong>Target Market</strong>Luxembourg, EU</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">08 / 08</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+# Genesis Swarm — PodDisruptionBudgets
+#
+# These PDBs ensure that voluntary disruptions (node drains, rolling upgrades,
+# cluster autoscaler scale-downs) never violate the consensus quorum requirements.
+#
+# PBFT constraint: N=11, f=3 — at most 3 replicas may be unavailable simultaneously.
+#   maxUnavailable: 3  ← guarantees 8+ replicas remain (≥ 2f+2, above quorum of 7)
+#
+# API constraint: always keep at least 2 API pods running for HA.
+#   minAvailable: 2
+
+---
+# PBFT consensus cluster: limit voluntary disruptions to f=3 pods at a time
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: pbft-pdb
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: pbft
+    app.kubernetes.io/component: consensus
+spec:
+  maxUnavailable: 3   # f = 3; never violate the BFT quorum threshold
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pbft
+
+---
+# API gateway: always keep at least 2 pods up for zero-downtime maintenance
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: genesis-api-pdb
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: genesis-api
+    app.kubernetes.io/component: api-gateway
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: genesis-api

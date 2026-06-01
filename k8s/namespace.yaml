@@ -1,0 +1,10 @@
+# Genesis Swarm — Kubernetes namespace
+# All resources live in the "genesis" namespace for RBAC isolation.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: genesis
+  labels:
+    app.kubernetes.io/name: genesis-swarm
+    app.kubernetes.io/part-of: genesis-swarm
+    environment: production

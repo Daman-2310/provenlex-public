@@ -1,0 +1,19 @@
+[build-system]
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "genesis-native"
+version = "0.6.0"
+description = "Genesis Swarm — Rust/PyO3 compliance hot-path extension"
+requires-python = ">=3.8"
+license = { text = "PROPRIETARY" }
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+
+[tool.maturin]
+module-name    = "genesis_native"
+features       = ["pyo3"]

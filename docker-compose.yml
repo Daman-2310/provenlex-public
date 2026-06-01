@@ -1,0 +1,184 @@
+version: '3.9'
+
+# ── Genesis Swarm — Local Development Stack ───────────────────────────────────
+#
+# Minimal profile (default):   docker-compose up
+#   api + jarvis only — no external services required
+#
+# Full profile (with monitoring): docker-compose --profile monitoring up
+#   Adds Prometheus + Grafana dashboards
+#
+# Required env vars (copy .env.example → .env):
+#   GENESIS_JWT_SECRET          strong random string for JWT signing
+#   GENESIS_USERS               JSON map of username → {hash, roles}  (optional, uses dev defaults)
+#   XAI_API_KEY                 Grok primary LLM provider (overrides Anthropic when set)
+#   ANTHROPIC_API_KEY           enables Claude AI chat in JarvisChat
+#   AISSTREAM_API_KEY           enables live AIS vessel tracking in CargoBot
+#   GENESIS_SLACK_WEBHOOK       optional Slack alerting webhook
+#   GENESIS_SMTP_USER / PASS    optional email alert credentials
+
+networks:
+  genesis-net:
+    driver: bridge
+
+volumes:
+  cases-data:
+  redis-data:
+  prometheus-data:
+  grafana-data:
+  zk-socket:
+
+services:
+  # ── Backend API ─────────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: genesis-api
+    ports:
+      - "8000:8000"
+    environment:
+      # ── Required ──────────────────────────────────────────────────
+      - GENESIS_JWT_SECRET=${GENESIS_JWT_SECRET:-change-me-in-production}
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      # ── Optional: AI + live data feeds ────────────────────────────
+      - XAI_API_KEY=${XAI_API_KEY:-}
+      - GROK_MODEL=${GROK_MODEL:-grok-3-fast}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - AISSTREAM_API_KEY=${AISSTREAM_API_KEY:-}
+      # ── Optional: alerting ────────────────────────────────────────
+      - GENESIS_SLACK_WEBHOOK=${GENESIS_SLACK_WEBHOOK:-}
+      - GENESIS_ALERT_EMAIL=${GENESIS_ALERT_EMAIL:-}
+      - GENESIS_SMTP_HOST=${GENESIS_SMTP_HOST:-smtp.gmail.com}
+      - GENESIS_SMTP_PORT=${GENESIS_SMTP_PORT:-587}
+      - GENESIS_SMTP_USER=${GENESIS_SMTP_USER:-}
+      - GENESIS_SMTP_PASS=${GENESIS_SMTP_PASS:-}
+      # ── Optional: user credentials (JSON) ─────────────────────────
+      - GENESIS_USERS=${GENESIS_USERS:-}
+      # ── Redis (distributed state: token revocation, lockout)
+      - GENESIS_REDIS_URL=redis://redis:6379/0
+      - GENESIS_ZK_SOCKET=/run/genesis/zk.sock
+      # ── Case DB ───────────────────────────────────────────────────
+      - GENESIS_CASE_DB_PATH=/data/cases.db
+      # ── PostgreSQL (set in production to use PostgreSQL instead of SQLite)
+      # - DATABASE_URL=postgresql+asyncpg://genesis:genesis@db:5432/genesis
+    volumes:
+      - cases-data:/data
+      - zk-socket:/run/genesis
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks: [genesis-net]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── Next.js Terminal UI ─────────────────────────────────────────────────────
+  jarvis:
+    build:
+      context: ./jarvis-ui
+      dockerfile: Dockerfile
+    container_name: genesis-jarvis
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [genesis-net]
+    restart: unless-stopped
+
+
+  # ── Redis (shared auth state: JTI blacklist, login-attempt counters) ────────
+  redis:
+    image: redis:7-alpine
+    container_name: genesis-redis
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis-data:/data
+    networks: [genesis-net]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ── Background worker (ARQ over Redis) ────────────────────────────────────
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: genesis-worker
+    command: ["python", "-m", "arq", "genesis_swarm.workers.worker.WorkerSettings"]
+    environment:
+      - GENESIS_JWT_SECRET=${GENESIS_JWT_SECRET:-change-me-in-production}
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - XAI_API_KEY=${XAI_API_KEY:-}
+      - GROK_MODEL=${GROK_MODEL:-grok-3-fast}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - GENESIS_SLACK_WEBHOOK=${GENESIS_SLACK_WEBHOOK:-}
+      - GENESIS_ALERT_EMAIL=${GENESIS_ALERT_EMAIL:-}
+      - GENESIS_SMTP_HOST=${GENESIS_SMTP_HOST:-smtp.gmail.com}
+      - GENESIS_SMTP_PORT=${GENESIS_SMTP_PORT:-587}
+      - GENESIS_SMTP_USER=${GENESIS_SMTP_USER:-}
+      - GENESIS_SMTP_PASS=${GENESIS_SMTP_PASS:-}
+      - GENESIS_WEBHOOK_SECRET=${GENESIS_WEBHOOK_SECRET:-}
+      - GENESIS_REDIS_URL=redis://redis:6379/0
+      - GENESIS_ZK_SOCKET=/run/genesis/zk.sock
+      - GENESIS_CASE_DB_PATH=/data/cases.db
+    volumes:
+      - cases-data:/data
+      - zk-socket:/run/genesis
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks: [genesis-net]
+    restart: unless-stopped
+
+  # ── Prometheus (monitoring profile) ────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: genesis-prometheus
+    profiles: [monitoring]
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    networks: [genesis-net]
+    restart: unless-stopped
+
+  # ── Grafana (monitoring profile) ───────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: genesis-grafana
+    profiles: [monitoring]
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-genesis_local}
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_USERS_DEFAULT_THEME=dark
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    networks: [genesis-net]
+    restart: unless-stopped

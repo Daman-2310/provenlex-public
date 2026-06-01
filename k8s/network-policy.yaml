@@ -1,0 +1,249 @@
+# Genesis Swarm — NetworkPolicy (Zero-Trust ingress/egress rules)
+#
+# Design principles:
+#   1. Default-deny all ingress and egress within the namespace
+#   2. Allow only explicitly modelled traffic paths
+#   3. PBFT replicas can only talk to each other and to the API coordinator
+#   4. The API pod can reach Redis, PBFT replicas, and the public internet
+#      (for live AIS/ADS-B feeds and OIDC discovery)
+#   5. Redis is only reachable from the API pods
+#
+# Traffic matrix:
+#   Internet       → Ingress-controller → genesis-api  :8080
+#   genesis-api    → pbft-*             :50050-50060   (PBFT coordinator)
+#   genesis-api    → redis              :6379          (billing, cache)
+#   genesis-api    → 0.0.0.0/0          :443           (OIDC, AIS, ADS-B)
+#   pbft-*         → pbft-*             :50050-50060   (peer mesh)
+#   kube-dns       → all pods           :53 DNS (UDP+TCP)
+
+---
+# ── Default deny-all for PBFT replicas ──────────────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: pbft-default-deny
+  namespace: genesis
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: pbft
+  policyTypes:
+    - Ingress
+    - Egress
+
+---
+# ── PBFT peer mesh (port 50050–50060) ────────────────────────────────────────
+# Any PBFT replica may connect to any other PBFT replica for consensus traffic.
+# The range 50050-50060 covers all 11 nodes.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: pbft-peer-mesh
+  namespace: genesis
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: pbft
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: pbft
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: genesis-api
+      ports:
+        - protocol: TCP
+          port: 50050
+        - protocol: TCP
+          port: 50051
+        - protocol: TCP
+          port: 50052
+        - protocol: TCP
+          port: 50053
+        - protocol: TCP
+          port: 50054
+        - protocol: TCP
+          port: 50055
+        - protocol: TCP
+          port: 50056
+        - protocol: TCP
+          port: 50057
+        - protocol: TCP
+          port: 50058
+        - protocol: TCP
+          port: 50059
+        - protocol: TCP
+          port: 50060
+        - protocol: TCP
+          port: 8090   # health probe
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: pbft
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: genesis-api
+      ports:
+        - protocol: TCP
+          port: 50050
+        - protocol: TCP
+          port: 50051
+        - protocol: TCP
+          port: 50052
+        - protocol: TCP
+          port: 50053
+        - protocol: TCP
+          port: 50054
+        - protocol: TCP
+          port: 50055
+        - protocol: TCP
+          port: 50056
+        - protocol: TCP
+          port: 50057
+        - protocol: TCP
+          port: 50058
+        - protocol: TCP
+          port: 50059
+        - protocol: TCP
+          port: 50060
+    # DNS resolution
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# ── Default deny-all for API pods ────────────────────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-default-deny
+  namespace: genesis
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: genesis-api
+  policyTypes:
+    - Ingress
+    - Egress
+
+---
+# ── API ingress from nginx ingress controller ─────────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-allow-ingress
+  namespace: genesis
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: genesis-api
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8080
+
+---
+# ── API egress rules ──────────────────────────────────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-allow-egress
+  namespace: genesis
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: genesis-api
+  policyTypes:
+    - Egress
+  egress:
+    # PBFT replica WebSocket connections
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: pbft
+      ports:
+        - protocol: TCP
+          port: 50050
+        - protocol: TCP
+          port: 50051
+        - protocol: TCP
+          port: 50052
+        - protocol: TCP
+          port: 50053
+        - protocol: TCP
+          port: 50054
+        - protocol: TCP
+          port: 50055
+        - protocol: TCP
+          port: 50056
+        - protocol: TCP
+          port: 50057
+        - protocol: TCP
+          port: 50058
+        - protocol: TCP
+          port: 50059
+        - protocol: TCP
+          port: 50060
+
+    # Redis (billing registry, metrics cache)
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+
+    # External HTTPS — OIDC discovery, AISStream.io, OpenSky Network, Celestrak
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+      ports:
+        - protocol: TCP
+          port: 443
+
+    # DNS
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# ── Redis: only API pods may connect ─────────────────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis-allow-api-only
+  namespace: genesis
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: redis
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: genesis-api
+      ports:
+        - protocol: TCP
+          port: 6379

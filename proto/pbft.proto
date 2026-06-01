@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package genesis.pbft;
+
+// ── PBFT consensus service ────────────────────────────────────────────────────
+// Each replica exposes this service. Replicas call each other directly.
+// No central broker — pure peer-to-peer as real PBFT requires.
+
+service PBFTReplica {
+  // Primary sends PRE-PREPARE to all backups
+  rpc PrePrepare (PrePrepareMsg) returns (Ack);
+
+  // Each replica broadcasts PREPARE to all others
+  rpc Prepare (PrepareMsg) returns (Ack);
+
+  // Each replica broadcasts COMMIT to all others
+  rpc Commit (CommitMsg) returns (Ack);
+
+  // F+1 replicas initiate view change when primary times out
+  rpc ViewChange (ViewChangeMsg) returns (Ack);
+
+  // New primary broadcasts new view after collecting F+1 view-change messages
+  rpc NewView (NewViewMsg) returns (Ack);
+
+  // Health probe — used by coordinator to detect crashed replicas
+  rpc Ping (PingMsg) returns (PongMsg);
+}
+
+// ── Shared types ──────────────────────────────────────────────────────────────
+
+message Ack {
+  bool   accepted = 1;
+  string reason   = 2;  // empty on success, error description on rejection
+}
+
+message PingMsg {
+  string sender_id = 1;
+}
+
+message PongMsg {
+  string node_id = 1;
+  int64  view    = 2;
+  bool   alive   = 3;
+}
+
+// ── Message types ─────────────────────────────────────────────────────────────
+
+message PrePrepareMsg {
+  int64  view        = 1;
+  int64  seq         = 2;
+  string digest      = 3;   // SHA-256 of the serialised request
+  bytes  payload     = 4;   // serialised transaction JSON
+  string sender_id   = 5;
+  bytes  signature   = 6;   // Ed25519 signature over (view||seq||digest)
+}
+
+message PrepareMsg {
+  int64  view        = 1;
+  int64  seq         = 2;
+  string digest      = 3;
+  string sender_id   = 4;
+  bytes  signature   = 5;
+}
+
+message CommitMsg {
+  int64  view        = 1;
+  int64  seq         = 2;
+  string digest      = 3;
+  string sender_id   = 4;
+  bytes  signature   = 5;
+}
+
+message ViewChangeMsg {
+  int64  new_view    = 1;
+  string sender_id   = 2;
+  int64  last_seq    = 3;   // highest seq this replica committed
+  bytes  signature   = 4;
+}
+
+message NewViewMsg {
+  int64             new_view       = 1;
+  string            sender_id      = 2;
+  repeated string   view_change_ids = 3;  // node IDs of F+1 view-change senders
+  bytes             signature      = 4;
+}

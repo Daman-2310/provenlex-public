@@ -1,0 +1,70 @@
+# Genesis Swarm — HorizontalPodAutoscaler
+#
+# Scales the API gateway (stateless) between 3 and 20 replicas based on
+# CPU utilisation and memory utilisation measured by the metrics-server.
+#
+# Behaviour tuning:
+#   scaleUp:   stabilise 60 s → fast scale-out on OSINT feed bursts
+#   scaleDown: stabilise 300 s → conservative scale-in to avoid flapping
+#
+# The PBFT StatefulSet is intentionally excluded from autoscaling:
+# PBFT requires a fixed quorum (N=11, f=3).  Changing N mid-operation
+# requires a view-change and reconfiguration sequence that must be
+# orchestrated by an operator, not automated.
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: genesis-api
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: genesis-api
+    app.kubernetes.io/component: api-gateway
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: genesis-api
+
+  minReplicas: 3
+  maxReplicas: 20
+
+  metrics:
+    # ── CPU utilisation ────────────────────────────────────────────────────────
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70   # scale out when average CPU > 70%
+
+    # ── Memory utilisation ─────────────────────────────────────────────────────
+    # Memory is a leading indicator for OSINT streaming load (in-memory deques)
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80   # scale out when average memory > 80%
+
+  behavior:
+    scaleUp:
+      # React quickly to sudden OSINT feed spikes (AIS / ADS-B bursts)
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Pods
+          value: 4
+          periodSeconds: 60      # add up to 4 pods per minute
+        - type: Percent
+          value: 100
+          periodSeconds: 60      # or double the current count, whichever is larger
+      selectPolicy: Max
+
+    scaleDown:
+      # Conservative scale-in — prevents oscillation after a spike
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 120     # remove at most 2 pods per 2 minutes
+      selectPolicy: Min

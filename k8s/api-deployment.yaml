@@ -1,0 +1,210 @@
+# Genesis Swarm — API Gateway Deployment
+#
+# Serves the FastAPI REST + WebSocket API.
+# Horizontally scalable: 3 replicas minimum; HPA scales to 20.
+# Stateless — all shared state lives in Redis (billing, metrics cache)
+# and in the PBFT StatefulSet (consensus log, Merkle tree).
+#
+# Rolling-update strategy: maxUnavailable=0 ensures zero downtime deploys.
+# maxSurge=2 allows 2 extra pods during rollout for fast cutover.
+
+---
+# ClusterIP Service — internal load balancer for the Ingress
+apiVersion: v1
+kind: Service
+metadata:
+  name: genesis-api
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: genesis-api
+    app.kubernetes.io/component: api-gateway
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: genesis-api
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
+
+---
+# API Gateway Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: genesis-api
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: genesis-api
+    app.kubernetes.io/component: api-gateway
+    app.kubernetes.io/version: "0.5.0"
+  annotations:
+    # Trigger a rollout when the ConfigMap or Secret changes
+    configmap/checksum: "placeholder-set-by-ci"
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: genesis-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: genesis-api
+        app.kubernetes.io/component: api-gateway
+      annotations:
+        # Prometheus scrape annotations
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      # ── Scheduling ────────────────────────────────────────────────────────────
+      terminationGracePeriodSeconds: 30
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: genesis-api
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 80
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: genesis-api
+                topologyKey: topology.kubernetes.io/zone
+
+      # ── Security ──────────────────────────────────────────────────────────────
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+
+      # ── Service account ────────────────────────────────────────────────────────
+      serviceAccountName: genesis-api
+      automountServiceAccountToken: false
+
+      containers:
+        - name: api
+          image: ghcr.io/daman-2310/genesis-swarm:v0.5.0   # replace with your registry
+          imagePullPolicy: Always
+          command: ["python", "-m", "uvicorn"]
+          args:
+            - "genesis_swarm.api.cloud_app:app"
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "8080"
+            - "--workers"
+            - "2"
+            - "--timeout-keep-alive"
+            - "75"
+
+          # ── Environment ────────────────────────────────────────────────────────
+          envFrom:
+            - configMapRef:
+                name: genesis-config
+            - secretRef:
+                name: genesis-secrets
+          env:
+            - name: PORT
+              value: "8080"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+
+          # ── Ports ────────────────────────────────────────────────────────────
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+
+          # ── Health probes ─────────────────────────────────────────────────────
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 18   # 18 × 5s = 90s startup budget
+
+          # ── Resources ─────────────────────────────────────────────────────────
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2000m"
+              memory: "3Gi"
+
+          # ── Security ──────────────────────────────────────────────────────────
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop: ["ALL"]
+
+          # ── Volume mounts ────────────────────────────────────────────────────
+          volumeMounts:
+            - name: api-data
+              mountPath: /app/data
+            - name: api-audit
+              mountPath: /app/audit_log
+            - name: pbft-certs
+              mountPath: /certs
+              readOnly: true
+
+      volumes:
+        - name: api-data
+          emptyDir:
+            sizeLimit: 2Gi
+        - name: api-audit
+          emptyDir:
+            sizeLimit: 1Gi
+        - name: pbft-certs
+          secret:
+            secretName: genesis-pbft-certs
+            defaultMode: 0400
+
+---
+# ServiceAccount for the API pods (minimal RBAC footprint)
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: genesis-api
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: genesis-api
+automountServiceAccountToken: false

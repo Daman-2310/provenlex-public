@@ -1,0 +1,59 @@
+# ── Genesis Swarm — ZK Worker Sidecar ────────────────────────────────────────
+#
+# Builds and runs the BN254 Groth16 prover sidecar.
+# Communicates with the Python orchestration layer via a Unix domain socket.
+#
+# Build: docker build -f Dockerfile.zk-worker -t genesis-zk-worker .
+# Run:   docker run --rm -v /run/genesis:/run/genesis genesis-zk-worker
+# ─────────────────────────────────────────────────────────────────────────────
+
+FROM rust:1.80-slim-bookworm AS builder
+
+RUN apt-get update -qq && apt-get install -y --no-install-recommends \
+        pkg-config libssl-dev ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+
+# Manifest-first layer: deps cached until Cargo.lock changes
+COPY sovereign-engine/Cargo.toml sovereign-engine/Cargo.lock ./sovereign-engine/
+
+RUN mkdir -p sovereign-engine/src sovereign-engine/benches && \
+    echo 'fn main() {}' > sovereign-engine/src/main.rs && \
+    echo ''             > sovereign-engine/src/lib.rs  && \
+    echo 'fn main() {}' > sovereign-engine/src/zk_worker.rs && \
+    echo 'fn main() {}' > sovereign-engine/benches/swarm_perf.rs && \
+    echo 'fn main() {}' > sovereign-engine/benches/hot_path_bench.rs && \
+    echo 'fn main() {}' > sovereign-engine/benches/zk_verify_bench.rs
+
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/build/sovereign-engine/target \
+    cd sovereign-engine && cargo fetch
+
+COPY sovereign-engine/src/ ./sovereign-engine/src/
+
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/build/sovereign-engine/target \
+    cd sovereign-engine && \
+    cargo build --release --bin zk-worker --features real-zk-proofs && \
+    cp target/release/zk-worker /zk-worker
+
+# ── Runtime ───────────────────────────────────────────────────────────────────
+FROM debian:bookworm-slim AS runtime
+
+RUN apt-get update -qq && apt-get install -y --no-install-recommends \
+        libssl3 ca-certificates \
+    && rm -rf /var/lib/apt/lists/* && apt-get clean
+
+RUN groupadd --gid 10001 swarm && \
+    useradd --uid 10001 --gid swarm --no-create-home --shell /usr/sbin/nologin swarm
+
+COPY --from=builder /zk-worker /usr/local/bin/zk-worker
+RUN chmod +x /usr/local/bin/zk-worker
+
+USER swarm
+
+ENV GENESIS_ZK_SOCKET=/run/genesis/zk.sock \
+    GENESIS_ZK_WORKERS=2
+
+ENTRYPOINT ["/usr/local/bin/zk-worker"]

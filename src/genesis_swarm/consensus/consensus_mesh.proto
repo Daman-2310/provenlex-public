@@ -1,0 +1,129 @@
+syntax = "proto3";
+
+package genesis_swarm.consensus;
+
+option python_package = "genesis_swarm.consensus";
+
+// ── Phase tags ────────────────────────────────────────────────────────────────
+
+enum MessagePhase {
+  PHASE_UNKNOWN         = 0;
+  PHASE_PRE_PREPARE     = 1;
+  PHASE_PREPARE         = 2;
+  PHASE_COMMIT          = 3;
+  PHASE_VIEW_CHANGE     = 4;
+  PHASE_NEW_VIEW        = 5;
+  PHASE_STATE_SYNC_REQ  = 6;
+  PHASE_STATE_SYNC_RESP = 7;
+  PHASE_CHECKPOINT      = 8;
+}
+
+// ── Wire envelope ─────────────────────────────────────────────────────────────
+//
+// Ed25519 authenticity model:
+//   signature = Ed25519_sign(private_key,
+//                 pack(">BQQ", phase, view, seq)
+//                 | digest | "\0" | sender_id | "\0"
+//                 | pack(">Q", timestamp_ns))
+//
+// Receivers verify signature against ed25519_pubkey, then cross-check the
+// pubkey against their static peer registry.  Mismatch → DROP + ALERT.
+
+message ConsensusEnvelope {
+  MessagePhase phase          = 1;
+  uint64       view           = 2;
+  uint64       seq            = 3;
+  string       digest         = 4;
+  string       sender_id      = 5;
+  bytes        ed25519_pubkey = 6;
+  bytes        signature      = 7;
+  bytes        payload        = 8;
+  uint64       timestamp_ns   = 9;
+  string       merkle_root    = 10;
+}
+
+// ── Phase-specific payloads (serialised to ConsensusEnvelope.payload) ─────────
+
+message PrePreparePayload {
+  bytes  request_data   = 1;
+  string client_id      = 2;
+  uint64 request_ts_ns  = 3;
+  string request_digest = 4;
+  string chain_root     = 5;
+}
+
+message CheckpointPayload {
+  uint64 checkpoint_seq = 1;
+  string state_hash     = 2;
+}
+
+// ── Node identity ─────────────────────────────────────────────────────────────
+//
+// Sent as the first message on a StreamConsensus stream so the server can
+// verify the peer's identity before forwarding envelopes.  The server MUST
+// reject any stream where the first message is not a valid NodeHello with a
+// known node_id and a valid ed25519 signature over the nonce.
+//
+// Protocol:
+//   1. Client opens StreamConsensus stream.
+//   2. Client sends NodeHello as first ConsensusEnvelope (phase = PHASE_UNKNOWN,
+//      payload = serialised NodeHello, signed over: node_id + nonce).
+//   3. Server validates signature and, if accepted, returns an Ack{accepted: true}.
+//   4. Subsequent ConsensusEnvelope messages flow freely until the stream closes.
+
+message NodeHello {
+  string node_id       = 1;  // matches static peer registry entry
+  bytes  ed25519_pubkey = 2;  // full 32-byte key
+  bytes  nonce         = 3;  // 16 random bytes; server uses to prevent replay
+  bytes  signature     = 4;  // Ed25519_sign(private_key, node_id + "\0" + nonce)
+  string version       = 5;  // semver string: "0.4.0"
+}
+
+// ── State synchronisation ─────────────────────────────────────────────────────
+
+message StateSyncRequest {
+  string requester_id = 1;
+  uint64 from_seq     = 2;
+  uint64 to_seq       = 3;
+}
+
+message CommittedBlock {
+  uint64         seq          = 1;
+  bytes          data         = 2;
+  string         digest       = 3;
+  string         merkle_root  = 4;
+  repeated bytes commit_sigs  = 5;
+  uint64         committed_ns = 6;
+}
+
+// ── Health ────────────────────────────────────────────────────────────────────
+
+message PingRequest  { string node_id = 1; }
+message PingResponse { string node_id = 1; uint64 last_seq = 2; bool healthy = 3; }
+message Ack          { bool accepted = 1; string node_id = 2; string reason = 3; }
+
+// ── gRPC Service ──────────────────────────────────────────────────────────────
+//
+// RPC surface:
+//   SendConsensus   — unary; single fire-and-forget envelope (low-latency path)
+//   StreamConsensus — bidirectional streaming; persistent per-peer channel used
+//                     for all three PBFT phases once a session is established;
+//                     first message from client MUST be a NodeHello envelope
+//   SyncState       — server-streaming; bulk block replay for state recovery
+//   Ping            — unary; liveness / RTT probe
+
+service ConsensusMesh {
+  // Unary: single envelope, immediate Ack.
+  rpc SendConsensus(ConsensusEnvelope) returns (Ack);
+
+  // Bidirectional streaming: long-lived per-peer channel for all PBFT phases.
+  // Eliminates per-message connection overhead on the hot path.
+  // First client message MUST be a NodeHello envelope (phase = PHASE_UNKNOWN).
+  rpc StreamConsensus(stream ConsensusEnvelope) returns (stream Ack);
+
+  // Server streaming: replay committed blocks for state recovery.
+  rpc SyncState(StateSyncRequest) returns (stream CommittedBlock);
+
+  // Unary health probe.
+  rpc Ping(PingRequest) returns (PingResponse);
+}

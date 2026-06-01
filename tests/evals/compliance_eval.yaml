@@ -1,0 +1,833 @@
+# Genesis Swarm — JARVIS AI Compliance Evaluation Set
+# Version: 1.0.0  |  Last updated: 2026-05-12
+#
+# 100 questions across 8 domains. Each question has:
+#   - question: the prompt sent to JARVIS
+#   - expected_keywords: substrings that MUST appear in a correct answer (case-insensitive)
+#   - forbidden_keywords: substrings that MUST NOT appear (hallucination guards)
+#   - domain: evaluation category
+#   - difficulty: easy | medium | hard
+#   - reference: regulatory source or internal component
+#
+# Scoring:
+#   PASS  = all expected_keywords present AND no forbidden_keywords present
+#   FAIL  = any expected_keyword missing OR any forbidden_keyword present
+#   Target: ≥ 80 / 100 PASS
+
+evals:
+
+  # ── Domain 1: DORA Article Definitions (15 questions) ─────────────────────
+
+  - id: dora_01
+    domain: DORA definitions
+    difficulty: easy
+    question: "What is the definition of 'ICT-related incident' under DORA Article 4?"
+    expected_keywords: ["unplanned", "disruption", "loss", "integrity", "availability"]
+    forbidden_keywords: ["I don't know", "unclear"]
+    reference: "DORA Art. 4(8)"
+
+  - id: dora_02
+    domain: DORA definitions
+    difficulty: easy
+    question: "What is DORA's definition of 'major ICT-related incident'?"
+    expected_keywords: ["significant", "financial entity", "critical service"]
+    forbidden_keywords: ["I don't know"]
+    reference: "DORA Art. 4(9)"
+
+  - id: dora_03
+    domain: DORA definitions
+    difficulty: medium
+    question: "What are the classification criteria for a major ICT incident under DORA Article 18?"
+    expected_keywords: ["clients affected", "duration", "data losses", "economic impact", "geographic spread"]
+    forbidden_keywords: []
+    reference: "DORA Art. 18(1)"
+
+  - id: dora_04
+    domain: DORA definitions
+    difficulty: medium
+    question: "What is the initial notification deadline for a major ICT incident under DORA Article 19?"
+    expected_keywords: ["4 hours", "initial", "competent authority"]
+    forbidden_keywords: ["24 hours", "72 hours"]
+    reference: "DORA Art. 19(1)"
+
+  - id: dora_05
+    domain: DORA definitions
+    difficulty: medium
+    question: "What is the intermediate report deadline under DORA Article 19?"
+    expected_keywords: ["72 hours", "intermediate"]
+    forbidden_keywords: ["24 hours", "1 month"]
+    reference: "DORA Art. 19(2)"
+
+  - id: dora_06
+    domain: DORA definitions
+    difficulty: medium
+    question: "What is the final report deadline under DORA Article 19?"
+    expected_keywords: ["1 month", "final report"]
+    forbidden_keywords: ["72 hours", "24 hours"]
+    reference: "DORA Art. 19(3)"
+
+  - id: dora_07
+    domain: DORA definitions
+    difficulty: hard
+    question: "Under DORA Article 20, what distinguishes a 'voluntary notification' from a mandatory report?"
+    expected_keywords: ["significant", "cyber threat", "voluntary", "not yet materialised"]
+    forbidden_keywords: []
+    reference: "DORA Art. 20"
+
+  - id: dora_08
+    domain: DORA definitions
+    difficulty: easy
+    question: "Which EU regulation is DORA? What is its full name and regulation number?"
+    expected_keywords: ["2022/2554", "Digital Operational Resilience"]
+    forbidden_keywords: []
+    reference: "DORA Regulation (EU) 2022/2554"
+
+  - id: dora_09
+    domain: DORA definitions
+    difficulty: hard
+    question: "What is TIBER-EU and how does it relate to DORA compliance?"
+    expected_keywords: ["threat", "intelligence", "red team", "penetration", "testing"]
+    forbidden_keywords: []
+    reference: "DORA Art. 26, TIBER-EU Framework"
+
+  - id: dora_10
+    domain: DORA definitions
+    difficulty: medium
+    question: "What entities are in scope for DORA obligations?"
+    expected_keywords: ["financial entity", "credit institution", "investment firm", "insurance"]
+    forbidden_keywords: []
+    reference: "DORA Art. 2"
+
+  - id: dora_11
+    domain: DORA definitions
+    difficulty: medium
+    question: "What is an ICT third-party service provider under DORA?"
+    expected_keywords: ["third-party", "ICT services", "digital", "data", "outsourcing"]
+    forbidden_keywords: []
+    reference: "DORA Art. 3(21)"
+
+  - id: dora_12
+    domain: DORA definitions
+    difficulty: hard
+    question: "What are the key requirements for ICT business continuity under DORA Article 11?"
+    expected_keywords: ["recovery", "continuity", "backup", "RTO", "RPO"]
+    forbidden_keywords: []
+    reference: "DORA Art. 11"
+
+  - id: dora_13
+    domain: DORA definitions
+    difficulty: easy
+    question: "When does DORA apply from? What is the application date?"
+    expected_keywords: ["January 2025", "17 January"]
+    forbidden_keywords: ["2024", "2023"]
+    reference: "DORA Art. 64"
+
+  - id: dora_14
+    domain: DORA definitions
+    difficulty: hard
+    question: "What are the four pillars of DORA's digital operational resilience framework?"
+    expected_keywords: ["ICT risk management", "incident", "testing", "third-party"]
+    forbidden_keywords: []
+    reference: "DORA Chapters II-V"
+
+  - id: dora_15
+    domain: DORA definitions
+    difficulty: medium
+    question: "What is the DORA requirement for ICT incident response plans?"
+    expected_keywords: ["documented", "procedures", "roles", "communication", "detection"]
+    forbidden_keywords: []
+    reference: "DORA Art. 17(3)"
+
+  # ── Domain 2: CSSF Circular 18/698 (10 questions) ────────────────────────
+
+  - id: cssf_01
+    domain: CSSF 18/698
+    difficulty: easy
+    question: "What is CSSF Circular 18/698 about?"
+    expected_keywords: ["ICT", "risk", "investment firm", "Luxembourg", "CSSF"]
+    forbidden_keywords: []
+    reference: "CSSF Circular 18/698"
+
+  - id: cssf_02
+    domain: CSSF 18/698
+    difficulty: medium
+    question: "What does CSSF Circular 18/698 require for ICT incident management?"
+    expected_keywords: ["detection", "classification", "notification", "recovery"]
+    forbidden_keywords: []
+    reference: "CSSF 18/698 Chapter 4"
+
+  - id: cssf_03
+    domain: CSSF 18/698
+    difficulty: medium
+    question: "What are the ICT governance requirements in CSSF Circular 18/698?"
+    expected_keywords: ["senior management", "risk appetite", "oversight", "ICT strategy"]
+    forbidden_keywords: []
+    reference: "CSSF 18/698 Chapter 2"
+
+  - id: cssf_04
+    domain: CSSF 18/698
+    difficulty: hard
+    question: "How does CSSF Circular 18/698 relate to DORA? Are they conflicting or complementary?"
+    expected_keywords: ["complementary", "aligned", "consistent", "Luxembourg"]
+    forbidden_keywords: ["conflict", "supersede", "replace"]
+    reference: "CSSF-DORA alignment guidance"
+
+  - id: cssf_05
+    domain: CSSF 18/698
+    difficulty: medium
+    question: "What RTO and RPO requirements does CSSF 18/698 suggest for critical ICT systems?"
+    expected_keywords: ["recovery time", "recovery point", "critical", "continuity"]
+    forbidden_keywords: []
+    reference: "CSSF 18/698 Chapter 5"
+
+  - id: cssf_06
+    domain: CSSF 18/698
+    difficulty: easy
+    question: "What is the CSSF and what is its role in financial supervision?"
+    expected_keywords: ["Luxembourg", "supervisory", "financial", "regulator"]
+    forbidden_keywords: []
+    reference: "CSSF mandate"
+
+  - id: cssf_07
+    domain: CSSF 18/698
+    difficulty: hard
+    question: "What audit logging requirements does CSSF 18/698 impose on ICT systems?"
+    expected_keywords: ["log", "audit", "traceability", "integrity", "retention"]
+    forbidden_keywords: []
+    reference: "CSSF 18/698 Chapter 6"
+
+  - id: cssf_08
+    domain: CSSF 18/698
+    difficulty: medium
+    question: "What are the third-party ICT risk requirements under CSSF 18/698?"
+    expected_keywords: ["third-party", "vendor", "outsourcing", "risk", "due diligence"]
+    forbidden_keywords: []
+    reference: "CSSF 18/698 Section 2.1.8"
+
+  - id: cssf_09
+    domain: CSSF 18/698
+    difficulty: hard
+    question: "What penetration testing or security testing requirements does CSSF 18/698 impose?"
+    expected_keywords: ["testing", "security", "vulnerability", "assessment"]
+    forbidden_keywords: []
+    reference: "CSSF 18/698"
+
+  - id: cssf_10
+    domain: CSSF 18/698
+    difficulty: medium
+    question: "How should a fund administrator document their ICT risk register under CSSF 18/698?"
+    expected_keywords: ["risk register", "inventory", "assessment", "documented"]
+    forbidden_keywords: []
+    reference: "CSSF 18/698 Section 2.1.3"
+
+  # ── Domain 3: AML/CFT Framework (15 questions) ────────────────────────────
+
+  - id: aml_01
+    domain: AML/CFT
+    difficulty: easy
+    question: "What is the FATF and what is its role in AML compliance?"
+    expected_keywords: ["Financial Action Task Force", "recommendations", "money laundering", "financing"]
+    forbidden_keywords: []
+    reference: "FATF mandate"
+
+  - id: aml_02
+    domain: AML/CFT
+    difficulty: medium
+    question: "What are the three stages of money laundering?"
+    expected_keywords: ["placement", "layering", "integration"]
+    forbidden_keywords: []
+    reference: "FATF 40 Recommendations"
+
+  - id: aml_03
+    domain: AML/CFT
+    difficulty: medium
+    question: "What is a Suspicious Activity Report (SAR) and when must it be filed?"
+    expected_keywords: ["SAR", "suspicious", "financial intelligence", "reporting"]
+    forbidden_keywords: []
+    reference: "EU AMLD Art. 33"
+
+  - id: aml_04
+    domain: AML/CFT
+    difficulty: medium
+    question: "What is the EU's 6th Anti-Money Laundering Directive (6AMLD)?"
+    expected_keywords: ["6AMLD", "criminal offence", "laundering", "predicate", "liability"]
+    forbidden_keywords: []
+    reference: "Directive (EU) 2018/1673"
+
+  - id: aml_05
+    domain: AML/CFT
+    difficulty: hard
+    question: "What is trade-based money laundering (TBML) and what are its key indicators?"
+    expected_keywords: ["trade", "invoice", "over-invoicing", "under-invoicing", "phantom shipment"]
+    forbidden_keywords: []
+    reference: "FATF TBML guidance"
+
+  - id: aml_06
+    domain: AML/CFT
+    difficulty: medium
+    question: "What does KYC stand for and what are its core components?"
+    expected_keywords: ["Know Your Customer", "identity verification", "beneficial owner", "CDD"]
+    forbidden_keywords: []
+    reference: "FATF R.10"
+
+  - id: aml_07
+    domain: AML/CFT
+    difficulty: medium
+    question: "What is beneficial ownership and why is it relevant to AML?"
+    expected_keywords: ["beneficial owner", "ultimate", "control", "25%", "shell"]
+    forbidden_keywords: []
+    reference: "EU AMLD Art. 3(6)"
+
+  - id: aml_08
+    domain: AML/CFT
+    difficulty: hard
+    question: "What is the Wolfsberg Group and what guidelines have they published relevant to fund administrators?"
+    expected_keywords: ["Wolfsberg", "correspondent banking", "private banking", "AML", "principles"]
+    forbidden_keywords: []
+    reference: "Wolfsberg Group guidelines"
+
+  - id: aml_09
+    domain: AML/CFT
+    difficulty: easy
+    question: "What is the OFAC SDN list?"
+    expected_keywords: ["Specially Designated Nationals", "OFAC", "Treasury", "sanctions", "blocked"]
+    forbidden_keywords: []
+    reference: "OFAC SDN programme"
+
+  - id: aml_10
+    domain: AML/CFT
+    difficulty: medium
+    question: "What is the difference between screening and monitoring in AML compliance?"
+    expected_keywords: ["screening", "onboarding", "transaction monitoring", "ongoing", "alerts"]
+    forbidden_keywords: []
+    reference: "FATF R.10-12"
+
+  - id: aml_11
+    domain: AML/CFT
+    difficulty: hard
+    question: "What are correspondent banking risks and how do they relate to layering?"
+    expected_keywords: ["correspondent", "nested", "respondent", "layering", "jurisdiction"]
+    forbidden_keywords: []
+    reference: "Wolfsberg Correspondent Banking Principles"
+
+  - id: aml_12
+    domain: AML/CFT
+    difficulty: medium
+    question: "What is PEP (Politically Exposed Person) screening and why is it required?"
+    expected_keywords: ["PEP", "politically exposed", "enhanced due diligence", "corruption", "risk"]
+    forbidden_keywords: []
+    reference: "FATF R.12"
+
+  - id: aml_13
+    domain: AML/CFT
+    difficulty: hard
+    question: "How does the Wirecard fraud relate to NAV manipulation and AML failures?"
+    expected_keywords: ["NAV", "fictitious", "escrow", "trustee", "balance sheet", "fraud"]
+    forbidden_keywords: []
+    reference: "Wirecard AG 2020 insolvency investigation"
+
+  - id: aml_14
+    domain: AML/CFT
+    difficulty: medium
+    question: "What is smurfing in money laundering and how is it detected?"
+    expected_keywords: ["smurfing", "structuring", "threshold", "below", "split"]
+    forbidden_keywords: []
+    reference: "FATF typologies"
+
+  - id: aml_15
+    domain: AML/CFT
+    difficulty: hard
+    question: "What are the AML obligations for alternative investment fund managers (AIFMs) under AIFMD?"
+    expected_keywords: ["AIFM", "AIFMD", "AML", "due diligence", "investor", "fund"]
+    forbidden_keywords: []
+    reference: "AIFMD + 4AMLD"
+
+  # ── Domain 4: Sanctions Compliance (10 questions) ─────────────────────────
+
+  - id: sanc_01
+    domain: Sanctions
+    difficulty: easy
+    question: "What is the EU Consolidated Sanctions List and who maintains it?"
+    expected_keywords: ["European Union", "consolidated", "sanctions", "CFSP"]
+    forbidden_keywords: []
+    reference: "EU Sanctions Map"
+
+  - id: sanc_02
+    domain: Sanctions
+    difficulty: medium
+    question: "What is the 50% rule in sanctions screening?"
+    expected_keywords: ["50%", "ownership", "designated", "entity", "controlled"]
+    forbidden_keywords: []
+    reference: "OFAC 50% Rule / EU sanctions guidance"
+
+  - id: sanc_03
+    domain: Sanctions
+    difficulty: hard
+    question: "What are sectoral sanctions and how do they differ from entity-based sanctions?"
+    expected_keywords: ["sectoral", "sector", "Russia", "energy", "finance", "entity-based"]
+    forbidden_keywords: []
+    reference: "OFAC Directive 1-4, EU Russia sanctions"
+
+  - id: sanc_04
+    domain: Sanctions
+    difficulty: medium
+    question: "What is OFAC's Specially Designated Globals (SDG) list?"
+    expected_keywords: ["OFAC", "SDG", "Treasury", "designated", "blocked"]
+    forbidden_keywords: []
+    reference: "OFAC SDG list"
+
+  - id: sanc_05
+    domain: Sanctions
+    difficulty: hard
+    question: "What due diligence is required when a fund investor is from a high-risk jurisdiction?"
+    expected_keywords: ["enhanced", "due diligence", "risk", "jurisdiction", "source of funds"]
+    forbidden_keywords: []
+    reference: "FATF R.19, EU AMLD Art. 18a"
+
+  - id: sanc_06
+    domain: Sanctions
+    difficulty: medium
+    question: "What is the UN Security Council Consolidated List and how does it relate to EU sanctions?"
+    expected_keywords: ["UN", "Security Council", "consolidated", "EU implementation", "autonomous"]
+    forbidden_keywords: []
+    reference: "UNSCR sanctions regime"
+
+  - id: sanc_07
+    domain: Sanctions
+    difficulty: easy
+    question: "What is a Specially Designated National (SDN)?"
+    expected_keywords: ["SDN", "OFAC", "blocked", "US persons", "transactions prohibited"]
+    forbidden_keywords: []
+    reference: "OFAC SDN programme"
+
+  - id: sanc_08
+    domain: Sanctions
+    difficulty: hard
+    question: "How should a fund administrator handle a sanctions hit on an existing investor mid-cycle?"
+    expected_keywords: ["freeze", "block", "competent authority", "notify", "suspend"]
+    forbidden_keywords: []
+    reference: "EU sanctions implementation guidance"
+
+  - id: sanc_09
+    domain: Sanctions
+    difficulty: medium
+    question: "What is derisking in the context of sanctions compliance and why is it controversial?"
+    expected_keywords: ["de-risking", "exit", "correspondent", "over-compliance", "financial exclusion"]
+    forbidden_keywords: []
+    reference: "FATF de-risking guidance"
+
+  - id: sanc_10
+    domain: Sanctions
+    difficulty: hard
+    question: "What are the disclosure obligations when a sanctions breach is discovered?"
+    expected_keywords: ["self-disclosure", "voluntary", "OFAC", "competent authority", "remediation"]
+    forbidden_keywords: []
+    reference: "OFAC voluntary self-disclosure guidance"
+
+  # ── Domain 5: Fraud Detection Patterns (15 questions) ─────────────────────
+
+  - id: fraud_01
+    domain: Fraud detection
+    difficulty: easy
+    question: "What is NAV manipulation in investment funds and how is it detected?"
+    expected_keywords: ["NAV", "net asset value", "inflated", "fictitious", "pricing"]
+    forbidden_keywords: []
+    reference: "IOSCO Hedge Fund Oversight guidance"
+
+  - id: fraud_02
+    domain: Fraud detection
+    difficulty: medium
+    question: "What were the key red flags in the Wirecard fraud that automated monitoring could have caught?"
+    expected_keywords: ["escrow", "balance", "trustee", "fictitious", "NAV", "third-party"]
+    forbidden_keywords: []
+    reference: "Wirecard AG EY audit review 2020"
+
+  - id: fraud_03
+    domain: Fraud detection
+    difficulty: hard
+    question: "How does the 1MDB scandal illustrate sovereign fund fraud risks?"
+    expected_keywords: ["sovereign", "bond", "misappropriation", "Goldman", "Malaysia", "1MDB"]
+    forbidden_keywords: []
+    reference: "1MDB DoJ settlement 2020"
+
+  - id: fraud_04
+    domain: Fraud detection
+    difficulty: medium
+    question: "What is the Ponzi scheme structure used in the Madoff fraud?"
+    expected_keywords: ["Ponzi", "returns", "new investors", "fictitious", "feeder fund"]
+    forbidden_keywords: []
+    reference: "SEC Madoff enforcement action 2008"
+
+  - id: fraud_05
+    domain: Fraud detection
+    difficulty: hard
+    question: "What is the LIBOR manipulation scandal and what FX detection methods could have caught it?"
+    expected_keywords: ["LIBOR", "rate", "manipulation", "benchmark", "interbank", "collusion"]
+    forbidden_keywords: []
+    reference: "FCA LIBOR investigation 2012"
+
+  - id: fraud_06
+    domain: Fraud detection
+    difficulty: medium
+    question: "What is layering through shell companies and what transaction patterns reveal it?"
+    expected_keywords: ["layering", "shell", "nominee", "circular", "beneficial owner"]
+    forbidden_keywords: []
+    reference: "FATF typologies on layering"
+
+  - id: fraud_07
+    domain: Fraud detection
+    difficulty: hard
+    question: "What is the Danske Bank scandal and what AML failures enabled €200B+ in suspicious flows?"
+    expected_keywords: ["Danske", "Estonia", "non-resident", "correspondent", "AML failure"]
+    forbidden_keywords: []
+    reference: "Danske Bank 2018 AML investigation"
+
+  - id: fraud_08
+    domain: Fraud detection
+    difficulty: medium
+    question: "How does IsolationForest work for anomaly detection in financial time series?"
+    expected_keywords: ["isolation", "forest", "random", "path length", "contamination", "anomaly score"]
+    forbidden_keywords: []
+    reference: "Liu et al. IsolationForest 2008"
+
+  - id: fraud_09
+    domain: Fraud detection
+    difficulty: medium
+    question: "What is the z-score method and when is it preferred over ML for anomaly detection?"
+    expected_keywords: ["z-score", "standard deviation", "mean", "threshold", "baseline"]
+    forbidden_keywords: []
+    reference: "Statistical process control"
+
+  - id: fraud_10
+    domain: Fraud detection
+    difficulty: hard
+    question: "What is AIS vessel tracking and how can phantom ships be used for trade-based fraud?"
+    expected_keywords: ["AIS", "vessel", "automatic identification", "phantom", "cargo", "spoofing"]
+    forbidden_keywords: []
+    reference: "FATF TBML guidance on maritime fraud"
+
+  - id: fraud_11
+    domain: Fraud detection
+    difficulty: medium
+    question: "What is FX front-running and how is it distinct from legitimate market-making?"
+    expected_keywords: ["front-running", "order flow", "execution", "client", "anticipate"]
+    forbidden_keywords: []
+    reference: "FCA FX market conduct guidance"
+
+  - id: fraud_12
+    domain: Fraud detection
+    difficulty: hard
+    question: "What are succession fraud patterns in investment funds (e.g. Enron-style SPVs)?"
+    expected_keywords: ["SPV", "special purpose", "off-balance", "transfer", "liability"]
+    forbidden_keywords: []
+    reference: "Enron SPV structure analysis"
+
+  - id: fraud_13
+    domain: Fraud detection
+    difficulty: medium
+    question: "What is SHAP and how does it help explain ML anomaly detection decisions?"
+    expected_keywords: ["SHAP", "Shapley", "feature importance", "explanation", "contribution"]
+    forbidden_keywords: []
+    reference: "Lundberg & Lee 2017 SHAP paper"
+
+  - id: fraud_14
+    domain: Fraud detection
+    difficulty: hard
+    question: "What is Byzantine fault tolerance in the context of consensus algorithms?"
+    expected_keywords: ["Byzantine", "fault", "tolerance", "N=3f+1", "consensus", "malicious"]
+    forbidden_keywords: []
+    reference: "Lamport et al. Byzantine Generals 1982"
+
+  - id: fraud_15
+    domain: Fraud detection
+    difficulty: medium
+    question: "How does PBFT (Practical Byzantine Fault Tolerance) achieve consensus with f faulty nodes?"
+    expected_keywords: ["PRE-PREPARE", "PREPARE", "COMMIT", "quorum", "2f+1", "replicas"]
+    forbidden_keywords: []
+    reference: "Castro & Liskov PBFT 1999"
+
+  # ── Domain 6: Genesis Swarm Architecture (15 questions) ───────────────────
+
+  - id: arch_01
+    domain: Genesis Swarm architecture
+    difficulty: easy
+    question: "How many specialist bots does Genesis Swarm run in consensus?"
+    expected_keywords: ["11", "eleven"]
+    forbidden_keywords: []
+    reference: "Genesis Swarm README"
+
+  - id: arch_02
+    domain: Genesis Swarm architecture
+    difficulty: easy
+    question: "How many Byzantine faults can Genesis Swarm tolerate simultaneously?"
+    expected_keywords: ["3", "three", "f=3"]
+    forbidden_keywords: []
+    reference: "Genesis Swarm PBFT config N=11 f=3"
+
+  - id: arch_03
+    domain: Genesis Swarm architecture
+    difficulty: medium
+    question: "What cryptographic signing scheme does Genesis Swarm use for bot messages?"
+    expected_keywords: ["Ed25519", "digital signature", "sign"]
+    forbidden_keywords: []
+    reference: "genesis_swarm/consensus/pbft_engine.py"
+
+  - id: arch_04
+    domain: Genesis Swarm architecture
+    difficulty: medium
+    question: "How does the Genesis Swarm Merkle audit log prevent tampering?"
+    expected_keywords: ["Merkle", "hash", "chain", "tamper", "proof"]
+    forbidden_keywords: []
+    reference: "genesis_swarm/consensus/sovereign_ledger.py"
+
+  - id: arch_05
+    domain: Genesis Swarm architecture
+    difficulty: hard
+    question: "How does the PBFT view-change protocol work in Genesis Swarm?"
+    expected_keywords: ["view-change", "primary", "timeout", "view", "new primary"]
+    forbidden_keywords: []
+    reference: "Castro & Liskov PBFT; genesis_swarm/consensus/pbft_engine.py"
+
+  - id: arch_06
+    domain: Genesis Swarm architecture
+    difficulty: medium
+    question: "What external data sources does Genesis Swarm use without requiring API keys?"
+    expected_keywords: ["OFAC", "ECB", "Yahoo Finance", "free"]
+    forbidden_keywords: []
+    reference: "Genesis Swarm README capability table"
+
+  - id: arch_07
+    domain: Genesis Swarm architecture
+    difficulty: medium
+    question: "What is the SHAP explainability flow in Genesis Swarm for an anomaly decision?"
+    expected_keywords: ["SHAP", "TreeExplainer", "IsolationForest", "feature", "fallback"]
+    forbidden_keywords: []
+    reference: "genesis_swarm/shared/explainability.py"
+
+  - id: arch_08
+    domain: Genesis Swarm architecture
+    difficulty: easy
+    question: "What authentication mechanism does Genesis Swarm use?"
+    expected_keywords: ["JWT", "RBAC", "token", "auth"]
+    forbidden_keywords: []
+    reference: "genesis_swarm/api/server.py"
+
+  - id: arch_09
+    domain: Genesis Swarm architecture
+    difficulty: medium
+    question: "What three RBAC roles does Genesis Swarm implement?"
+    expected_keywords: ["viewer", "operator", "admin"]
+    forbidden_keywords: []
+    reference: "genesis_swarm/api/server.py RBAC"
+
+  - id: arch_10
+    domain: Genesis Swarm architecture
+    difficulty: hard
+    question: "How does Genesis Swarm's online learning model avoid catastrophic forgetting?"
+    expected_keywords: ["rolling window", "WINDOW_SIZE", "retrain", "deque", "contamination"]
+    forbidden_keywords: []
+    reference: "genesis_swarm/shared/online_learner.py"
+
+  - id: arch_11
+    domain: Genesis Swarm architecture
+    difficulty: medium
+    question: "What is the Wirecard synthetic replay feature and what does it demonstrate?"
+    expected_keywords: ["Wirecard", "replay", "Day 347", "1395 days", "simulation"]
+    forbidden_keywords: []
+    reference: "genesis_swarm/shared/wirecard_replay.py"
+
+  - id: arch_12
+    domain: Genesis Swarm architecture
+    difficulty: medium
+    question: "How does Genesis Swarm handle bot failures without bringing down the entire swarm?"
+    expected_keywords: ["supervisor", "restart", "isolat", "try-except", "heartbeat"]
+    forbidden_keywords: []
+    reference: "genesis_swarm/shared/bot_base.py; shared/supervisor.py"
+
+  - id: arch_13
+    domain: Genesis Swarm architecture
+    difficulty: hard
+    question: "What is the RAG memory system in Genesis Swarm and how is it queried?"
+    expected_keywords: ["RAG", "ChromaDB", "vector", "embedding", "precedent"]
+    forbidden_keywords: []
+    reference: "genesis_swarm/shared/memory/rag_engine.py"
+
+  - id: arch_14
+    domain: Genesis Swarm architecture
+    difficulty: medium
+    question: "What is the A/B shadow model feature and what metric controls promotion?"
+    expected_keywords: ["shadow", "AUC-ROC", "promotion", "challenger", "gate"]
+    forbidden_keywords: []
+    reference: "genesis_swarm/shared/shadow_model.py"
+
+  - id: arch_15
+    domain: Genesis Swarm architecture
+    difficulty: medium
+    question: "How does Genesis Swarm anchor its Merkle root on-chain?"
+    expected_keywords: ["Ethereum", "calldata", "anchor", "Merkle root", "IPFS"]
+    forbidden_keywords: []
+    reference: "genesis_swarm/shared/blockchain_anchor.py"
+
+  # ── Domain 7: Operational Risk (10 questions) ─────────────────────────────
+
+  - id: ops_01
+    domain: Operational risk
+    difficulty: easy
+    question: "What is operational risk in the context of fund administration?"
+    expected_keywords: ["process", "people", "systems", "external", "failure", "loss"]
+    forbidden_keywords: []
+    reference: "Basel II/III operational risk definition"
+
+  - id: ops_02
+    domain: Operational risk
+    difficulty: medium
+    question: "What is an RTO (Recovery Time Objective) and why does it matter for fund administrators?"
+    expected_keywords: ["RTO", "recovery time", "downtime", "maximum", "acceptable"]
+    forbidden_keywords: []
+    reference: "ISO 22301 / DORA Art. 11"
+
+  - id: ops_03
+    domain: Operational risk
+    difficulty: medium
+    question: "What is a circuit breaker in distributed systems and how does Genesis Swarm use it?"
+    expected_keywords: ["circuit breaker", "open", "closed", "half-open", "external API", "failure"]
+    forbidden_keywords: []
+    reference: "genesis_swarm/shared/circuit_breaker.py"
+
+  - id: ops_04
+    domain: Operational risk
+    difficulty: hard
+    question: "What are SLOs and SLAs and how do they differ in the context of compliance systems?"
+    expected_keywords: ["SLO", "SLA", "service level", "objective", "agreement", "target"]
+    forbidden_keywords: []
+    reference: "Google SRE book"
+
+  - id: ops_05
+    domain: Operational risk
+    difficulty: medium
+    question: "What is alert fatigue and how does Genesis Swarm's deduplication mitigate it?"
+    expected_keywords: ["alert fatigue", "deduplication", "correlation", "window", "suppress"]
+    forbidden_keywords: []
+    reference: "genesis_swarm/shared/alerting.py"
+
+  - id: ops_06
+    domain: Operational risk
+    difficulty: hard
+    question: "How does chaos engineering relate to DORA's resilience testing requirements?"
+    expected_keywords: ["chaos", "fault injection", "resilience", "testing", "DORA", "operational"]
+    forbidden_keywords: []
+    reference: "DORA Art. 26; chaos engineering principles"
+
+  - id: ops_07
+    domain: Operational risk
+    difficulty: medium
+    question: "What Prometheus metrics should a compliance monitoring system expose?"
+    expected_keywords: ["latency", "error rate", "alert count", "uptime", "metrics"]
+    forbidden_keywords: []
+    reference: "genesis_swarm/api/metrics.py"
+
+  - id: ops_08
+    domain: Operational risk
+    difficulty: easy
+    question: "What is structured logging and why is it preferred for compliance audit trails?"
+    expected_keywords: ["structured", "JSON", "machine-readable", "query", "audit"]
+    forbidden_keywords: []
+    reference: "genesis_swarm: structlog"
+
+  - id: ops_09
+    domain: Operational risk
+    difficulty: medium
+    question: "What is OpenTelemetry and how does it help with distributed system observability?"
+    expected_keywords: ["OpenTelemetry", "tracing", "spans", "OTLP", "observability"]
+    forbidden_keywords: []
+    reference: "OpenTelemetry specification"
+
+  - id: ops_10
+    domain: Operational risk
+    difficulty: hard
+    question: "What is multi-tenancy isolation and why is it critical for a fund administrator's compliance platform?"
+    expected_keywords: ["tenant", "isolation", "segregation", "data", "fund", "per-tenant"]
+    forbidden_keywords: []
+    reference: "genesis_swarm/shared/tenancy.py"
+
+  # ── Domain 8: General Compliance & Ethics (10 questions) ──────────────────
+
+  - id: eth_01
+    domain: General compliance
+    difficulty: easy
+    question: "What is the difference between 'rules-based' and 'principles-based' regulation?"
+    expected_keywords: ["rules-based", "principles-based", "specific", "outcome", "flexibility"]
+    forbidden_keywords: []
+    reference: "FCA regulatory approach"
+
+  - id: eth_02
+    domain: General compliance
+    difficulty: medium
+    question: "What is regulatory arbitrage and why is it a risk for European fund structures?"
+    expected_keywords: ["regulatory arbitrage", "jurisdiction", "loophole", "AIFMD", "Luxembourg"]
+    forbidden_keywords: []
+    reference: "ESMA supervisory convergence"
+
+  - id: eth_03
+    domain: General compliance
+    difficulty: hard
+    question: "How does the EU AI Act affect compliance AI systems like Genesis Swarm?"
+    expected_keywords: ["AI Act", "high-risk", "conformity", "transparency", "accountability"]
+    forbidden_keywords: []
+    reference: "EU AI Act Regulation 2024"
+
+  - id: eth_04
+    domain: General compliance
+    difficulty: medium
+    question: "What is the difference between compliance and risk management?"
+    expected_keywords: ["compliance", "risk management", "regulatory", "rules", "risk appetite"]
+    forbidden_keywords: []
+    reference: "Three lines of defence model"
+
+  - id: eth_05
+    domain: General compliance
+    difficulty: medium
+    question: "What is the three lines of defence model in financial risk management?"
+    expected_keywords: ["first line", "second line", "third line", "business", "risk", "audit"]
+    forbidden_keywords: []
+    reference: "IIA Three Lines Model 2020"
+
+  - id: eth_06
+    domain: General compliance
+    difficulty: hard
+    question: "What are the GDPR implications of storing transaction monitoring data containing PII?"
+    expected_keywords: ["GDPR", "PII", "data minimisation", "retention", "lawful basis"]
+    forbidden_keywords: []
+    reference: "GDPR Art. 5-6"
+
+  - id: eth_07
+    domain: General compliance
+    difficulty: medium
+    question: "What is an audit trail and what characteristics make it legally defensible?"
+    expected_keywords: ["audit trail", "tamper-proof", "timestamp", "immutable", "chain of custody"]
+    forbidden_keywords: []
+    reference: "Legal requirements for audit evidence"
+
+  - id: eth_08
+    domain: General compliance
+    difficulty: hard
+    question: "What is the AGPL-3.0 license and what obligations does it place on companies deploying Genesis Swarm as a service?"
+    expected_keywords: ["AGPL", "network service", "source code", "publish", "copyleft"]
+    forbidden_keywords: []
+    reference: "GNU AGPL v3 Section 13"
+
+  - id: eth_09
+    domain: General compliance
+    difficulty: medium
+    question: "What is the principle of proportionality in EU financial regulation?"
+    expected_keywords: ["proportionality", "size", "nature", "complexity", "scale", "appropriate"]
+    forbidden_keywords: []
+    reference: "EU regulatory proportionality principle"
+
+  - id: eth_10
+    domain: General compliance
+    difficulty: hard
+    question: "What are the ESMA guidelines on outsourcing arrangements for fund managers?"
+    expected_keywords: ["ESMA", "outsourcing", "delegation", "oversight", "due diligence", "AIFMD"]
+    forbidden_keywords: []
+    reference: "ESMA AIFMD outsourcing guidelines"

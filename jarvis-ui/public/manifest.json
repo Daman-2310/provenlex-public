@@ -1,0 +1,49 @@
+{
+  "name": "Genesis Swarm — Sovereign Command Center",
+  "short_name": "Genesis Swarm",
+  "description": "AI compliance & operational-risk intelligence for European funds. The Book of Genesis, anchored on Bitcoin.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050508",
+  "theme_color": "#9b6dff",
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "The Book of Genesis",
+      "short_name": "Book",
+      "description": "100 sealed prophecies",
+      "url": "/book",
+      "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Operator Dashboard",
+      "short_name": "Operator",
+      "description": "Live bot feed",
+      "url": "/operator",
+      "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Constitutional Court",
+      "short_name": "Court",
+      "description": "3 AI judges deliberate",
+      "url": "/court",
+      "icons": [{ "src": "/icon-192.svg", "sizes": "192x192" }]
+    }
+  ]
+}

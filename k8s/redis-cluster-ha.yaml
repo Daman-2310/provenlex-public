@@ -1,0 +1,694 @@
+# Genesis Swarm — Redis Cluster HA v2  (6-node, 3M/3R, bank-grade hardening)
+#
+# Improvements over redis-cluster.yaml
+# ─────────────────────────────────────
+#   • topologySpreadConstraints — ≤2 pods per availability zone
+#   • requiredDuringSchedulingIgnoredDuringExecution anti-affinity — 1 pod/node
+#   • preStop lifecycle hook — graceful CLUSTER FAILOVER before master eviction
+#   • Redis Exporter sidecar — oliver006/redis_exporter:v1.62.0-alpine
+#   • ServiceMonitor — Prometheus Operator auto-scrape
+#   • Metrics Service — dedicated port 9121
+#   • Read Service — topology-aware routing to replicas
+#   • NetworkPolicy — strict ingress/egress allowlist
+#   • Renamed dangerous commands: FLUSHALL→disabled, FLUSHDB→disabled,
+#       CONFIG→CONFIGCMD, DEBUG→disabled, KEYS→disabled, SAVE→SAVECMD
+#
+# Prerequisites
+# ─────────────────────────────────────────────────────────────────────────────
+#   • Prometheus Operator installed (for ServiceMonitor CRD)
+#   • kubectl -n genesis create secret generic genesis-secrets \
+#         --from-literal=REDIS_PASSWORD=<strong-password>
+#   • 6 worker nodes with label topology.kubernetes.io/zone set
+#
+# Deploy
+# ─────────────────────────────────────────────────────────────────────────────
+#   kubectl apply -f k8s/redis-cluster-ha.yaml
+#   kubectl -n genesis rollout status statefulset/redis-cluster-ha
+
+---
+# ── 1. ConfigMap: redis.conf ──────────────────────────────────────────────────
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-cluster-ha-config
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: redis-cluster-ha
+    app.kubernetes.io/component: config
+    app.kubernetes.io/part-of: genesis-swarm
+    app.kubernetes.io/version: "7.2"
+data:
+  redis.conf: |
+    # ── Cluster ───────────────────────────────────────────────────────────────
+    cluster-enabled yes
+    cluster-config-file /data/nodes.conf
+    cluster-node-timeout 15000
+    cluster-announce-hostname ""
+    cluster-migration-barrier 1
+    cluster-require-full-coverage no
+    cluster-allow-reads-when-down no
+
+    # ── Persistence ───────────────────────────────────────────────────────────
+    appendonly yes
+    appendfsync everysec
+    no-appendfsync-on-rewrite no
+    auto-aof-rewrite-percentage 100
+    auto-aof-rewrite-min-size 64mb
+    save 900 1
+    save 300 10
+    save 60 10000
+    dir /data
+
+    # ── Security ──────────────────────────────────────────────────────────────
+    protected-mode yes
+    # Password is injected at runtime via --requirepass flag from env
+    # Rename / disable dangerous commands
+    rename-command FLUSHALL ""
+    rename-command FLUSHDB  ""
+    rename-command DEBUG    ""
+    rename-command KEYS     ""
+    rename-command CONFIG   "CONFIGCMD"
+    rename-command SAVE     "SAVECMD"
+
+    # ── Performance ───────────────────────────────────────────────────────────
+    maxmemory 512mb
+    maxmemory-policy allkeys-lru
+    hz 15
+    dynamic-hz yes
+    aof-use-rdb-preamble yes
+    lazyfree-lazy-eviction yes
+    lazyfree-lazy-expire yes
+    lazyfree-lazy-server-del yes
+    replica-lazy-flush yes
+
+    # ── Network ───────────────────────────────────────────────────────────────
+    tcp-backlog 511
+    tcp-keepalive 300
+    timeout 0
+    bind 0.0.0.0
+
+    # ── Logging ───────────────────────────────────────────────────────────────
+    loglevel notice
+    logfile ""
+
+---
+# ── 2. ConfigMap: scripts ─────────────────────────────────────────────────────
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-cluster-ha-scripts
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: redis-cluster-ha
+    app.kubernetes.io/component: scripts
+    app.kubernetes.io/part-of: genesis-swarm
+data:
+  bootstrap.sh: |
+    #!/bin/sh
+    set -euo pipefail
+
+    NAMESPACE="${NAMESPACE:-genesis}"
+    STS_NAME="${STS_NAME:-redis-cluster-ha}"
+    HEADLESS="${HEADLESS:-redis-cluster-ha-headless}"
+    REPLICAS="${REPLICAS:-6}"
+    PORT="${PORT:-6379}"
+    PASSWORD="${REDIS_PASSWORD}"
+
+    echo "[bootstrap] Waiting for all $REPLICAS pods to become ready..."
+    i=0
+    while [ "$i" -lt "$REPLICAS" ]; do
+      host="$STS_NAME-$i.$HEADLESS.$NAMESPACE.svc.cluster.local"
+      until redis-cli -h "$host" -p "$PORT" -a "$PASSWORD" PING 2>/dev/null | grep -q PONG; do
+        echo "[bootstrap] Waiting for $host..."
+        sleep 3
+      done
+      i=$((i + 1))
+    done
+    echo "[bootstrap] All pods ready."
+
+    # Idempotency check — skip if cluster already formed
+    FIRST="$STS_NAME-0.$HEADLESS.$NAMESPACE.svc.cluster.local"
+    CLUSTER_SIZE=$(redis-cli -h "$FIRST" -p "$PORT" -a "$PASSWORD" \
+      CLUSTER INFO 2>/dev/null | grep cluster_known_nodes | awk -F: '{print $2}' | tr -d '\r') || CLUSTER_SIZE=0
+    if [ "${CLUSTER_SIZE:-0}" -ge "$REPLICAS" ]; then
+      echo "[bootstrap] Cluster already formed ($CLUSTER_SIZE nodes). Nothing to do."
+      exit 0
+    fi
+
+    # Build node list for redis-cli --cluster create
+    NODES=""
+    i=0
+    while [ "$i" -lt "$REPLICAS" ]; do
+      host="$STS_NAME-$i.$HEADLESS.$NAMESPACE.svc.cluster.local"
+      NODES="$NODES $host:$PORT"
+      i=$((i + 1))
+    done
+
+    echo "[bootstrap] Creating cluster: $NODES"
+    # shellcheck disable=SC2086
+    redis-cli -a "$PASSWORD" --cluster create $NODES \
+      --cluster-replicas 1 \
+      --cluster-yes
+
+    echo "[bootstrap] Cluster formation complete."
+
+  prestop.sh: |
+    #!/bin/sh
+    # Trigger graceful failover if this pod is a master, preventing data loss
+    # on voluntary disruptions (rolling update, drain).
+    set -eu
+    ROLE=$(redis-cli -a "${REDIS_PASSWORD}" INFO replication 2>/dev/null \
+           | grep "^role:" | tr -d '\r' | cut -d: -f2)
+    if [ "$ROLE" = "master" ]; then
+      echo "[prestop] Pod is master — initiating CLUSTER FAILOVER FORCE"
+      redis-cli -a "${REDIS_PASSWORD}" CLUSTER FAILOVER FORCE || true
+      sleep 8
+      echo "[prestop] Failover initiated. Proceeding with shutdown."
+    else
+      echo "[prestop] Pod is replica — no failover needed."
+    fi
+
+---
+# ── 3. Headless Service ───────────────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster-ha-headless
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: redis-cluster-ha
+    app.kubernetes.io/component: headless
+    app.kubernetes.io/part-of: genesis-swarm
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/name: redis-cluster-ha
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: redis
+    - name: cluster-bus
+      port: 16379
+      targetPort: cluster-bus
+
+---
+# ── 4. Client Service ─────────────────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster-ha
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: redis-cluster-ha
+    app.kubernetes.io/component: client
+    app.kubernetes.io/part-of: genesis-swarm
+  annotations:
+    prometheus.io/scrape: "false"  # metrics via ServiceMonitor
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: redis-cluster-ha
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: redis
+      protocol: TCP
+
+---
+# ── 5. Read Service (replica-aware routing) ───────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster-ha-read
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: redis-cluster-ha
+    app.kubernetes.io/component: read
+    app.kubernetes.io/part-of: genesis-swarm
+  annotations:
+    service.kubernetes.io/topology-mode: Auto
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: redis-cluster-ha
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: redis
+      protocol: TCP
+
+---
+# ── 6. Metrics Service (for ServiceMonitor) ───────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster-ha-metrics
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: redis-cluster-ha
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/part-of: genesis-swarm
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: redis-cluster-ha
+  ports:
+    - name: metrics
+      port: 9121
+      targetPort: metrics
+      protocol: TCP
+
+---
+# ── 7. StatefulSet ────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-cluster-ha
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: redis-cluster-ha
+    app.kubernetes.io/component: cache
+    app.kubernetes.io/part-of: genesis-swarm
+    app.kubernetes.io/version: "7.2"
+  annotations:
+    kubectl.kubernetes.io/last-applied-at: "managed"
+spec:
+  serviceName: redis-cluster-ha-headless
+  replicas: 6
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: redis-cluster-ha
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 0
+  podManagementPolicy: OrderedReady
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: redis-cluster-ha
+        app.kubernetes.io/component: cache
+        app.kubernetes.io/part-of: genesis-swarm
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9121"
+        prometheus.io/path: "/metrics"
+        checksum/config: "{{ include (print .Template.BasePath \"/configmap.yaml\") . | sha256sum }}"
+    spec:
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+
+      # ── Guaranteed 1 pod per physical node ──────────────────────────────────
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: redis-cluster-ha
+              topologyKey: kubernetes.io/hostname
+
+      # ── ≤2 pods per availability zone ───────────────────────────────────────
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis-cluster-ha
+
+      initContainers:
+        - name: cluster-ip-setup
+          image: redis:7.2-alpine
+          command:
+            - sh
+            - -c
+            - |
+              # Write cluster-announce-ip so the pod advertises its pod IP
+              # instead of the headless DNS name (required for cross-node routing).
+              echo "cluster-announce-ip ${POD_IP}" >> /tmp/cluster-extra.conf
+              cp /tmp/cluster-extra.conf /data/cluster-extra.conf
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: data
+              mountPath: /data
+
+      containers:
+        # ── Redis ──────────────────────────────────────────────────────────────
+        - name: redis
+          image: redis:7.2-alpine
+          imagePullPolicy: IfNotPresent
+          command:
+            - redis-server
+            - /etc/redis/redis.conf
+            - --requirepass
+            - $(REDIS_PASSWORD)
+            - --masterauth
+            - $(REDIS_PASSWORD)
+            - --cluster-announce-ip
+            - $(POD_IP)
+            - --include
+            - /data/cluster-extra.conf
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: genesis-secrets
+                  key: REDIS_PASSWORD
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+            - name: cluster-bus
+              containerPort: 16379
+              protocol: TCP
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "/scripts/prestop.sh"]
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - redis-cli -a "$REDIS_PASSWORD" PING | grep -q PONG
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+            successThreshold: 1
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - redis-cli -a "$REDIS_PASSWORD" PING | grep -q PONG
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 768Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /etc/redis
+              readOnly: true
+            - name: scripts
+              mountPath: /scripts
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+
+        # ── Redis Exporter sidecar ─────────────────────────────────────────────
+        - name: redis-exporter
+          image: oliver006/redis_exporter:v1.62.0-alpine
+          imagePullPolicy: IfNotPresent
+          args:
+            - --redis.addr=redis://localhost:6379
+            - --redis.password=$(REDIS_PASSWORD)
+            - --is-cluster=true
+            - --web.listen-address=:9121
+            - --web.telemetry-path=/metrics
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: genesis-secrets
+                  key: REDIS_PASSWORD
+          ports:
+            - name: metrics
+              containerPort: 9121
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: metrics
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 20m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsUser: 59000
+            runAsGroup: 59000
+            capabilities:
+              drop: [ALL]
+
+      volumes:
+        - name: config
+          configMap:
+            name: redis-cluster-ha-config
+        - name: scripts
+          configMap:
+            name: redis-cluster-ha-scripts
+            defaultMode: 0755
+        - name: tmp
+          emptyDir: {}
+
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          app.kubernetes.io/name: redis-cluster-ha
+          app.kubernetes.io/part-of: genesis-swarm
+      spec:
+        accessModes: [ReadWriteOnce]
+        storageClassName: fast-ssd
+        resources:
+          requests:
+            storage: 8Gi
+
+---
+# ── 8. PodDisruptionBudget ────────────────────────────────────────────────────
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: redis-cluster-ha-pdb
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: redis-cluster-ha
+    app.kubernetes.io/part-of: genesis-swarm
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: redis-cluster-ha
+
+---
+# ── 9. ServiceAccount (bootstrap Job) ────────────────────────────────────────
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: redis-cluster-ha-bootstrap
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: redis-cluster-ha
+    app.kubernetes.io/component: bootstrap
+    app.kubernetes.io/part-of: genesis-swarm
+automountServiceAccountToken: false
+
+---
+# ── 10. Bootstrap Job ─────────────────────────────────────────────────────────
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redis-cluster-ha-init
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: redis-cluster-ha
+    app.kubernetes.io/component: bootstrap
+    app.kubernetes.io/part-of: genesis-swarm
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "5"
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: redis-cluster-ha
+        app.kubernetes.io/component: bootstrap
+    spec:
+      serviceAccountName: redis-cluster-ha-bootstrap
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: bootstrap
+          image: redis:7.2-alpine
+          command: ["/bin/sh", "/scripts/bootstrap.sh"]
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: STS_NAME
+              value: redis-cluster-ha
+            - name: HEADLESS
+              value: redis-cluster-ha-headless
+            - name: REPLICAS
+              value: "6"
+            - name: PORT
+              value: "6379"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: genesis-secrets
+                  key: REDIS_PASSWORD
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+              readOnly: true
+      volumes:
+        - name: scripts
+          configMap:
+            name: redis-cluster-ha-scripts
+            defaultMode: 0755
+
+---
+# ── 11. ServiceMonitor (Prometheus Operator) ──────────────────────────────────
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: redis-cluster-ha
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: redis-cluster-ha
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/part-of: genesis-swarm
+    release: prometheus  # matches typical kube-prometheus-stack selector
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: redis-cluster-ha
+      app.kubernetes.io/component: metrics
+  namespaceSelector:
+    matchNames: [genesis]
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+      honorLabels: true
+
+---
+# ── 12. NetworkPolicy ─────────────────────────────────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis-cluster-ha-netpol
+  namespace: genesis
+  labels:
+    app.kubernetes.io/name: redis-cluster-ha
+    app.kubernetes.io/part-of: genesis-swarm
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: redis-cluster-ha
+  policyTypes: [Ingress, Egress]
+  ingress:
+    # Allow Redis + cluster-bus from genesis app pods
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: genesis
+      ports:
+        - port: 6379
+          protocol: TCP
+        - port: 16379
+          protocol: TCP
+    # Allow inter-cluster-node gossip
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis-cluster-ha
+      ports:
+        - port: 6379
+          protocol: TCP
+        - port: 16379
+          protocol: TCP
+    # Allow Prometheus metrics scrape
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - port: 9121
+          protocol: TCP
+  egress:
+    # Allow inter-cluster gossip
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis-cluster-ha
+      ports:
+        - port: 6379
+          protocol: TCP
+        - port: 16379
+          protocol: TCP
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP

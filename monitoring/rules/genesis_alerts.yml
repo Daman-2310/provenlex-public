@@ -1,0 +1,118 @@
+groups:
+  - name: genesis_swarm
+    interval: 10s
+    rules:
+      # ── Anomaly & Shadow Bot ───────────────────────────────────────────────
+      - alert: HighAnomalyScore
+        expr: genesis_bot_anomaly_score > 85
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Bot {{ $labels.bot_type }} anomaly score critical"
+          description: "Score {{ $value }} exceeds 85 threshold"
+
+      - alert: HighBypassRate
+        expr: genesis_bypass_rate_pct > 30
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Shadow bot bypass rate {{ $value }}% — detection hardening needed"
+
+      # ── Consensus SLO ──────────────────────────────────────────────────────
+      - alert: BFTConsensusTimeout
+        expr: histogram_quantile(0.95, genesis_time_to_consensus_seconds_bucket) > 2.0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "BFT consensus p95 latency > 2s"
+
+      - alert: ConsensusP99SLOBreach
+        expr: genesis_swarm_consensus_latency_p99_ms > 500
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Consensus P99 latency {{ $value }}ms breaches 500ms SLO"
+          description: "Investigate PBFT round trips or quorum degradation"
+
+      # ── Bot Health ─────────────────────────────────────────────────────────
+      - alert: LowBotTrustScore
+        expr: genesis_bot_trust_score < 0.5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Bot {{ $labels.bot_id }} trust score critical"
+
+      - alert: BotHealthBelowSLO
+        expr: (genesis_swarm_bots_healthy / genesis_swarm_bots_total) * 100 < 90
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Bot health {{ $value | printf "%.1f" }}% below 90% SLO"
+          description: "{{ $labels.instance }} — check for crashed or quarantined bots"
+
+      - alert: BotDown
+        expr: genesis_swarm_bots_healthy == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "All bots are down — swarm is offline"
+
+      # ── API Error Rate ─────────────────────────────────────────────────────
+      - alert: HighAPIErrorRate
+        expr: rate(genesis_swarm_api_errors_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API error rate {{ $value | printf "%.2f" }}/s exceeds 5% threshold"
+
+      # ── Auth / Security ────────────────────────────────────────────────────
+      - alert: AuthBruteForceDetected
+        expr: rate(genesis_swarm_auth_failures_total[1m]) > 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Auth brute-force: {{ $value | printf "%.1f" }} failures/s"
+          description: "Possible credential stuffing or brute-force attack — check lockout policy"
+
+      - alert: HighAuthFailureRate
+        expr: increase(genesis_swarm_auth_failures_total[5m]) > 20
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $value }} auth failures in 5 minutes"
+
+      # ── Infrastructure ─────────────────────────────────────────────────────
+      - alert: RedisConnectionLost
+        expr: up{job="genesis_swarm"} == 1 and absent(genesis_swarm_up)
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Genesis Swarm process unreachable — possible Redis or startup failure"
+
+      - alert: SwarmDown
+        expr: genesis_swarm_up == 0 or absent(genesis_swarm_up)
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Genesis Swarm is DOWN"
+          description: "The API process has stopped responding to Prometheus scrapes"
+
+      - alert: HighAlertBacklog
+        expr: rate(genesis_swarm_alerts_total[5m]) > 10
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Alert dispatch rate {{ $value | printf "%.1f" }}/s — possible alert storm"

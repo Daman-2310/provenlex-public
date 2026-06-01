@@ -1,0 +1,88 @@
+name: PBFT Consensus Benchmark
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    name: PBFT Benchmark (200 rounds)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt && pip install -e .
+
+      - name: Run PBFT benchmark
+        run: |
+          python scripts/pbft_benchmark.py --rounds 200 2>&1 | tee benchmark_run.log
+          grep '^JSON_SUMMARY:' benchmark_run.log \
+            | sed 's/^JSON_SUMMARY://' \
+            > benchmark_results.json
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark-results
+          path: benchmark_results.json
+          retention-days: 90
+
+      - name: Post summary to GitHub Actions
+        if: always()
+        run: |
+          python - <<'EOF'
+          import json, os, sys
+
+          results_path = "benchmark_results.json"
+          if not os.path.exists(results_path):
+              print("benchmark_results.json not found — skipping summary")
+              sys.exit(0)
+
+          with open(results_path) as f:
+              d = json.load(f)
+
+          slo_icon = "✅" if d.get("slo_pass") else "❌"
+          rate_pct  = f"{d['success_rate']*100:.2f}%"
+
+          lines = [
+              "## PBFT Consensus Benchmark Results",
+              "",
+              f"**SLO status:** {slo_icon} {'PASS' if d.get('slo_pass') else 'FAIL'}",
+              "",
+              "| Metric | Value |",
+              "|--------|-------|",
+              f"| Rounds | {d['rounds']} |",
+              f"| Successes | {d['successes']} |",
+              f"| Failures | {d['failures']} |",
+              f"| Success Rate | {rate_pct} |",
+              f"| P50 latency | {d['latency_p50_ms']} ms |",
+              f"| P95 latency | {d['latency_p95_ms']} ms |",
+              f"| P99 latency | {d['latency_p99_ms']} ms |",
+              f"| Max latency | {d['latency_max_ms']} ms |",
+              "",
+              "### SLO Targets",
+              "| SLO | Target | Result |",
+              "|-----|--------|--------|",
+              f"| P99 latency | < 500 ms | {d['latency_p99_ms']} ms {'✅' if d['latency_p99_ms'] < 500 else '❌'} |",
+              f"| Success rate | ≥ 99% | {rate_pct} {'✅' if d['success_rate'] >= 0.99 else '❌'} |",
+          ]
+
+          summary_path = os.environ.get("GITHUB_STEP_SUMMARY", "/dev/stdout")
+          with open(summary_path, "a") as f:
+              f.write("\n".join(lines) + "\n")
+
+          print("Summary written.")
+          EOF

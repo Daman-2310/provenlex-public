@@ -1,0 +1,176 @@
+# Genesis Swarm — Zero-Tolerance Pre-Commit Gate
+#
+# Toolchain (in execution order):
+#   1. pre-commit-hooks   — whitespace, file hygiene, secret detection
+#   2. ruff               — monolithic lint + format (replaces black+isort+flake8+autoflake)
+#   3. mypy               — strict static type enforcement
+#   4. bandit             — OWASP / CWE security scanning
+#   5. pip-audit          — known-CVE dependency audit
+#
+# Install:   pip install pre-commit && pre-commit install
+# Run all:   pre-commit run --all-files
+# Skip CI:   SKIP=mypy git commit ...  (use sparingly)
+
+default_language_version:
+  python: python3.11
+
+default_stages: [pre-commit]
+
+fail_fast: false  # run all hooks so the developer sees every problem at once
+
+repos:
+
+  # ── 1. General file hygiene ────────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+        stages: [pre-commit]
+
+      - id: end-of-file-fixer
+        stages: [pre-commit]
+
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+      - id: check-yaml
+        args: [--unsafe]   # allows custom YAML tags (e.g. Kubernetes merge keys)
+
+      - id: check-toml
+
+      - id: check-json
+
+      - id: check-merge-conflict
+
+      - id: check-added-large-files
+        args: [--maxkb=750]
+
+      - id: check-case-conflict
+
+      - id: check-symlinks
+
+      - id: destroyed-symlinks
+
+      - id: detect-private-key
+
+      - id: no-commit-to-branch
+        args: [--branch=main, --branch=master, --branch=release]
+
+      - id: debug-statements    # catches leftover pdb / breakpoint() calls
+
+      - id: check-ast            # verify Python files parse cleanly before linting
+
+      - id: check-docstring-first
+
+      - id: fix-encoding-pragma  # ensure no -*- coding: -*- headers creep in
+
+      - id: forbid-new-submodules
+
+  # ── 2. Ruff — monolithic linter + formatter ────────────────────────────────
+  #
+  # ruff lint:    replaces flake8 + isort + autoflake + pyupgrade + dozens of
+  #               flake8 plugins.  --fix auto-corrects safe fixable violations.
+  #               --exit-non-zero-on-fix blocks the commit when auto-fixes are
+  #               applied so the developer reviews them before re-committing.
+  #
+  # ruff-format:  drop-in Black replacement; deterministic output, no config
+  #               needed beyond line-length set in pyproject.toml.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args:
+          - --fix
+          - --exit-non-zero-on-fix
+          - --show-fixes
+        types_or: [python, pyi]
+
+      - id: ruff-format
+        types_or: [python, pyi]
+
+  # ── 3. Mypy — strict static type checking ─────────────────────────────────
+  #
+  # Runs in the same virtualenv as the project so it can resolve third-party
+  # stubs.  additional_dependencies must mirror [project.dependencies] in
+  # pyproject.toml that have stubs published on PyPI.
+  #
+  # The --no-error-summary flag suppresses the "Found N errors in M files"
+  # footer — the per-file errors are sufficient, and the footer inflates CI
+  # output when dozens of files are clean.
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.11.2
+    hooks:
+      - id: mypy
+        name: mypy (strict)
+        language: python
+        types: [python]
+        require_serial: true   # mypy is not parallelism-safe across files
+        args:
+          - --strict
+          - --ignore-missing-imports
+          - --no-error-summary
+          - --pretty
+        additional_dependencies:
+          - "pydantic-settings>=2.0"
+          - "types-redis>=4.6"
+          - "types-passlib>=1.7"
+          - "types-aiofiles>=23.1"
+          - "anthropic>=0.47"
+          - "structlog>=24.0"
+          - "tenacity>=8.2"
+          - "sqlalchemy[mypy]>=2.0"
+          - "cryptography>=42.0"
+          - "psutil>=5.9"
+
+  # ── 4. Bandit — OWASP security scanner ────────────────────────────────────
+  #
+  # Reads its configuration from [tool.bandit] in pyproject.toml.
+  # Severity/confidence thresholds are set there so this hook stays thin.
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.10
+    hooks:
+      - id: bandit
+        name: bandit (security scan)
+        args:
+          - --configfile=pyproject.toml
+          - --recursive
+          - --format=text
+          - --severity-level=medium
+          - --confidence-level=medium
+        files: ^src/
+        additional_dependencies: ["bandit[toml]>=1.7"]
+
+  # ── 5. pip-audit — CVE dependency vulnerability scan ──────────────────────
+  #
+  # pip-audit queries the OSV database for known vulnerabilities in the
+  # installed dependency closure.  It runs only on changes to lock files or
+  # pyproject.toml so it doesn't slow down every commit.
+  - repo: https://github.com/pypa/pip-audit
+    rev: v2.7.3
+    hooks:
+      - id: pip-audit
+        name: pip-audit (CVE scan)
+        args:
+          - --require-hashes=false
+          - --vulnerability-service=osv
+          - --format=columns
+          - --progress-spinner=off
+        files: ^(pyproject\.toml|requirements.*\.txt)$
+
+  # ── 6. Prettier — JSON / YAML / Markdown formatting ───────────────────────
+  #
+  # Keeps non-Python configuration files consistently formatted without manual
+  # intervention.  pinned via node version in .nvmrc.
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        types_or: [yaml, json, markdown]
+        exclude: |
+          (?x)^(
+            .*\.pre-commit-config\.yaml|
+            CHANGELOG\.md|
+            .*schema\.json
+          )$
+        args: [--prose-wrap=always, --print-width=100]
