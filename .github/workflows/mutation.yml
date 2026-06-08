@@ -54,7 +54,7 @@ jobs:
           pip install mutmut
 
       - name: Restore mutmut cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .mutmut-cache
           key: mutmut-${{ hashFiles('src/genesis_swarm/consensus/pbft_consensus.py', 'tests/consensus/**') }}
