@@ -1,19 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
   <defs>
-    <radialGradient id="bg" cx="50%" cy="50%" r="60%">
-      <stop offset="0%" stop-color="#1a1a2e"/>
-      <stop offset="100%" stop-color="#050508"/>
-    </radialGradient>
-    <linearGradient id="bolt" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#9b6dff"/>
-      <stop offset="50%" stop-color="#4a9eff"/>
-      <stop offset="100%" stop-color="#00ff88"/>
+    <linearGradient id="em" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#12E68C"/>
+      <stop offset="1" stop-color="#0A8F58"/>
     </linearGradient>
-    <filter id="glow"><feGaussianBlur stdDeviation="6"/></filter>
+    <radialGradient id="hl" cx="34%" cy="26%" r="80%">
+      <stop offset="0" stop-color="#5BF2AE" stop-opacity="0.55"/>
+      <stop offset="55%" stop-color="#12E68C" stop-opacity="0"/>
+    </radialGradient>
   </defs>
-  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
-  <path d="M 294 96 L 160 294 L 240 294 L 218 416 L 352 218 L 272 218 Z"
-        fill="url(#bolt)" filter="url(#glow)" opacity="0.7"/>
-  <path d="M 294 96 L 160 294 L 240 294 L 218 416 L 352 218 L 272 218 Z"
-        fill="url(#bolt)"/>
+  <rect width="512" height="512" fill="url(#em)"/>
+  <rect width="512" height="512" fill="url(#hl)"/>
+  <g fill="#04130b">
+    <path d="M256,108 Q286,226 404,256 Q286,286 256,404 Q226,286 108,256 Q226,226 256,108 Z"/>
+    <path d="M398,92 Q407,123 438,132 Q407,141 398,172 Q389,141 358,132 Q389,123 398,92 Z"/>
+  </g>
 </svg>
