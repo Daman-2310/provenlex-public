@@ -25,6 +25,8 @@ Source-available under PolyForm Noncommercial 1.0.0
 
 ---
 
+> **Note:** This is a representative source snapshot for inspection — the deterministic engine, its test suite, and the brand are kept current here; the surrounding app may lag the live build at https://genesis-swarm.vercel.app. Full or current source review is available to serious counterparties on request.
+
 ## What this is
 
 Genesis Swarm reads a fund prospectus and checks it against the **AIFMD II and UCITS
