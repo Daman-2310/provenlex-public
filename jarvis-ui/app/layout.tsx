@@ -28,8 +28,8 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   icons: {
     icon: [
-      // Monogram favicon: a "G" mark in the brand emerald — no emoji glyph.
-      { url: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2306070A'/><text x='50' y='73' font-family='ui-sans-serif,system-ui' font-size='68' font-weight='800' fill='%2310D982' text-anchor='middle'>G</text></svg>" },
+      // Monogram favicon: a "P" mark in the brand emerald — no emoji glyph.
+      { url: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2306070A'/><text x='50' y='73' font-family='ui-sans-serif,system-ui' font-size='68' font-weight='800' fill='%2310D982' text-anchor='middle'>P</text></svg>" },
       { url: '/icon-192.svg', sizes: '192x192', type: 'image/svg+xml' },
     ],
     apple: '/icon-192.svg',

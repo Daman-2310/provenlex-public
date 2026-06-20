@@ -20,7 +20,7 @@ const ACCENTS: Record<string, { primary: string; secondary: string }> = {
 export async function GET(req: NextRequest) {
   const u = req.nextUrl.searchParams
   const title = (u.get('title') ?? 'ProvenLex').slice(0, 140)
-  const kicker = (u.get('kicker') ?? 'The AI immune system for European funds').slice(0, 80)
+  const kicker = (u.get('kicker') ?? 'Deterministic AIFMD II compliance for European funds').slice(0, 80)
   const accentKey = u.get('accent') ?? 'purple'
   const accent = ACCENTS[accentKey] ?? ACCENTS.purple
 
