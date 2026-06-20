@@ -1,4 +1,4 @@
-// Genesis Codex .gguf model release waitlist.
+// ProvenLex Codex .gguf model release waitlist.
 
 import { NextRequest } from 'next/server'
 import { kv } from '@/lib/kv'

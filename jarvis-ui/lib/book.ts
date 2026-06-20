@@ -1,4 +1,4 @@
-// THE BOOK OF GENESIS — 100 sealed prophecies on named EU financial entities.
+// THE BOOK OF PROVENLEX — 100 sealed prophecies on named EU financial entities.
 // Curated across asset managers, banks, insurers, PE, real estate, wealth.
 // LEIs verified against GLEIF where available; resolved at scoring time when not.
 
@@ -123,7 +123,7 @@ export const BOOK_CANDIDATES: BookCandidate[] = [
   { name: 'M.M.Warburg & CO',                                        jurisdiction: 'DE', category: 'wealth' },
 ]
 
-export const BOOK_VERSION = 'GENESIS-BOOK-I'  // semantic versioning at the Book level
+export const BOOK_VERSION = 'PROVENLEX-BOOK-I'  // semantic versioning at the Book level
 
 export interface BookEntry {
   rank: number

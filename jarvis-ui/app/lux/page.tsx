@@ -5,7 +5,7 @@ import LuxConsole from './LuxConsole'
 import ComplianceDisclaimer from '@/components/ComplianceDisclaimer'
 
 export const metadata = {
-  title: 'Luxembourg RegTech Engines · Live · Genesis Swarm',
+  title: 'Luxembourg RegTech Engines · Live · ProvenLex',
   description: 'Five institutional CSSF/AIFMD compliance engines you can run live in the browser — substance audit, cross-departmental reconciliation, AIFMD II pre-trade limits, CSSF e-ID validation, and delegation oversight.',
 }
 

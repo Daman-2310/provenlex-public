@@ -70,7 +70,7 @@ export default function TrialPage() {
       <div className="sticky top-0 z-40 flex items-center justify-between px-6 py-3 border-b border-[rgba(16,217,130,0.12)]" style={{ background: 'rgba(5,5,8,0.97)', backdropFilter: 'blur(8px)' }}>
         <div className="flex items-center gap-3">
           <div className="w-2 h-2 rounded-full bg-[#10D982] animate-pulse" />
-          <a href="/scan" className="font-bold tracking-[0.2em] text-sm uppercase hover:opacity-80 transition-opacity">Genesis Swarm</a>
+          <a href="/scan" className="font-bold tracking-[0.2em] text-sm uppercase hover:opacity-80 transition-opacity">ProvenLex</a>
           <span className="text-[rgba(16,217,130,0.4)] text-[10px] tracking-widest hidden sm:block">// Request Trial</span>
         </div>
         <a href="/scan" className="text-[9px] uppercase tracking-wider px-3 py-1.5 border border-[rgba(16,217,130,0.3)] text-[#10D982] rounded hover:bg-[rgba(16,217,130,0.08)] transition-colors">← Run a scan</a>
@@ -81,7 +81,7 @@ export default function TrialPage() {
           <div className="lg:col-span-2 space-y-8">
             <div className="space-y-4">
               <div className="text-[9px] uppercase tracking-[0.3em] text-[rgba(16,217,130,0.5)]">Free 90-day pilot</div>
-              <h1 className="text-3xl font-bold leading-tight">See Genesis Swarm working on your fund.</h1>
+              <h1 className="text-3xl font-bold leading-tight">See ProvenLex working on your fund.</h1>
               <p className="text-[rgba(255,255,255,0.45)] text-sm leading-relaxed">We configure a live environment for your fund structure — DORA, AIFMD II, SFDR — and show you exactly what you are missing.</p>
             </div>
             <div className="space-y-3">

@@ -80,7 +80,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-[10px] uppercase tracking-[0.25em] text-[#10D982] font-black mb-3">WHO WE ARE &amp; CONTACT</h2>
-            <p>Genesis Swarm is an independent, source-available compliance-tooling project, operated by its founder pending formal incorporation in the EU. For any privacy request or question, contact <a href="mailto:daman.sharma.2310@gmail.com" className="text-[#10D982]">daman.sharma.2310@gmail.com</a>.</p>
+            <p>ProvenLex is an independent, source-available compliance-tooling project, operated by its founder pending formal incorporation in the EU. For any privacy request or question, contact <a href="mailto:daman.sharma.2310@gmail.com" className="text-[#10D982]">daman.sharma.2310@gmail.com</a>.</p>
           </section>
 
           <p className="text-[11px] text-[rgba(255,255,255,0.4)] pt-2">See also <Link href="/security" className="text-[#10D982]">Trust &amp; Security</Link> and <Link href="/terms" className="text-[#10D982]">Terms</Link>. This notice is information about our practices, not legal advice.</p>

@@ -1,6 +1,6 @@
 // Pre-registered live predictions.
 //
-// Curated forecasts that pull from the Book of Genesis snapshot — these are
+// Curated forecasts that pull from the Book of ProvenLex snapshot — these are
 // the 10 *highest-Pre-Crime-Index* entities at sealing time. Each is presented
 // as a specific, dated, falsifiable prediction.
 //

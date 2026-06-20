@@ -1,4 +1,4 @@
-// Genesis Twin — Monte Carlo stress simulator for Book entities.
+// ProvenLex Twin — Monte Carlo stress simulator for Book entities.
 //
 // For each (entity × scenario), runs 10,000 synthetic trajectories under
 // the named stress and produces probability distributions of survival,

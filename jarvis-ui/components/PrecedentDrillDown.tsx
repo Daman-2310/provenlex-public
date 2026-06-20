@@ -255,7 +255,7 @@ export default function PrecedentDrillDown({ botType, score, summary, onClose }:
         {/* Footer */}
         <div className="p-3 border-t border-[rgba(16,217,130,0.1)] flex justify-between text-[8px] text-[rgba(16,217,130,0.3)] uppercase">
           <span>RAG // ChromaDB Vector Store</span>
-          <span>Genesis Swarm v0.2 // DORA Compliant</span>
+          <span>ProvenLex v0.2 // DORA Compliant</span>
         </div>
       </div>
     </motion.div>

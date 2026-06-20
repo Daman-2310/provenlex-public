@@ -206,6 +206,6 @@ export async function GET(req: NextRequest) {
     regulatoryFlags: flags,
     recommendation,
     timestamp: new Date().toISOString(),
-    source: 'Genesis Swarm RWA Token Compliance Engine v1',
+    source: 'ProvenLex RWA Token Compliance Engine v1',
   } satisfies TokenAnalysis & { explorer: string; timestamp: string; source: string })
 }

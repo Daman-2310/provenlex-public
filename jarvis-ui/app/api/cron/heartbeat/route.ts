@@ -151,12 +151,12 @@ async function rescanSanctions(origin: string): Promise<{ scanned: number; alert
         if (prefs.emailAlerts) {
           await sendEmail(
             email,
-            `[Genesis Swarm] Sanctions alert on ${a.fundName}`,
+            `[ProvenLex] Sanctions alert on ${a.fundName}`,
             `<div style="font-family:system-ui">
               <h2 style="color:#ff3366">Sanctions screening hit</h2>
               <p>Your saved fund <strong>${a.fundName}</strong> matched ${trulyNew.length} new entities on the US Treasury OFAC SDN list.</p>
               <p><a href="${dashboardUrl}" style="display:inline-block;padding:12px 24px;background:#00cc6a;color:#000;text-decoration:none;border-radius:4px;font-weight:bold">Review in Dashboard →</a></p>
-              <p style="color:#888;font-size:11px;margin-top:24px">Genesis Swarm RegTech AI · Luxembourg</p>
+              <p style="color:#888;font-size:11px;margin-top:24px">ProvenLex RegTech AI · Luxembourg</p>
             </div>`,
             text,
           )

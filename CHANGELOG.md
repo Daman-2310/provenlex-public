@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Genesis Swarm are documented here.
+All notable changes to ProvenLex are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
@@ -45,7 +45,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); version
 - **Hypothesis fuzz tests** — property-based tests in `tests/property/` prove PBFT safety invariants under random message orderings, Byzantine forgery, and duplicate payloads
 - **Chaos / fault-injection tests** — `tests/chaos/` kills replicas mid-round, starves primaries, and clock-skews nodes; CI verifies correct consensus under every failure mode
 - **PBFT latency benchmark** — `tests/benchmarks/` measures 1,000-round P50/P95/P99 commit latency; results written to `benchmark_results.json`
-- **CSSF / DORA control mapping** — `CSSF_MAPPING.md` maps every Genesis Swarm control to CSSF Circular 18/698 and DORA Chapter III paragraphs with evidence artifacts
+- **CSSF / DORA control mapping** — `CSSF_MAPPING.md` maps every ProvenLex control to CSSF Circular 18/698 and DORA Chapter III paragraphs with evidence artifacts
 - **SECURITY.md** — responsible disclosure policy, PGP contact, CVE process, dependency audit pipeline
 - **OpenTelemetry tracing** — OTel spans around PBFT rounds, bot cycles, and alert dispatch; OTLP exporter configurable via `OTEL_EXPORTER_OTLP_ENDPOINT`
 - **Circuit breaker** — `CircuitBreaker` wraps all external API calls (OFAC, ECB, AISStream, Celestrak); CLOSED → OPEN → HALF-OPEN state machine with configurable thresholds

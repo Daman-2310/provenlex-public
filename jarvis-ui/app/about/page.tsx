@@ -27,7 +27,7 @@ export default function AboutPage() {
             </span>
           </h1>
           <p className="text-[rgba(255,255,255,0.7)] text-lg leading-relaxed">
-            Genesis Swarm checks a fund prospectus against AIFMD&nbsp;II and UCITS using
+            ProvenLex checks a fund prospectus against AIFMD&nbsp;II and UCITS using
             deterministic arithmetic and the rule text — <span className="text-white font-bold">no large
             language model anywhere</span>. Every verdict cites the exact article, is reproducible,
             and runs entirely in your browser. Nothing you paste is uploaded.
@@ -52,7 +52,7 @@ export default function AboutPage() {
             </div>
             <div className="flex-1 min-w-0">
               <h2 className="text-2xl font-black text-white">Daman Sharma</h2>
-              <div className="text-[12px] text-[rgba(16,217,130,0.85)] uppercase tracking-widest font-bold mt-0.5">Founder · Genesis Swarm</div>
+              <div className="text-[12px] text-[rgba(16,217,130,0.85)] uppercase tracking-widest font-bold mt-0.5">Founder · ProvenLex</div>
               <div className="flex items-center gap-3 mt-2 text-[10px] uppercase tracking-wider text-[rgba(255,255,255,0.5)]">
                 <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> Building for Luxembourg</span>
                 <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> Age 16</span>
@@ -63,7 +63,7 @@ export default function AboutPage() {
 
           <div className="space-y-4 text-[14px] leading-relaxed text-[rgba(255,255,255,0.8)]">
             <p>
-              I&apos;m 16, and I built Genesis Swarm because of one thing every Conducting Officer
+              I&apos;m 16, and I built ProvenLex because of one thing every Conducting Officer
               already knows: they are <span className="text-white font-bold">personally liable</span> for
               what goes into a regulatory filing — and &quot;the model said so&quot; has never been a defence.
             </p>

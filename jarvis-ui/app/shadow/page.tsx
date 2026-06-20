@@ -3,7 +3,7 @@
 // Shadow Mode — the institutional adoption surface.
 //
 // Composes four honest capabilities over the real scan engine:
-//   #1 Passive Shadow divergence (legacy self-consistency vs Genesis statutory)
+//   #1 Passive Shadow divergence (legacy self-consistency vs ProvenLex statutory)
 //   #2 Board-ready Audit Pack (findings → citations + tamper-evident hash chain)
 //   #3 Reasoning Trace (deterministic input → rule → test → result per finding)
 //   #4 Resilience scorecard (the same fail-safe cases CI asserts)
@@ -106,7 +106,7 @@ export default function ShadowModePage() {
             style={{ background: 'linear-gradient(135deg, #10D982, #0B9E63)', boxShadow: '0 0 18px rgba(16,217,130,0.45)' }}>
             <Sparkles className="w-4 h-4 text-black" />
           </div>
-          <span className="text-sm font-black tracking-[0.15em]">GENESIS SWARM</span>
+          <span className="text-sm font-black tracking-[0.15em]">PROVENLEX</span>
         </a>
         <div className="flex items-center gap-4 text-[11px] uppercase tracking-[0.15em] font-bold text-[rgba(255,255,255,0.6)]">
           <a href="/scan" className="hover:text-white">Live Scan</a>
@@ -122,11 +122,11 @@ export default function ShadowModePage() {
             Passive Shadow Mode · adopt with zero risk
           </div>
           <h1 className="font-black tracking-tight leading-[1.05]" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>
-            Run Genesis <span style={{ color: ACCENT }}>silently</span>, alongside
+            Run ProvenLex <span style={{ color: ACCENT }}>silently</span>, alongside
             <br className="hidden md:block" /> your current process.
           </h1>
           <p className="text-[rgba(255,255,255,0.55)] max-w-2xl mt-5 leading-relaxed">
-            No big red switch. Genesis takes <span className="text-white font-semibold">no action</span> — it watches the same
+            No big red switch. ProvenLex takes <span className="text-white font-semibold">no action</span> — it watches the same
             documents your team reviews and logs a <span className="text-white font-semibold">divergence report</span>:
             exactly what it would have caught that your current process let through. Everything below is computed live, in
             your browser, by the same engine as <a href="/scan" className="underline" style={{ color: ACCENT }}>/scan</a>.
@@ -167,7 +167,7 @@ export default function ShadowModePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
               <VerdictCard title="Your current process" subtitle="self-consistency review"
                 verdict={divergence.legacyVerdict} count={divergence.legacyCriticalCount} muted />
-              <VerdictCard title="Genesis Swarm" subtitle="+ AIFMD II statutory overlay"
+              <VerdictCard title="ProvenLex" subtitle="+ AIFMD II statutory overlay"
                 verdict={divergence.genesisVerdict} count={divergence.genesisCriticalCount} />
             </div>
 
@@ -180,7 +180,7 @@ export default function ShadowModePage() {
             {divergence.missedByLegacy.length > 0 && (
               <>
                 <div className="text-[11px] uppercase tracking-[0.2em] font-bold text-[rgba(255,255,255,0.45)] mb-2">
-                  Caught by Genesis · missed by your current process
+                  Caught by ProvenLex · missed by your current process
                 </div>
                 <div className="space-y-2">
                   {divergence.missedByLegacy.map((f, i) => {
@@ -356,7 +356,7 @@ export default function ShadowModePage() {
           style={{ background: `linear-gradient(135deg, ${ACCENT}1a, rgba(91,141,239,0.08))`, border: `1px solid ${ACCENT}44` }}>
           <h3 className="text-xl md:text-2xl font-black mb-2">Run a 30-day shadow pilot on your own funds.</h3>
           <p className="text-[rgba(255,255,255,0.55)] text-sm mb-5 max-w-xl mx-auto">
-            Zero risk. Genesis touches nothing — it just shows you, document by document, what your current process is letting through.
+            Zero risk. ProvenLex touches nothing — it just shows you, document by document, what your current process is letting through.
           </p>
           <a href="/scan" className="inline-flex items-center gap-2 px-6 py-3 rounded-md text-sm uppercase tracking-[0.12em] font-black"
             style={{ background: ACCENT, color: '#000', boxShadow: `0 0 24px ${ACCENT}66` }}>

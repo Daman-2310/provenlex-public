@@ -5,7 +5,7 @@ export const runtime = 'edge'
 const SCHEMA = {
   '@context': 'https://genesis-swarm.app/protocol/v1',
   '@type': 'GenesisOperationalRiskAssessment',
-  version: 'GENESIS-1',
+  version: 'PROVENLEX-1',
   status: 'CANDIDATE',
   license: 'Apache-2.0',
   editor: { name: 'Daman Sharma', contact: 'daman.sharma.2310@gmail.com' },
@@ -43,7 +43,7 @@ const SCHEMA = {
 
 const OPENAPI = {
   openapi: '3.1.0',
-  info: { title: 'GENESIS-1 Protocol', version: '1.0', description: 'Open standard for AI-driven operational-risk reporting in regulated financial entities.', license: { name: 'Apache 2.0' } },
+  info: { title: 'PROVENLEX-1 Protocol', version: '1.0', description: 'Open standard for AI-driven operational-risk reporting in regulated financial entities.', license: { name: 'Apache 2.0' } },
   components: {
     schemas: {
       Assessment: {

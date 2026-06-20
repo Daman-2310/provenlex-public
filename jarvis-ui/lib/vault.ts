@@ -1,4 +1,4 @@
-// GENESIS EVIDENCE VAULT — the defensibility layer.
+// PROVENLEX EVIDENCE VAULT — the defensibility layer.
 //
 // Reframes the product from "detector" to "audit insurance": every compliance
 // check a fund runs becomes a sealed, timestamped, append-only record. The

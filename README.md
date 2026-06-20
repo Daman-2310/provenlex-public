@@ -1,6 +1,6 @@
 <div align="center">
 
-# Genesis Swarm
+# ProvenLex
 
 **Deterministic AIFMD II / UCITS prospectus compliance — in the browser, with no LLM.**
 
@@ -8,7 +8,7 @@
 [2027 AIFMD II Readiness Report](https://genesis-swarm.vercel.app/research/report-01-aifmd2-readiness) ·
 [Trust & security](https://genesis-swarm.vercel.app/security)
 
-📐 **The versioned standard:** [Genesis Ruleset Specification v2026.1](./RULESET.md) · [live, interactive version](https://genesis-swarm.vercel.app/ruleset)
+📐 **The versioned standard:** [ProvenLex Ruleset Specification v2026.1](./RULESET.md) · [live, interactive version](https://genesis-swarm.vercel.app/ruleset)
 
 Source-available under PolyForm Noncommercial 1.0.0
 
@@ -20,7 +20,7 @@ Source-available under PolyForm Noncommercial 1.0.0
 
 ## What this is
 
-Genesis Swarm reads a fund prospectus and checks it against the **AIFMD II and UCITS
+ProvenLex reads a fund prospectus and checks it against the **AIFMD II and UCITS
 quantitative limits** — leverage caps, risk retention, single-issuer / single-borrower
 concentration — in seconds, entirely client-side. For every finding it cites the exact
 rule and the source line, so you can see precisely where a document breaches the law or
@@ -65,7 +65,7 @@ production-grade and which are reference implementations.
 
 - **`jarvis-ui/`** — the product: the Next.js application and the deterministic compliance
   engine behind the live scanner. Client-side, no LLM in the decision path.
-- **`RULESET.md`** — the Genesis Ruleset Specification: the versioned, citable AIFMD II / UCITS limits the engine enforces, each bound to its statutory source.
+- **`RULESET.md`** — the ProvenLex Ruleset Specification: the versioned, citable AIFMD II / UCITS limits the engine enforces, each bound to its statutory source.
 - `CSSF_MAPPING.md`, `SECURITY.md`, `CONTRIBUTING.md`, `CHANGELOG.md` — mapping, trust, and notes.
 
 ## Links

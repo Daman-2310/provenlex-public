@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { ArrowLeft, ScrollText, ShieldCheck, AlertOctagon, Mail, Lock, FileText, Hash } from 'lucide-react'
 
 export const metadata = {
-  title: 'Legal · Terms · Right to Erasure · Genesis Swarm',
-  description: 'Terms of use, AI disclaimer, GDPR notice, and right-to-erasure procedure for Genesis Swarm operational-risk analysis platform.',
+  title: 'Legal · Terms · Right to Erasure · ProvenLex',
+  description: 'Terms of use, AI disclaimer, GDPR notice, and right-to-erasure procedure for ProvenLex operational-risk analysis platform.',
 }
 
 export default function LegalPage() {
@@ -29,7 +29,7 @@ export default function LegalPage() {
             style={{ background: 'rgba(245,165,36,0.08)', border: '1px solid rgba(245,165,36,0.3)' }}>
             <ShieldCheck className="w-3 h-3 text-[#F5A524]" />
             <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#F5A524]">
-              Plain-English terms · binding when you use Genesis Swarm
+              Plain-English terms · binding when you use ProvenLex
             </span>
           </div>
           <h1 className="font-black tracking-tight mb-3" style={{ fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', lineHeight: 1.05 }}>
@@ -45,14 +45,14 @@ export default function LegalPage() {
         </div>
 
         {/* THE BIG DISCLAIMER */}
-        <Section icon={AlertOctagon} accent="#F2566E" title="§ 1 — What Genesis Swarm is and is not">
+        <Section icon={AlertOctagon} accent="#F2566E" title="§ 1 — What ProvenLex is and is not">
           <p>
-            <strong className="text-white">Genesis Swarm is a deterministic compliance-checking tool.</strong> It reads a
+            <strong className="text-white">ProvenLex is a deterministic compliance-checking tool.</strong> It reads a
             fund prospectus and tests it against the AIFMD II and UCITS quantitative limits using rules and arithmetic —
             no LLM or AI in the decision path. Outputs are reproducible and cited to the rule.
           </p>
           <p>
-            Outputs on Genesis Swarm <strong className="text-white">are not</strong>:
+            Outputs on ProvenLex <strong className="text-white">are not</strong>:
           </p>
           <ul className="space-y-1.5 text-[rgba(255,255,255,0.7)]">
             <li>— a credit rating (we are not registered under the EU CRA Regulation)</li>
@@ -71,7 +71,7 @@ export default function LegalPage() {
         {/* HISTORICAL ARCHETYPES */}
         <Section icon={FileText} accent="#5B8DEF" title="§ 2 — On historical archetypes">
           <p>
-            Several Genesis Swarm features reference historical fraud cases (Wirecard, Archegos, FTX, Greensill, Madoff).
+            Several ProvenLex features reference historical fraud cases (Wirecard, Archegos, FTX, Greensill, Madoff).
             These are referenced <strong className="text-white">as analytical pattern templates only</strong> — never as
             assertions that any current subject of analysis is engaged in similar conduct.
           </p>
@@ -99,7 +99,7 @@ export default function LegalPage() {
         {/* GDPR + RIGHT TO ERASURE */}
         <Section icon={Lock} accent="#10D982" title="§ 4 — GDPR, personal data, and your rights" id="erasure">
           <p>
-            Where Genesis Swarm processes personal data of identifiable individuals (e.g. named executives in a public
+            Where ProvenLex processes personal data of identifiable individuals (e.g. named executives in a public
             dossier), the lawful basis is <strong className="text-white">Article 6(1)(f) of the GDPR</strong> — legitimate
             interest in research, journalism, and public-interest financial transparency, balanced against the data
             subject's rights.
@@ -121,7 +121,7 @@ export default function LegalPage() {
               <span className="text-[10px] uppercase tracking-[0.18em] text-[#10D982] font-black">How to make a request</span>
             </div>
             <p className="text-[12px] text-[rgba(255,255,255,0.8)] mb-2">
-              Email <a href="mailto:daman.sharma.2310@gmail.com?subject=Genesis%20Swarm%20%E2%80%94%20GDPR%2FErasure%20request"
+              Email <a href="mailto:daman.sharma.2310@gmail.com?subject=ProvenLex%20%E2%80%94%20GDPR%2FErasure%20request"
                 className="text-[#10D982] font-bold hover:underline">daman.sharma.2310@gmail.com</a> with the subject{' '}
               <span className="font-mono text-[#10D982]">"GDPR/Erasure request"</span>.
             </p>
@@ -145,7 +145,7 @@ export default function LegalPage() {
             <li>— are probabilistic — outputs can vary between identical-looking requests</li>
           </ul>
           <p className="mt-3">
-            <strong className="text-white">Do not</strong> rely on Genesis Swarm output as your sole basis for
+            <strong className="text-white">Do not</strong> rely on ProvenLex output as your sole basis for
             any consequential decision. Verify independently before acting.
           </p>
         </Section>
@@ -153,7 +153,7 @@ export default function LegalPage() {
         {/* LIABILITY */}
         <Section icon={ShieldCheck} accent="#F5A524" title="§ 6 — Liability limitation">
           <p>
-            To the maximum extent permitted by law, Genesis Swarm and its editor are <strong className="text-white">not liable</strong> for:
+            To the maximum extent permitted by law, ProvenLex and its editor are <strong className="text-white">not liable</strong> for:
           </p>
           <ul className="space-y-1.5 text-[rgba(255,255,255,0.7)]">
             <li>— losses arising from reliance on platform output</li>

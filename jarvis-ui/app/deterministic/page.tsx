@@ -2,7 +2,7 @@
 
 // Deterministic by Design — the architectural moat, told honestly.
 //
-// The case: Genesis runs no ML model, so it cannot drift or hallucinate; every
+// The case: ProvenLex runs no ML model, so it cannot drift or hallucinate; every
 // verdict is the exact rule + arithmetic, reproducible bit-for-bit and hash-
 // sealed. Two claims are PROVEN live, not asserted:
 //   • a real throughput/latency benchmark on the visitor's own hardware
@@ -61,7 +61,7 @@ export default function DeterministicPage() {
             style={{ background: `linear-gradient(135deg, ${ACCENT}, #0B9E63)`, boxShadow: `0 0 18px ${ACCENT}88` }}>
             <Sparkles className="w-4 h-4 text-black" />
           </div>
-          <span className="text-sm font-black tracking-[0.15em]">GENESIS SWARM</span>
+          <span className="text-sm font-black tracking-[0.15em]">PROVENLEX</span>
         </a>
         <div className="flex items-center gap-4 text-[11px] uppercase tracking-[0.15em] font-bold text-[rgba(255,255,255,0.6)]">
           <a href="/scan" className="hover:text-white">Live Scan</a>
@@ -81,7 +81,7 @@ export default function DeterministicPage() {
             <span style={{ color: ACCENT }}>No model. No drift. No doubt.</span>
           </h1>
           <p className="text-[rgba(255,255,255,0.55)] max-w-2xl mt-5 leading-relaxed">
-            Genesis runs <span className="text-white font-semibold">no machine-learning model</span> in its decision path —
+            ProvenLex runs <span className="text-white font-semibold">no machine-learning model</span> in its decision path —
             it is regex and arithmetic. So it cannot hallucinate, cannot drift between versions, and every verdict is the
             exact rule it applied. That is not a limitation to apologise for; for statutory compliance it is the
             <span className="text-white font-semibold"> entire point</span>. Below, two of these claims are proven live —
@@ -94,7 +94,7 @@ export default function DeterministicPage() {
           style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
           <div className="grid grid-cols-12 px-4 py-3 text-[10px] uppercase tracking-[0.18em] font-bold border-b border-[rgba(255,255,255,0.08)]">
             <div className="col-span-4 text-[rgba(255,255,255,0.4)]"> </div>
-            <div className="col-span-4" style={{ color: ACCENT }}>Genesis · deterministic</div>
+            <div className="col-span-4" style={{ color: ACCENT }}>ProvenLex · deterministic</div>
             <div className="col-span-4 text-[rgba(255,255,255,0.4)]">LLM / ML-based RegTech</div>
           </div>
           {COMPARISON.map((r, i) => (
@@ -117,7 +117,7 @@ export default function DeterministicPage() {
             <div className="text-sm font-bold text-white mb-1">The honest tradeoff</div>
             <p className="text-[13px] text-[rgba(255,255,255,0.6)] leading-relaxed">
               Deterministic is not “better at everything.” It only catches what is encoded as a rule — it won’t interpret
-              genuinely ambiguous prose or infer intent the way a language model might. Genesis is deterministic exactly
+              genuinely ambiguous prose or infer intent the way a language model might. ProvenLex is deterministic exactly
               where the answer must be <span className="text-white">certain</span>: statutory limits, arithmetic, structure.
               Judgment calls stay with a human — not a model that can be <span className="text-white">confidently wrong</span>.
               We’d rather be precisely right about the checkable things than vaguely right about everything.

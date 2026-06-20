@@ -3,8 +3,8 @@ import { ArrowLeft, Code2, Copy, ExternalLink } from 'lucide-react'
 import CosmicBackground from '@/components/CosmicBackground'
 
 export const metadata = {
-  title: 'Embed the Genesis Score · Genesis Swarm',
-  description: 'Drop a Genesis Score badge on any website with a single iframe.',
+  title: 'Embed the ProvenLex Score · ProvenLex',
+  description: 'Drop a ProvenLex Score badge on any website with a single iframe.',
 }
 
 const SAMPLE_LEI = '529900VBK42Y5HHRMD23'
@@ -31,7 +31,7 @@ export default function EmbedDocsPage() {
 
         <div className="text-center mb-12">
           <h1 className="font-black tracking-tight mb-4" style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', lineHeight: 0.95 }}>
-            <span className="text-white">"Verified by Genesis"</span>
+            <span className="text-white">"Verified by ProvenLex"</span>
             <br />
             <span style={{
               background: 'linear-gradient(90deg, #5B8DEF 0%, #10D982 100%)',
@@ -41,7 +41,7 @@ export default function EmbedDocsPage() {
             </span>
           </h1>
           <p className="text-[rgba(255,255,255,0.6)] text-base max-w-2xl mx-auto leading-relaxed">
-            Drop one iframe on any page. Show the Genesis Score for any LEI in the GLEIF registry.
+            Drop one iframe on any page. Show the ProvenLex Score for any LEI in the GLEIF registry.
             Auto-refreshing, dark + light themes, three sizes. Free forever.
           </p>
         </div>
@@ -67,7 +67,7 @@ export default function EmbedDocsPage() {
   width="320" height="120"
   style="border:0; background:transparent;"
   loading="lazy"
-  title="Genesis Score">
+  title="ProvenLex Score">
 </iframe>`} />
         </section>
 
@@ -107,7 +107,7 @@ export default function EmbedDocsPage() {
             <li>— GLEIF identity data cached for 24 hours</li>
             <li>— Badges are fully responsive — the iframe scales to its container</li>
             <li>— No tracking cookies, no analytics, no user data collected by the badge</li>
-            <li>— Click-through opens the full Genesis dossier in a new tab</li>
+            <li>— Click-through opens the full ProvenLex dossier in a new tab</li>
             <li>— Score reflects AI operational-risk analysis · not investment advice (<Link href="/legal" className="text-[#5B8DEF] hover:underline">terms</Link>)</li>
           </ul>
         </section>
@@ -129,7 +129,7 @@ function PreviewCard({ label, lei, theme, size }: { label: string; lei: string; 
           height={size === 'lg' ? 150 : size === 'sm' ? 95 : 120}
           style={{ border: 0, background: 'transparent' }}
           loading="lazy"
-          title="Genesis Score badge preview" />
+          title="ProvenLex Score badge preview" />
       </div>
     </div>
   )

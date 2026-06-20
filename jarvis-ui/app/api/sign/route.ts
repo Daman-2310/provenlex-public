@@ -13,7 +13,7 @@ export async function GET(req: Request) {
     alg: 'Ed25519',
     publicKeyPem: publicKeyPem(),
     publicKeyBase64: publicKeyBase64(),
-    note: 'Verify any Genesis signature against this key with standard Ed25519.',
+    note: 'Verify any ProvenLex signature against this key with standard Ed25519.',
   })
 }
 

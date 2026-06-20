@@ -148,7 +148,7 @@ export default function OnboardPage() {
   const downloadReport = () => {
     if (!result) return
     const lines = [
-      'GENESIS SWARM — COMPLIANCE GAP REPORT',
+      'PROVENLEX — COMPLIANCE GAP REPORT',
       `Fund: ${result.fund_name}  |  Type: ${result.fund_type}  |  AUM: €${result.aum_eur_m}M`,
       `Score: ${result.score}/100  Grade: ${result.grade}  |  Report ID: ${result.report_id}`,
       '', `SUMMARY: ${result.critical_count} critical, ${result.high_count} high, ${result.total_gaps} total gaps`,

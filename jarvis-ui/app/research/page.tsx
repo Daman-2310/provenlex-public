@@ -3,8 +3,8 @@ import { ArrowLeft, Microscope, FileText, ChevronRight, Calendar } from 'lucide-
 import CosmicBackground from '@/components/CosmicBackground'
 
 export const metadata = {
-  title: 'Genesis Foresight Lab · Research · Genesis Swarm',
-  description: 'The research wing of Genesis Swarm. Open methodology, cited findings, and reproducible analysis on operational-risk forecasting in EU finance.',
+  title: 'ProvenLex Foresight Lab · Research · ProvenLex',
+  description: 'The research wing of ProvenLex. Open methodology, cited findings, and reproducible analysis on operational-risk forecasting in EU finance.',
 }
 
 const PAPERS = [
@@ -67,7 +67,7 @@ export default function ResearchPage() {
             style={{ background: 'rgba(91,141,239,0.08)', border: '1px solid rgba(91,141,239,0.3)' }}>
             <Microscope className="w-3 h-3 text-[#5B8DEF]" />
             <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-[#5B8DEF]">
-              The research wing of Genesis Swarm
+              The research wing of ProvenLex
             </span>
           </div>
           <h1 className="font-black tracking-tight mb-5"
@@ -146,7 +146,7 @@ export default function ResearchPage() {
           <div className="text-[11px] uppercase tracking-[0.2em] text-[#5B8DEF] font-black mb-3">How to cite</div>
           <pre className="text-[11px] font-mono text-[rgba(255,255,255,0.85)] bg-black/40 rounded p-3 overflow-x-auto">
 {`Sharma, D. (2026). "Consistent Isn't Compliant: Teaching Software to
-Read Fund Prospectuses." Genesis Swarm Field Note NOTE-01.
+Read Fund Prospectuses." ProvenLex Field Note NOTE-01.
 Luxembourg.
 URL: https://genesis-swarm.vercel.app/research/note-01-consistent-isnt-compliant`}
           </pre>

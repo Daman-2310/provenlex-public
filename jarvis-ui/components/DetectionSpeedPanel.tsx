@@ -17,7 +17,7 @@ const WIRECARD_TIMELINE = [
   { year: '2019',     event: 'FT investigation published', caught: false },
   { year: 'Jun 2020', event: 'Auditors discover €1.9B missing', caught: false },
   { year: 'Jun 25',   event: 'Wirecard insolvency — €12.5B wiped', caught: false },
-  { year: 'T+340ms',  event: 'Genesis Swarm detects NAV manipulation', caught: true },
+  { year: 'T+340ms',  event: 'ProvenLex detects NAV manipulation', caught: true },
 ]
 
 export default function DetectionSpeedPanel() {
@@ -54,7 +54,7 @@ export default function DetectionSpeedPanel() {
             DETECTION BENCHMARK
           </div>
           <div style={{ fontSize: '8px', color: 'rgba(91,141,239,0.6)' }}>
-            GENESIS SWARM vs TRADITIONAL COMPLIANCE
+            PROVENLEX vs TRADITIONAL COMPLIANCE
           </div>
         </div>
         <div className="flex gap-2">
@@ -140,7 +140,7 @@ export default function DetectionSpeedPanel() {
             <div className="grid grid-cols-3 px-2 py-1" style={{ background: 'rgba(16,217,130,0.05)', borderBottom: '1px solid rgba(16,217,130,0.1)', fontSize: '8px', color: 'rgba(16,217,130,0.4)', letterSpacing: '0.06em' }}>
               <span>METRIC</span>
               <span>TRADITIONAL</span>
-              <span style={{ color: '#10D982' }}>GENESIS SWARM</span>
+              <span style={{ color: '#10D982' }}>PROVENLEX</span>
             </div>
             {COMPARISON_ROWS.map((row, i) => (
               <div
@@ -180,7 +180,7 @@ export default function DetectionSpeedPanel() {
               color: 'rgba(16,217,130,0.7)',
             }}
           >
-            Genesis Swarm would have flagged Wirecard 5 years before collapse.
+            ProvenLex would have flagged Wirecard 5 years before collapse.
             €12.5B in investor losses, preventable in 340ms.
           </div>
         </div>

@@ -167,8 +167,8 @@ function AifmdPanel() {
 function EidPanel() {
   const [valid, setValid] = useState(false)
   const input = valid
-    ? { legalName: 'Genesis Lux Fund SICAV-RAIF', managementCompany: 'Genesis ManCo S.A.', depositary: 'BNP Paribas LU', documentTitle: 'Offering Document v1', documentSha256: 'a'.repeat(64), eidasSignature: 'b'.repeat(80), lei: '529900VBK42Y5HHRMD23' }
-    : { legalName: 'Genesis Lux Fund', managementCompany: '', depositary: 'BNP Paribas LU', documentTitle: 'Offering Document', documentSha256: 'not-a-hash', eidasSignature: 'short', lei: 'BADLEI' }
+    ? { legalName: 'ProvenLex Lux Fund SICAV-RAIF', managementCompany: 'ProvenLex ManCo S.A.', depositary: 'BNP Paribas LU', documentTitle: 'Offering Document v1', documentSha256: 'a'.repeat(64), eidasSignature: 'b'.repeat(80), lei: '529900VBK42Y5HHRMD23' }
+    : { legalName: 'ProvenLex Lux Fund', managementCompany: '', depositary: 'BNP Paribas LU', documentTitle: 'Offering Document', documentSha256: 'not-a-hash', eidasSignature: 'short', lei: 'BADLEI' }
   const res = preflightValidate(input)
   return (
     <div className="rounded-xl p-4" style={card('#5B8DEF')}>

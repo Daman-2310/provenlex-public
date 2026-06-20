@@ -1,4 +1,4 @@
-// Genesis Swarm MCP server — Model Context Protocol endpoint (JSON-RPC 2.0 / POST).
+// ProvenLex MCP server — Model Context Protocol endpoint (JSON-RPC 2.0 / POST).
 //
 // SCOPE-LIMITED 2026-06-12: this server previously broadcast operational-risk
 // scores, a "pre-crime index", and forecasts on NAMED REAL ENTITIES to LLM
@@ -30,7 +30,7 @@ function rpcError(id: string | number | undefined, code: number, message: string
 const TOOLS = [
   {
     name: 'genesis.manifest.get',
-    description: 'Get the aggregate Genesis manifest — totals and Merkle root only. No per-entity data.',
+    description: 'Get the aggregate ProvenLex manifest — totals and Merkle root only. No per-entity data.',
     parameters: { type: 'object', properties: {} },
   },
 ]
@@ -39,7 +39,7 @@ const RETIRED_TOOLS = ['genesis.score.get', 'genesis.prophecy.list', 'genesis.vi
 
 export async function GET() {
   return Response.json({
-    name: 'Genesis Swarm MCP Server',
+    name: 'ProvenLex MCP Server',
     version: '2.0.0',
     protocol: 'json-rpc-2.0',
     transport: 'http-post',

@@ -34,7 +34,7 @@ export default function ExtensionPage() {
           </h1>
           <p className="text-[rgba(255,255,255,0.55)] text-base max-w-2xl mx-auto leading-relaxed">
             Select any company on LinkedIn, Bloomberg Terminal, the FT, or any website.
-            Genesis Swarm pops up an instant OFAC sanctions screen + compliance score.
+            ProvenLex pops up an instant OFAC sanctions screen + compliance score.
             <span className="text-white"> Works on every page, in every tab.</span>
           </p>
         </div>
@@ -52,7 +52,7 @@ export default function ExtensionPage() {
               <Chrome className="w-9 h-9 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-xl font-black text-white">Genesis Swarm Extension v0.1</h2>
+              <h2 className="text-xl font-black text-white">ProvenLex Extension v0.1</h2>
               <p className="text-[12px] text-[rgba(255,255,255,0.55)] mt-1">
                 Manifest V3 · Chromium-compatible · 9 KB · No telemetry · Source code available
               </p>
@@ -70,8 +70,8 @@ export default function ExtensionPage() {
           <div className="text-[10px] uppercase tracking-[0.25em] text-[#5B8DEF] font-black mb-3">HOW IT WORKS</div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {[
-              { n: '01', Icon: MousePointer2, t: 'Select any text', d: 'Highlight a company name on any webpage. A green "Screen with Genesis Swarm" button appears next to your cursor.' },
-              { n: '02', Icon: Search,        t: 'Click to screen',  d: 'Genesis Swarm checks the name against the live US Treasury OFAC SDN list (18,976 entities) in under 800ms.' },
+              { n: '01', Icon: MousePointer2, t: 'Select any text', d: 'Highlight a company name on any webpage. A green "Screen with ProvenLex" button appears next to your cursor.' },
+              { n: '02', Icon: Search,        t: 'Click to screen',  d: 'ProvenLex checks the name against the live US Treasury OFAC SDN list (18,976 entities) in under 800ms.' },
               { n: '03', Icon: Shield,        t: 'Get the verdict',  d: 'Top-right overlay shows hits with match score + program. Click to generate a full 60-min audit pack.' },
             ].map(s => (
               <div key={s.n} className="rounded-xl p-5"
@@ -110,7 +110,7 @@ export default function ExtensionPage() {
           {[
             { Icon: Globe, t: 'Works everywhere', d: 'LinkedIn, Bloomberg, FT, Twitter, any site. <all_urls> permission scope.' },
             { Icon: Shield, t: 'Zero telemetry', d: 'Selection text is sent only to genesis-swarm.vercel.app. Source available.' },
-            { Icon: MousePointer2, t: 'Two activation modes', d: 'Selection floating button OR right-click "Screen with Genesis Swarm".' },
+            { Icon: MousePointer2, t: 'Two activation modes', d: 'Selection floating button OR right-click "Screen with ProvenLex".' },
             { Icon: Search, t: 'Real OFAC data', d: 'Live US Treasury SDN list — 18,976 entities, ~800ms response.' },
           ].map(f => (
             <div key={f.t} className="rounded-lg p-4"

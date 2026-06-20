@@ -55,7 +55,7 @@ function hexToRgba(hex: string, alpha: number): string {
 }
 
 // ────────────────────────────────────────────────────────────────────
-//  Genesis Swarm — Marketing Landing
+//  ProvenLex — Marketing Landing
 //  Goal: 30-second pitch that makes an investor lean forward.
 // ────────────────────────────────────────────────────────────────────
 
@@ -116,7 +116,7 @@ function Nav() {
             <Sparkles className="w-4 h-4 text-black" />
           </div>
           <div className="leading-tight">
-            <div className="text-sm font-black tracking-[0.15em] text-white">GENESIS SWARM</div>
+            <div className="text-sm font-black tracking-[0.15em] text-white">PROVENLEX</div>
             <div className="text-[8px] uppercase tracking-[0.25em] text-[#10D982]">// DETERMINISTIC REGTECH</div>
           </div>
         </a>
@@ -404,7 +404,7 @@ function Problem() {
 // Solution — 3 step "how it works"
 function Solution() {
   const steps = [
-    { n: '01', Icon: Cpu, t: 'Bring a document', d: 'Paste an LEI, drop a prospectus PDF, or paste the text. Genesis reads it in your browser — nothing is uploaded, no account needed.', accent: '#10D982' },
+    { n: '01', Icon: Cpu, t: 'Bring a document', d: 'Paste an LEI, drop a prospectus PDF, or paste the text. ProvenLex reads it in your browser — nothing is uploaded, no account needed.', accent: '#10D982' },
     { n: '02', Icon: GitBranch, t: 'Checked against the rule', d: 'Each declared limit is tested against the document’s own caps and the AIFMD II statutory caps — plain arithmetic, instant, no LLM in the decision path.', accent: '#5B8DEF' },
     { n: '03', Icon: Shield, t: 'Tamper-evident audit trail', d: 'Every verdict is hashed into a tamper-evident chain — a CSSF-grade evidence trail you can export as a PDF the moment a regulator asks.', accent: '#F5A524' },
   ]
@@ -413,7 +413,7 @@ function Solution() {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-20">
           <div className="text-[11px] uppercase tracking-[0.3em] text-[#10D982] mb-4 font-bold">
-            // HOW GENESIS SWARM WORKS
+            // HOW PROVENLEX WORKS
           </div>
           <h2 className="font-black tracking-tight text-white" style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)' }}>
             From prospectus to compliance proof
@@ -486,7 +486,7 @@ function ROICalculator() {
         <div className="text-center mb-14">
           <div className="text-[11px] uppercase tracking-[0.3em] text-[#10D982] mb-4 font-bold">// ILLUSTRATIVE SAVINGS ESTIMATE</div>
           <h2 className="font-black tracking-tight text-white" style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)' }}>
-            What Genesis Swarm could save
+            What ProvenLex could save
             <br />
             <span className="text-[#10D982]" style={{ textShadow: '0 0 30px rgba(16,217,130,0.4)' }}>
               a fund your size.
@@ -636,7 +636,7 @@ function Pricing() {
             <span className="text-[rgba(255,255,255,0.4)]">for general availability.</span>
           </h2>
           <p className="text-[rgba(255,255,255,0.55)] mt-6 max-w-xl mx-auto">
-            Genesis Swarm is onboarding a small number of design partners right now — those
+            ProvenLex is onboarding a small number of design partners right now — those
             pilots are <span className="text-white">free</span>. The tiers below are indicative
             for when it's generally available; some features are on the roadmap.
           </p>
@@ -735,7 +735,7 @@ function FinalCTA() {
           }}>the regulator does.</span>
         </h2>
         <p className="text-[rgba(255,255,255,0.6)] text-base md:text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
-          Genesis Swarm catches what manual quarterly audits miss — including a prospectus that
+          ProvenLex catches what manual quarterly audits miss — including a prospectus that
           permits more leverage than AIFMD&nbsp;II allows. Try the live scanner free: no account,
           nothing uploaded, every verdict reproducible and cited to the rule.
         </p>
@@ -775,7 +775,7 @@ function Footer() {
                 style={{ background: 'linear-gradient(135deg, #10D982 0%, #0B9E63 100%)' }}>
                 <Sparkles className="w-4 h-4 text-black" />
               </div>
-              <span className="text-sm font-black tracking-[0.15em] text-white">GENESIS SWARM</span>
+              <span className="text-sm font-black tracking-[0.15em] text-white">PROVENLEX</span>
             </div>
             <p className="text-[12px] text-[rgba(255,255,255,0.4)] max-w-sm leading-relaxed">
               Deterministic compliance tooling for Luxembourg AIFMs — AIFMD II, DORA, SFDR.
@@ -816,7 +816,7 @@ function Footer() {
           </div>
         </div>
         <div className="pt-6 border-t border-[rgba(255,255,255,0.04)] flex items-center justify-between flex-wrap gap-3 text-[10px] uppercase tracking-wider text-[rgba(255,255,255,0.3)]">
-          <div>© 2026 Genesis Swarm · Luxembourg RegTech</div>
+          <div>© 2026 ProvenLex · Luxembourg RegTech</div>
           <div className="flex gap-4">
             <span>CSSF-aligned</span>
             <span>·</span>

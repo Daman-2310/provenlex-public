@@ -1,8 +1,8 @@
-# The Genesis Ruleset Specification
+# The ProvenLex Ruleset Specification
 
 **Version `2026.1` · Effective `2026-04-16` · Framework: AIFMD II + UCITS (Directive 2009/65/EC)**
 
-The public, versioned, **deterministic** interpretation of the AIFMD II loan-origination limits and the UCITS diversification rule — the exact body of rules behind every [Genesis Swarm](https://genesis-swarm.vercel.app) verdict. The engine is one implementation; *this* is the standard. Inspect it, cite it, fork it.
+The public, versioned, **deterministic** interpretation of the AIFMD II loan-origination limits and the UCITS diversification rule — the exact body of rules behind every [ProvenLex](https://genesis-swarm.vercel.app) verdict. The engine is one implementation; *this* is the standard. Inspect it, cite it, fork it.
 
 > Information only, not legal advice. AIFMD II detail remains subject to ESMA's final RTS/ITS; the version and effective date record exactly which interpretation applied when a verdict was sealed.
 
@@ -66,8 +66,8 @@ Every verdict the engine issues is stamped with this version and a SHA-256 hash 
 ## Cite as
 
 ```
-Sharma, D. (2026). "The Genesis Ruleset Specification v2026.1."
-Genesis Swarm. Effective 2026-04-16.
+Sharma, D. (2026). "The ProvenLex Ruleset Specification v2026.1."
+ProvenLex. Effective 2026-04-16.
 URL: https://genesis-swarm.vercel.app/ruleset
 ```
 

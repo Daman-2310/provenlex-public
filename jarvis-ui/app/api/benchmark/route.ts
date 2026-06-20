@@ -1,4 +1,4 @@
-// Anonymous industry benchmark — percentile scoring across all Genesis Swarm users.
+// Anonymous industry benchmark — percentile scoring across all ProvenLex users.
 // Aggregates compliance scores from every user's saved analyses, computes the
 // caller's percentile rank without revealing any individual data.
 import { getSession } from '@/lib/auth'

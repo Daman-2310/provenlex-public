@@ -421,11 +421,11 @@ export default function ScanPage() {
             <div className="rounded-2xl p-5" style={{ background: 'rgba(16,217,130,0.05)', border: '1px solid rgba(16,217,130,0.25)' }}>
               <div className="text-[11px] uppercase tracking-[0.2em] font-black mb-2" style={{ color: '#10D982' }}>Was this useful?</div>
               <p className="text-[13px] leading-relaxed" style={{ color: '#C7CDD2' }}>
-                A free, deterministic check — <span className="text-white">information only, not legal advice</span>. I&apos;m Daman, 16, building Genesis Swarm solo.
+                A free, deterministic check — <span className="text-white">information only, not legal advice</span>. I&apos;m Daman, 16, building ProvenLex solo.
                 If you run compliance, risk, or legal at a Luxembourg fund, I&apos;d genuinely value your blunt feedback — where does it fall short? — or I&apos;ll run it on your own funds with you, free.
               </p>
               <div className="flex items-center gap-3 flex-wrap mt-4">
-                <a href="mailto:daman.sharma.2310@gmail.com?subject=Genesis%20Swarm%20feedback%20%2F%20pilot&body=Hi%20Daman%2C%0A%0AI%20ran%20a%20prospectus%20through%20the%20scanner.%0A%0A"
+                <a href="mailto:daman.sharma.2310@gmail.com?subject=ProvenLex%20feedback%20%2F%20pilot&body=Hi%20Daman%2C%0A%0AI%20ran%20a%20prospectus%20through%20the%20scanner.%0A%0A"
                   className="flex items-center gap-1.5 px-4 py-2.5 rounded-md text-[11px] uppercase tracking-[0.15em] font-black"
                   style={{ background: '#10D982', color: '#04130b' }}>
                   <Mail className="w-3.5 h-3.5" /> Email me your take

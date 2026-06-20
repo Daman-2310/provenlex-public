@@ -57,10 +57,10 @@ export async function POST(req: NextRequest) {
   }
 
   const pdfDoc = await PDFDocument.create()
-  pdfDoc.setTitle(`Genesis Swarm Compliance Report - ${payload.fundName ?? 'Fund'}`)
+  pdfDoc.setTitle(`ProvenLex Compliance Report - ${payload.fundName ?? 'Fund'}`)
   pdfDoc.setSubject('Cryptographically signed regulatory gap analysis')
-  pdfDoc.setProducer('Genesis Swarm v0.4')
-  pdfDoc.setCreator('Genesis Swarm RegTech AI')
+  pdfDoc.setProducer('ProvenLex v0.4')
+  pdfDoc.setCreator('ProvenLex RegTech AI')
   pdfDoc.setCreationDate(new Date())
 
   const helv = await pdfDoc.embedFont(StandardFonts.Helvetica)
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
   page.drawRectangle({ x: 0, y: height - 4, width, height: 4, color: C.green })
 
   // Header
-  page.drawText('GENESIS SWARM', { x: 40, y: height - 50, size: 22, font: helvBold, color: C.text })
+  page.drawText('PROVENLEX', { x: 40, y: height - 50, size: 22, font: helvBold, color: C.text })
   page.drawText('Compliance Report - Cryptographically Signed', { x: 40, y: height - 70, size: 9, font: helv, color: C.dim })
 
   page.drawText(`ISSUED ${new Date().toISOString().slice(0, 10)}`, {
@@ -197,7 +197,7 @@ export async function POST(req: NextRequest) {
   page.drawText(`${anchor.leaves.length} hashed sections - all verified`, { x: 100, y: y - 76, size: 7, font: mono, color: C.dim })
 
   // Footer brand
-  page.drawText('GENESIS SWARM RegTech AI - Luxembourg', { x: 40, y: 30, size: 8, font: helvBold, color: C.green })
+  page.drawText('PROVENLEX RegTech AI - Luxembourg', { x: 40, y: 30, size: 8, font: helvBold, color: C.green })
   page.drawText('CSSF-aligned - DORA + AIFMD II + SFDR ready', { x: 40, y: 18, size: 7, font: helv, color: C.dim })
   page.drawText(`Page 1 of 1 - genesis-swarm.vercel.app`, { x: width - 220, y: 18, size: 7, font: mono, color: C.dim })
 

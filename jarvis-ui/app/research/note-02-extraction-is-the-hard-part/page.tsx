@@ -30,7 +30,7 @@ export default function Note02Page() {
 
         <div className="mb-10 pb-8" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
           <div className="text-[10px] uppercase tracking-[0.3em] text-[#5B8DEF] font-mono font-bold mb-3">
-            GENESIS SWARM · FIELD NOTE 02 · 2026
+            PROVENLEX · FIELD NOTE 02 · 2026
           </div>
           <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white leading-tight mb-5">
             {`Extraction Is the Hard Part`}<br />
@@ -39,7 +39,7 @@ export default function Note02Page() {
           <div className="text-[12px] text-[rgba(255,255,255,0.6)] mb-1">
             <strong className="text-white">Daman Sharma</strong>
             <span className="mx-2">·</span>
-            Genesis Swarm
+            ProvenLex
             <span className="mx-2">·</span>
             <a href="mailto:daman.sharma.2310@gmail.com" className="text-[#5B8DEF] hover:underline">daman.sharma.2310@gmail.com</a>
           </div>
@@ -100,7 +100,7 @@ export default function Note02Page() {
           <pre className="text-[11px] font-mono text-[rgba(255,255,255,0.85)] bg-black/40 rounded p-3 overflow-x-auto">
 {`Sharma, D. (2026). "Extraction Is the Hard Part: Why Automated
 AIFMD II Checking Is Harder Than the AI Vendors Admit."
-Genesis Swarm Field Note NOTE-02. Luxembourg. 20 June 2026.`}
+ProvenLex Field Note NOTE-02. Luxembourg. 20 June 2026.`}
           </pre>
           <p className="text-[12px] text-[rgba(255,255,255,0.6)] leading-relaxed mt-4">
             Released under Creative Commons Attribution 4.0 International. Reproduce, distribute,

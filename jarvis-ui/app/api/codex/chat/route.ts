@@ -1,5 +1,5 @@
 // RETIRED 2026-06-12. The Codex assistant streamed user messages to a third-party
-// LLM (Groq). Genesis Swarm makes no LLM calls — "no LLM in the decision path,
+// LLM (Groq). ProvenLex makes no LLM calls — "no LLM in the decision path,
 // nothing uploaded" is the product's core guarantee. Removed. For compliance
 // questions, use the deterministic, client-side prospectus scanner at /scan.
 

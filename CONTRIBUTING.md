@@ -1,6 +1,6 @@
-# Contributing to Genesis Swarm
+# Contributing to ProvenLex
 
-Genesis Swarm is an open-source compliance infrastructure project. The goal is to build the missing open alternative to Bloomberg Terminal and Thomson Reuters for financial crime detection — free for the community, auditable by anyone, improvable by everyone.
+ProvenLex is an open-source compliance infrastructure project. The goal is to build the missing open alternative to Bloomberg Terminal and Thomson Reuters for financial crime detection — free for the community, auditable by anyone, improvable by everyone.
 
 We are early. The codebase works. There is a lot of depth left to add. Every contribution matters.
 

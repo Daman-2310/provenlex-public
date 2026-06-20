@@ -3,7 +3,7 @@
 
 const GONE = {
   error: 'gone',
-  message: 'Retired — Genesis Swarm does not generate legal opinions. No replacement.',
+  message: 'Retired — ProvenLex does not generate legal opinions. No replacement.',
 }
 
 export async function GET() { return Response.json(GONE, { status: 410 }) }

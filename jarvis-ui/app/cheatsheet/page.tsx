@@ -90,7 +90,7 @@ export default function CheatSheetPage() {
             style={{ background: `linear-gradient(135deg, ${ACCENT}, #00a866)`, boxShadow: `0 0 18px ${ACCENT}88` }}>
             <Sparkles className="w-4 h-4 text-black" />
           </div>
-          <span className="text-sm font-black tracking-[0.15em]">GENESIS SWARM</span>
+          <span className="text-sm font-black tracking-[0.15em]">PROVENLEX</span>
         </a>
         <div className="flex items-center gap-4 text-[11px] uppercase tracking-[0.15em] font-bold text-[rgba(255,255,255,0.6)]">
           <a href="/scan" className="hover:text-white">Live Scan</a>

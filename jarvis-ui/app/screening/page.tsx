@@ -54,7 +54,7 @@ export default function ScreeningPage() {
       <div className="sticky top-0 z-40 flex items-center justify-between px-6 py-3 border-b border-[rgba(16,217,130,0.12)]" style={{ background: 'rgba(5,5,8,0.97)', backdropFilter: 'blur(8px)' }}>
         <div className="flex items-center gap-3">
           <div className="w-2 h-2 rounded-full bg-[#10D982] animate-pulse" />
-          <a href="/dashboard" className="font-bold tracking-[0.2em] text-sm uppercase hover:opacity-80">Genesis Swarm</a>
+          <a href="/dashboard" className="font-bold tracking-[0.2em] text-sm uppercase hover:opacity-80">ProvenLex</a>
           <span className="text-[rgba(16,217,130,0.4)] text-[10px] tracking-widest hidden sm:block">// AML · Sanctions Screener</span>
         </div>
         <a href="/dashboard" className="text-[9px] uppercase tracking-wider px-3 py-1.5 border border-[rgba(16,217,130,0.3)] text-[#10D982] rounded hover:bg-[rgba(16,217,130,0.08)] transition-colors">← Dashboard</a>

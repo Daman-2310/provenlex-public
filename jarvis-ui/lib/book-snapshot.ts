@@ -1,11 +1,11 @@
-// Static snapshot of the most recently sealed Book of Genesis.
+// Static snapshot of the most recently sealed Book of ProvenLex.
 // Used as a fallback when Vercel KV is not provisioned or has expired the entries.
 // Regenerate with: curl -s -X POST "https://.../api/book/seal?auth=...&full=1" > /tmp/book.json && node scripts/write-snapshot.js
 
 import type { BookManifest, BookEntry } from "@/lib/book"
 
 export const BOOK_SNAPSHOT_MANIFEST: BookManifest = {
-  "version": "GENESIS-BOOK-I",
+  "version": "PROVENLEX-BOOK-I",
   "sealed_at": "2026-05-30T04:55:51.311Z",
   "reveal_at": "2027-11-21T04:55:51.312Z",
   "total_prophecies": 100,

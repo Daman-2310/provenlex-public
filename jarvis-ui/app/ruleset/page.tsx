@@ -5,9 +5,9 @@ import { STATUTORY, RULESET } from '@/lib/scan-engine'
 import RulesetSeal from './RulesetSeal'
 
 export const metadata = {
-  title: 'The Genesis Ruleset Specification — versioned, citable AIFMD II / UCITS limits',
+  title: 'The ProvenLex Ruleset Specification — versioned, citable AIFMD II / UCITS limits',
   description:
-    'The public, versioned, deterministic interpretation of the AIFMD II loan-origination limits (175%/300% leverage, 5% retention, 20% single-borrower) and the UCITS 5/10/40 diversification rule. Every rule bound to its statutory source and SHA-256 sealed. The standard behind every Genesis Swarm verdict — inspect it, cite it, fork it.',
+    'The public, versioned, deterministic interpretation of the AIFMD II loan-origination limits (175%/300% leverage, 5% retention, 20% single-borrower) and the UCITS 5/10/40 diversification rule. Every rule bound to its statutory source and SHA-256 sealed. The standard behind every ProvenLex verdict — inspect it, cite it, fork it.',
 }
 
 const S = STATUTORY
@@ -65,7 +65,7 @@ const META_RULES = [
     id: 'GS-DATA-1', title: 'Fail loud — insufficient data',
     rule: 'Where a document does not disclose enough to evaluate a rule, the verdict is “insufficient data” — never a clean pass.',
     scope: 'All funds.',
-    source: 'Genesis design principle.',
+    source: 'ProvenLex design principle.',
     method: 'A confident wrong “compliant” is worse than an honest “cannot judge.”',
   },
 ]
@@ -90,12 +90,12 @@ export default function RulesetPage() {
 
       <main className="relative max-w-3xl mx-auto px-6 py-12">
         <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight mb-4">
-          The Genesis Ruleset Specification
+          The ProvenLex Ruleset Specification
         </h1>
         <p className="text-[15px] text-[rgba(255,255,255,0.65)] leading-relaxed mb-7 max-w-2xl">
           The public, versioned, <strong className="text-white">deterministic</strong> interpretation of the
           AIFMD&nbsp;II loan-origination limits and the UCITS diversification rule — the exact body of rules
-          behind every Genesis Swarm verdict. The engine is one implementation; <em>this</em> is the standard.
+          behind every ProvenLex verdict. The engine is one implementation; <em>this</em> is the standard.
           Inspect it, cite it, fork it. No login, nothing to buy.
         </p>
 
@@ -111,8 +111,8 @@ export default function RulesetPage() {
             <span className="text-[10px] uppercase tracking-wider font-bold text-[#10D982]">Cite as</span>
           </div>
           <pre className="text-[11px] font-mono text-[rgba(255,255,255,0.85)] bg-black/40 rounded p-3 overflow-x-auto">
-{`Sharma, D. (2026). "The Genesis Ruleset Specification v${RULESET.version}."
-Genesis Swarm. Effective ${RULESET.effective}.
+{`Sharma, D. (2026). "The ProvenLex Ruleset Specification v${RULESET.version}."
+ProvenLex. Effective ${RULESET.effective}.
 URL: https://genesis-swarm.vercel.app/ruleset`}
           </pre>
           <p className="text-[12px] text-[rgba(255,255,255,0.6)] leading-relaxed mt-4">

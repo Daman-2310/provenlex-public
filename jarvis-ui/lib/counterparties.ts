@@ -1,4 +1,4 @@
-// Counterparty edges between Book of Genesis entities.
+// Counterparty edges between Book of ProvenLex entities.
 //
 // Each edge describes a real-world type of financial relationship:
 //   - depositary: custodian for a fund's assets

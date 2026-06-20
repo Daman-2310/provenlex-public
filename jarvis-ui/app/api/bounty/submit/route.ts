@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
   try {
     await sendEmail(
       'daman.sharma.2310@gmail.com',
-      `Genesis Bounty submission · ${entity}`,
+      `ProvenLex Bounty submission · ${entity}`,
       `<p><strong>Submission ${id}</strong></p>
       <p><strong>Email:</strong> ${email}</p>
       <p><strong>Entity:</strong> ${entity}</p>

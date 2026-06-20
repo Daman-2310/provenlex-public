@@ -15,7 +15,7 @@ export default function NotFound() {
           This page<br />doesn&apos;t exist.
         </h1>
         <p className="text-[rgba(255,255,255,0.65)] text-base leading-relaxed mb-7">
-          The URL you reached isn&apos;t part of Genesis Swarm — it may have moved, or never existed.
+          The URL you reached isn&apos;t part of ProvenLex — it may have moved, or never existed.
           Here&apos;s where to go instead.
         </p>
 

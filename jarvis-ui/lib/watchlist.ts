@@ -1,4 +1,4 @@
-// The Genesis Watch List — 2026-2027 edition.
+// The ProvenLex Watch List — 2026-2027 edition.
 //
 // 5 EU entities ranked by Pre-Crime Index × RISING trajectory at the time of
 // publication, with documented public-record signals and falsifiable vindication
@@ -166,7 +166,7 @@ export const WATCHLIST: WatchListEntry[] = [
 // Deterministic SHA-256 hash of canonical Watch List for cryptographic commit
 export async function computeWatchListHash(): Promise<string> {
   const canonical = [
-    'GENESIS-WATCHLIST-V1',
+    'PROVENLEX-WATCHLIST-V1',
     WATCHLIST_PUBLICATION_DATE,
     WATCHLIST_REVEAL_AT,
     ...WATCHLIST.flatMap(e => [

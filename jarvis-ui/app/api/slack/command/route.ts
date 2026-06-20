@@ -1,6 +1,6 @@
 // Slack slash command endpoint: /compliance <question>
 // Verifies the Slack signing secret, then returns a deterministic, honest
-// response. Genesis Swarm makes NO LLM calls — this bot does not send the
+// response. ProvenLex makes NO LLM calls — this bot does not send the
 // question to any third-party model. It points the user at the deterministic
 // scanner and the relevant regulation references.
 import { NextRequest } from 'next/server'
@@ -36,7 +36,7 @@ function route(question: string): string {
   if (/sanction|ofac|screen|sdn/.test(q)) refs.push(`• Sanctions screening → ${BASE}/screening`)
   if (refs.length === 0) refs.push(`• Regulation references → ${BASE}/aifmd, ${BASE}/dora, ${BASE}/sfdr`)
   return [
-    `Genesis Swarm is *deterministic* — it does not use an AI/LLM, so it won't generate a free-text answer here.`,
+    `ProvenLex is *deterministic* — it does not use an AI/LLM, so it won't generate a free-text answer here.`,
     ``,
     `To check a prospectus against AIFMD II / UCITS reproducibly, paste it into the client-side scanner (nothing is uploaded): ${BASE}/scan`,
     ``,
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
   if (!text || text === 'help') {
     return Response.json({
       response_type: 'ephemeral',
-      text: `*Genesis Swarm Compliance Bot*\n\nGenesis Swarm is deterministic — no AI/LLM. This bot points you at the right tool and references.\n\nUsage: \`${command} <topic>\`\n\nExamples:\n• \`${command} DORA Art. 28 sub-threshold AIFM\`\n• \`${command} SFDR Art. 8 disclosure\`\n• \`${command} screen ROSNEFT\`\n\nRun a prospectus check (nothing uploaded): ${BASE}/scan`,
+      text: `*ProvenLex Compliance Bot*\n\nProvenLex is deterministic — no AI/LLM. This bot points you at the right tool and references.\n\nUsage: \`${command} <topic>\`\n\nExamples:\n• \`${command} DORA Art. 28 sub-threshold AIFM\`\n• \`${command} SFDR Art. 8 disclosure\`\n• \`${command} screen ROSNEFT\`\n\nRun a prospectus check (nothing uploaded): ${BASE}/scan`,
     })
   }
 
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
     blocks: [
       {
         type: 'header',
-        text: { type: 'plain_text', text: 'Genesis Swarm Compliance', emoji: true },
+        text: { type: 'plain_text', text: 'ProvenLex Compliance', emoji: true },
       },
       {
         type: 'context',
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
       },
       {
         type: 'context',
-        elements: [{ type: 'mrkdwn', text: '_Genesis Swarm · deterministic compliance tooling · no LLM, nothing uploaded · information only, not legal advice._' }],
+        elements: [{ type: 'mrkdwn', text: '_ProvenLex · deterministic compliance tooling · no LLM, nothing uploaded · information only, not legal advice._' }],
       },
     ],
   })

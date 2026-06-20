@@ -2,8 +2,8 @@ import { Suspense } from 'react'
 import LoginClient from './LoginClient'
 
 export const metadata = {
-  title: 'Sign in · Genesis Swarm',
-  description: 'Sign in to Genesis Swarm with email magic link, Google, or GitHub.',
+  title: 'Sign in · ProvenLex',
+  description: 'Sign in to ProvenLex with email magic link, Google, or GitHub.',
 }
 
 export default function LoginPage() {

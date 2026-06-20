@@ -1,4 +1,4 @@
-// Genesis Mirror — prospectus-vs-reality drift engine.
+// ProvenLex Mirror — prospectus-vs-reality drift engine.
 //
 // For each Book entity, derive a set of plausible AIFMD/Pillar-3-style
 // claims (what the prospectus or annual report says) and then compute

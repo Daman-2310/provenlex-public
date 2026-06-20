@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { ArrowLeft, Lock } from 'lucide-react'
 
 export const metadata = {
-  title: 'Data Processing Agreement (DPA) · Genesis Swarm',
-  description: 'GDPR Article 28 Data Processing Agreement between Genesis Swarm and its B2B customers.',
+  title: 'Data Processing Agreement (DPA) · ProvenLex',
+  description: 'GDPR Article 28 Data Processing Agreement between ProvenLex and its B2B customers.',
 }
 
 export default function DpaPage() {
@@ -28,7 +28,7 @@ export default function DpaPage() {
         <p className="text-[rgba(255,255,255,0.5)] text-[12px] mb-10">Last updated: 30 May 2026 · Effective for all B2B customer agreements</p>
 
         <Box>
-          This DPA forms an integral part of any commercial agreement between <strong className="text-white">Genesis Swarm</strong> (the &ldquo;Processor&rdquo;) and a paying customer (the &ldquo;Controller&rdquo;) when the Service involves the Processor processing personal data on behalf of the Controller. By signing a commercial agreement with the Processor, the Controller is deemed to have accepted this DPA.
+          This DPA forms an integral part of any commercial agreement between <strong className="text-white">ProvenLex</strong> (the &ldquo;Processor&rdquo;) and a paying customer (the &ldquo;Controller&rdquo;) when the Service involves the Processor processing personal data on behalf of the Controller. By signing a commercial agreement with the Processor, the Controller is deemed to have accepted this DPA.
         </Box>
 
         <Section h="1. Definitions">

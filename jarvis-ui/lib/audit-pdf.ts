@@ -59,9 +59,9 @@ function wrap(text: string, font: PDFFont, size: number, maxWidth: number): stri
 export async function auditPackToPdf(pack: AuditPack): Promise<Uint8Array> {
   const pdf = await PDFDocument.create()
   pdf.setTitle(`AIFMD II Audit Pack — ${pack.fundName ?? 'Compliance'}`)
-  pdf.setAuthor('Genesis Swarm')
+  pdf.setAuthor('ProvenLex')
   pdf.setSubject('Deterministic AIFMD II compliance audit pack')
-  pdf.setProducer('Genesis Swarm — deterministic, client-side')
+  pdf.setProducer('ProvenLex — deterministic, client-side')
   pdf.setCreationDate(new Date(pack.generatedAt))
 
   const reg = await pdf.embedFont(StandardFonts.Helvetica)
@@ -96,7 +96,7 @@ export async function auditPackToPdf(pack: AuditPack): Promise<Uint8Array> {
   // ── Header band ──────────────────────────────────────────────────────────
   page.drawRectangle({ x: 0, y: A4.h - 92, width: A4.w, height: 92, color: rgb(0.055, 0.06, 0.09) })
   page.drawRectangle({ x: 0, y: A4.h - 92, width: 4, height: 92, color: ACCENT })
-  page.drawText('GENESIS SWARM', { x: M, y: A4.h - 40, size: 13, font: bold, color: rgb(1, 1, 1) })
+  page.drawText('PROVENLEX', { x: M, y: A4.h - 40, size: 13, font: bold, color: rgb(1, 1, 1) })
   page.drawText(`AIFMD II  ${DOT}  Audit Readiness Pack`, { x: M, y: A4.h - 58, size: 10, font: reg, color: rgb(0.78, 0.8, 0.92) })
   page.drawText(`Deterministic  ${DOT}  no LLM in the decision path  ${DOT}  computed client-side`, {
     x: M, y: A4.h - 74, size: 8, font: reg, color: rgb(0.55, 0.58, 0.72),
@@ -178,7 +178,7 @@ export async function auditPackToPdf(pack: AuditPack): Promise<Uint8Array> {
   const pages = pdf.getPages()
   pages.forEach((p, idx) => {
     p.drawLine({ start: { x: M, y: M - 8 }, end: { x: A4.w - M, y: M - 8 }, thickness: 0.5, color: LINE })
-    p.drawText('Generated client-side by Genesis Swarm - nothing left the browser. Re-verify the chain root to confirm integrity.', {
+    p.drawText('Generated client-side by ProvenLex - nothing left the browser. Re-verify the chain root to confirm integrity.', {
       x: M, y: M - 20, size: 7.5, font: reg, color: FAINT,
     })
     const pp = `Page ${idx + 1} of ${pages.length}`

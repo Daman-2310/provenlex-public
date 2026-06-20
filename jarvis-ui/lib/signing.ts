@@ -1,9 +1,9 @@
-// SERVER-ONLY. Real Ed25519 signing for Genesis compliance artifacts.
+// SERVER-ONLY. Real Ed25519 signing for ProvenLex compliance artifacts.
 //
 // Upgrades the audit trail from "SHA-256 hash" (proves integrity only) to a real
-// digital signature (proves integrity AND authorship — that *Genesis* attested
+// digital signature (proves integrity AND authorship — that *ProvenLex* attested
 // this exact record). Anyone can verify a signature against the published public
-// key with standard Ed25519; no Genesis code required to check it.
+// key with standard Ed25519; no ProvenLex code required to check it.
 //
 // Production: set GENESIS_SIGNING_KEY to a base64 PKCS8 Ed25519 private key so
 // the identity is stable across deployments. If unset, an ephemeral key is

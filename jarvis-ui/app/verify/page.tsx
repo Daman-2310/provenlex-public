@@ -6,7 +6,7 @@
 // Paste the prospectus (and, optionally, a hash someone handed you); this page
 // re-runs the exact same engine /scan uses, recomputes the canonical SHA-256,
 // and tells you whether it matches. Same input → same hash, on any machine —
-// so a Genesis verdict is something you can check, not something you trust.
+// so a ProvenLex verdict is something you can check, not something you trust.
 
 import { useState, useCallback } from 'react'
 import dynamic from 'next/dynamic'
@@ -52,7 +52,7 @@ export default function VerifyPage() {
             style={{ background: `linear-gradient(135deg, ${ACCENT}, #0B9E63)`, boxShadow: `0 0 18px ${ACCENT}88` }}>
             <Sparkles className="w-4 h-4 text-black" />
           </div>
-          <span className="text-sm font-black tracking-[0.15em]">GENESIS SWARM</span>
+          <span className="text-sm font-black tracking-[0.15em]">PROVENLEX</span>
         </a>
         <div className="flex items-center gap-4 text-[11px] uppercase tracking-[0.15em] font-bold text-[rgba(255,255,255,0.6)]">
           <a href="/scan" className="hover:text-white">Live Scan</a>
@@ -177,11 +177,11 @@ export default function VerifyPage() {
         <section className="mt-10 rounded-2xl p-5 md:p-6" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)' }}>
           <h2 className="text-[13px] uppercase tracking-[0.2em] font-black mb-3">Why this is possible</h2>
           <p className="text-[13px] text-[rgba(255,255,255,0.6)] leading-relaxed">
-            Genesis Swarm has no model in its decision path — it's deterministic regex + arithmetic.
+            ProvenLex has no model in its decision path — it's deterministic regex + arithmetic.
             So a verdict is a pure function of (the document, the rules). Hash the document + findings and
             you get a digest that is identical for everyone, forever. That's what makes a verdict
             <span className="text-white"> independently checkable</span>: a regulator or a counterparty
-            doesn't have to trust Genesis — they re-run it and compare. An LLM-based tool cannot offer this.
+            doesn't have to trust ProvenLex — they re-run it and compare. An LLM-based tool cannot offer this.
           </p>
           <a href="/deterministic" className="inline-flex items-center gap-1.5 mt-4 text-[12px] font-bold" style={{ color: ACCENT }}>
             See the determinism proof + live benchmark <ArrowRight className="w-3.5 h-3.5" />

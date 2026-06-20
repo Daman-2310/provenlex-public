@@ -30,7 +30,7 @@ export default function Note01Page() {
 
         <div className="mb-10 pb-8" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
           <div className="text-[10px] uppercase tracking-[0.3em] text-[#5B8DEF] font-mono font-bold mb-3">
-            GENESIS SWARM · FIELD NOTE 01 · 2026
+            PROVENLEX · FIELD NOTE 01 · 2026
           </div>
           <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white leading-tight mb-5">
             {`Consistent Isn't Compliant`}<br />
@@ -39,7 +39,7 @@ export default function Note01Page() {
           <div className="text-[12px] text-[rgba(255,255,255,0.6)] mb-1">
             <strong className="text-white">Daman Sharma</strong>
             <span className="mx-2">·</span>
-            Genesis Swarm
+            ProvenLex
             <span className="mx-2">·</span>
             <a href="mailto:daman.sharma.2310@gmail.com" className="text-[#5B8DEF] hover:underline">daman.sharma.2310@gmail.com</a>
           </div>
@@ -87,7 +87,7 @@ export default function Note01Page() {
           </div>
           <pre className="text-[11px] font-mono text-[rgba(255,255,255,0.85)] bg-black/40 rounded p-3 overflow-x-auto">
 {`Sharma, D. (2026). "Consistent Isn't Compliant: Teaching Software to
-Read Fund Prospectuses." Genesis Swarm Field Note NOTE-01.
+Read Fund Prospectuses." ProvenLex Field Note NOTE-01.
 Luxembourg. 7 June 2026.`}
           </pre>
           <p className="text-[12px] text-[rgba(255,255,255,0.6)] leading-relaxed mt-4">

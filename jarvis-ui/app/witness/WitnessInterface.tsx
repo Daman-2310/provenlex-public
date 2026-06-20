@@ -40,7 +40,7 @@ const ROLES = [
   'Other',
 ]
 
-const DEFAULT_ACK = 'I confirm that, in my capacity as named, I have reviewed the Genesis Swarm operational-risk indicators relating to this counterparty as of the timestamp below, and have considered them as part of our ongoing third-party risk monitoring.'
+const DEFAULT_ACK = 'I confirm that, in my capacity as named, I have reviewed the ProvenLex operational-risk indicators relating to this counterparty as of the timestamp below, and have considered them as part of our ongoing third-party risk monitoring.'
 
 export default function WitnessInterface({ prophecies }: { prophecies: Prophecy[] }) {
   const [mode, setMode] = useState<Mode>('sign')

@@ -95,7 +95,7 @@ export default function StatusPage() {
           )}
           <h1 className="text-3xl md:text-4xl font-black mt-5 mb-2 tracking-tight">All systems</h1>
           <p className="text-[rgba(255,255,255,0.5)] text-sm">
-            Live health checks across every Genesis Swarm dependency. Refreshes every 30 seconds.
+            Live health checks across every ProvenLex dependency. Refreshes every 30 seconds.
           </p>
           {lastFetched && (
             <div className="text-[9px] uppercase tracking-widest text-[rgba(255,255,255,0.35)] mt-2">
@@ -132,7 +132,7 @@ export default function StatusPage() {
         )}
 
         <div className="mt-8 text-center text-[10px] uppercase tracking-widest text-[rgba(255,255,255,0.35)]">
-          Genesis Swarm RegTech AI · CSSF-aligned · DORA + AIFMD II + SFDR ready
+          ProvenLex RegTech AI · CSSF-aligned · DORA + AIFMD II + SFDR ready
         </div>
       </div>
     </div>

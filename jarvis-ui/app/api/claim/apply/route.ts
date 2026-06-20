@@ -1,6 +1,6 @@
 // Reverse Onboarding — entities apply (and pay) to be added to the Book.
 //
-// The Yelp-business-claim model: as LP demand for Genesis scores grows,
+// The Yelp-business-claim model: as LP demand for ProvenLex scores grows,
 // absence from the Book becomes suspicious. Entities pay to be scored to
 // clear their name.
 

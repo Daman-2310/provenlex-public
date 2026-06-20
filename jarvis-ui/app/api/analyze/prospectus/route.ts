@@ -1,6 +1,6 @@
 // RETIRED 2026-06-12. This endpoint extracted uploaded prospectus text and sent up
 // to 15,000 characters to a third-party LLM (Groq), leaking uploaded content and
-// contradicting Genesis Swarm's core guarantee ("no LLM, nothing leaves your
+// contradicting ProvenLex's core guarantee ("no LLM, nothing leaves your
 // browser"). Use the deterministic, client-side scanner at /scan. No replacement.
 
 const GONE = {

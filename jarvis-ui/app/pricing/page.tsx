@@ -86,7 +86,7 @@ export default function PricingPage() {
 
   async function subscribe(tier: string) {
     if (tier === 'enterprise') {
-      window.location.href = 'mailto:daman.sharma.2310@gmail.com?subject=Genesis%20Swarm%20Enterprise%20-%20intro'
+      window.location.href = 'mailto:daman.sharma.2310@gmail.com?subject=ProvenLex%20Enterprise%20-%20intro'
       return
     }
     setLoading(tier); setError(null)
@@ -128,7 +128,7 @@ export default function PricingPage() {
       <div className="sticky top-0 z-40 flex items-center justify-between px-6 py-3 border-b border-[rgba(16,217,130,0.12)]" style={{ background: 'rgba(5,5,8,0.97)', backdropFilter: 'blur(8px)' }}>
         <div className="flex items-center gap-3">
           <div className="w-2 h-2 rounded-full bg-[#10D982] animate-pulse" />
-          <a href="/dashboard" className="font-bold tracking-[0.2em] text-sm uppercase hover:opacity-80">Genesis Swarm</a>
+          <a href="/dashboard" className="font-bold tracking-[0.2em] text-sm uppercase hover:opacity-80">ProvenLex</a>
           <span className="text-[rgba(16,217,130,0.4)] text-[10px] tracking-widest hidden sm:block">// Pricing</span>
         </div>
         <a href="/dashboard" className="text-[9px] uppercase tracking-wider px-3 py-1.5 border border-[rgba(16,217,130,0.3)] text-[#10D982] rounded hover:bg-[rgba(16,217,130,0.08)] transition-colors">← Dashboard</a>
@@ -139,7 +139,7 @@ export default function PricingPage() {
         <div className="text-center space-y-4">
           <div className="text-[9px] uppercase tracking-[0.4em] text-[rgba(16,217,130,0.5)]">Transparent · No hidden fees</div>
           <h1 className="text-4xl sm:text-5xl font-black tracking-tight">RegTech that pays for itself</h1>
-          <p className="text-[rgba(255,255,255,0.45)] text-base max-w-xl mx-auto leading-relaxed">One CSSF fine covers years of Genesis Swarm. Most Luxembourg funds spend €80k–€200k per year on compliance consultants. We cost a fraction.</p>
+          <p className="text-[rgba(255,255,255,0.45)] text-base max-w-xl mx-auto leading-relaxed">One CSSF fine covers years of ProvenLex. Most Luxembourg funds spend €80k–€200k per year on compliance consultants. We cost a fraction.</p>
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded text-[10px] uppercase tracking-wider font-bold" style={{ background: 'rgba(245,165,36,0.08)', border: '1px solid rgba(245,165,36,0.35)', color: '#F5A524' }}>
             <Zap className="w-3.5 h-3.5" /> DORA deadline: 17 Jan 2025 — Luxembourg enforcement ongoing
           </div>

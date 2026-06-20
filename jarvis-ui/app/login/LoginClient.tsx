@@ -97,7 +97,7 @@ export default function LoginClient({ supabaseConfigured }: { supabaseConfigured
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-5"
             style={{ background: 'rgba(91,141,239,0.08)', border: '1px solid rgba(91,141,239,0.3)' }}>
             <Sparkles className="w-3 h-3 text-[#5B8DEF]" />
-            <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-[#5B8DEF]">Sign in to Genesis</span>
+            <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-[#5B8DEF]">Sign in to ProvenLex</span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-tight">
             Welcome back.

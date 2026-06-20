@@ -5,7 +5,7 @@ import { Resend } from 'resend'
 import { getSession } from './auth'
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
-const FROM = process.env.EMAIL_FROM ?? 'Genesis Swarm <onboarding@resend.dev>'
+const FROM = process.env.EMAIL_FROM ?? 'ProvenLex <onboarding@resend.dev>'
 const CRON_SECRET = process.env.CRON_SECRET
 
 export async function authorizeCron(req: NextRequest): Promise<boolean> {

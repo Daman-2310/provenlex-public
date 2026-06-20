@@ -25,7 +25,7 @@ function generateBriefing(email: string, funds: SavedAnalysis[], news: NewsItem[
   const action = worst && worst.complianceScore < 80
     ? `Action: review ${worst.fundName} (${worst.complianceScore}/100) and re-scan after remediation.`
     : 'Action: keep every tracked fund above 80/100; re-scan after any prospectus change.'
-  return `Genesis Swarm morning briefing for ${email}\n\n${fundLine}\n\n${newsLine}\n\n${action}`
+  return `ProvenLex morning briefing for ${email}\n\n${fundLine}\n\n${newsLine}\n\n${action}`
 }
 
 function brieingHtml(briefing: string, funds: SavedAnalysis[], news: NewsItem[], dashboardUrl: string): string {
@@ -35,7 +35,7 @@ function brieingHtml(briefing: string, funds: SavedAnalysis[], news: NewsItem[],
   <div style="background:#fff;border-radius:12px;padding:28px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
       <div style="width:24px;height:24px;background:linear-gradient(135deg,#00ff88,#00aa55);border-radius:6px"></div>
-      <strong style="font-size:13px;letter-spacing:.1em;color:#00aa55">GENESIS SWARM</strong>
+      <strong style="font-size:13px;letter-spacing:.1em;color:#00aa55">PROVENLEX</strong>
     </div>
     <h1 style="font-size:22px;font-weight:900;margin:0 0 4px;color:#111">Your morning compliance briefing</h1>
     <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.1em;margin-bottom:24px">${new Date().toDateString()} · ${funds.length} funds tracked · ${news.length} regulatory updates</div>
@@ -43,7 +43,7 @@ function brieingHtml(briefing: string, funds: SavedAnalysis[], news: NewsItem[],
     <hr style="border:none;border-top:1px solid #eee;margin:20px 0">
     <a href="${dashboardUrl}" style="display:inline-block;padding:12px 22px;background:#00cc6a;color:#000;text-decoration:none;border-radius:6px;font-weight:900;font-size:12px;letter-spacing:.05em">OPEN DASHBOARD →</a>
   </div>
-  <div style="text-align:center;font-size:10px;color:#aaa;margin-top:18px;letter-spacing:.1em;text-transform:uppercase">Genesis Swarm RegTech AI · Luxembourg · <a href="${dashboardUrl}" style="color:#aaa">manage email preferences</a></div>
+  <div style="text-align:center;font-size:10px;color:#aaa;margin-top:18px;letter-spacing:.1em;text-transform:uppercase">ProvenLex RegTech AI · Luxembourg · <a href="${dashboardUrl}" style="color:#aaa">manage email preferences</a></div>
 </div>`
 }
 
@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
     const dashboardUrl = `${origin}/dashboard`
     const sent = await sendEmail(
       email,
-      `Genesis Swarm · Morning briefing · ${new Date().toDateString()}`,
+      `ProvenLex · Morning briefing · ${new Date().toDateString()}`,
       brieingHtml(briefing, funds, news, dashboardUrl),
       briefing,
     )

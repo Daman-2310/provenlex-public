@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { ArrowLeft, ScrollText } from 'lucide-react'
 
 export const metadata = {
-  title: 'Terms of Service · Genesis Swarm',
-  description: 'Terms governing use of the Genesis Swarm deterministic compliance scanner and its public-data lookups.',
+  title: 'Terms of Service · ProvenLex',
+  description: 'Terms governing use of the ProvenLex deterministic compliance scanner and its public-data lookups.',
 }
 
 export default function TermsPage() {
@@ -27,11 +27,11 @@ export default function TermsPage() {
         <p className="text-[rgba(255,255,255,0.5)] text-[12px] mb-10">Last updated: 14 June 2026 · Effective immediately</p>
 
         <Section h="1. Acceptance of Terms">
-          <p>By accessing or using Genesis Swarm (the &ldquo;Service&rdquo;) at genesis-swarm.vercel.app, you agree to be bound by these Terms of Service (&ldquo;Terms&rdquo;). If you do not agree, do not use the Service.</p>
+          <p>By accessing or using ProvenLex (the &ldquo;Service&rdquo;) at genesis-swarm.vercel.app, you agree to be bound by these Terms of Service (&ldquo;Terms&rdquo;). If you do not agree, do not use the Service.</p>
         </Section>
 
         <Section h="2. The Service">
-          <p>Genesis Swarm is a <strong>deterministic compliance-checking tool</strong>. It reads a fund document you paste or upload and checks the limits it declares (and its holdings) against the document&apos;s own caps and the AIFMD&nbsp;II / UCITS statutory limits. The analysis runs <strong>entirely in your browser using arithmetic and the regulation text — there is no large language model involved</strong>, so every result is reproducible.</p>
+          <p>ProvenLex is a <strong>deterministic compliance-checking tool</strong>. It reads a fund document you paste or upload and checks the limits it declares (and its holdings) against the document&apos;s own caps and the AIFMD&nbsp;II / UCITS statutory limits. The analysis runs <strong>entirely in your browser using arithmetic and the regulation text — there is no large language model involved</strong>, so every result is reproducible.</p>
           <p>The Service also offers look-ups of public reference data (OFAC / EU sanctions lists, GLEIF legal-entity identifiers, ECB reference rates). It is provided free of charge. It does not publish risk scores, predictions, or assessments about any third-party entity.</p>
         </Section>
 
@@ -55,11 +55,11 @@ export default function TermsPage() {
         </Section>
 
         <Section h="6. No Warranty">
-          <p>The Service is provided &ldquo;as is&rdquo; without warranty of any kind. While the engine is deterministic and reproducible, Genesis Swarm makes no representation that any result is accurate, complete, current, or fit for a particular purpose — extraction from real-world documents can be incomplete, and the statutory references are summaries, not the official text. Always verify against the primary regulation and your own advisors.</p>
+          <p>The Service is provided &ldquo;as is&rdquo; without warranty of any kind. While the engine is deterministic and reproducible, ProvenLex makes no representation that any result is accurate, complete, current, or fit for a particular purpose — extraction from real-world documents can be incomplete, and the statutory references are summaries, not the official text. Always verify against the primary regulation and your own advisors.</p>
         </Section>
 
         <Section h="7. Limitation of Liability">
-          <p>To the maximum extent permitted by applicable law, Genesis Swarm and its founder Daman Sharma shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or in connection with your use of the Service. Aggregate liability shall not exceed one hundred euros (€100) per claimant.</p>
+          <p>To the maximum extent permitted by applicable law, ProvenLex and its founder Daman Sharma shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or in connection with your use of the Service. Aggregate liability shall not exceed one hundred euros (€100) per claimant.</p>
         </Section>
 
         <Section h="8. Governing Law · Jurisdiction">
@@ -67,7 +67,7 @@ export default function TermsPage() {
         </Section>
 
         <Section h="9. Changes to the Service">
-          <p>Genesis Swarm reserves the right to modify, suspend, or discontinue the Service at any time. Material changes to these Terms will be announced with version history at the top of this page.</p>
+          <p>ProvenLex reserves the right to modify, suspend, or discontinue the Service at any time. Material changes to these Terms will be announced with version history at the top of this page.</p>
         </Section>
 
         <Section h="10. Contact">

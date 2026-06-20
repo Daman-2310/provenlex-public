@@ -1,4 +1,4 @@
-// Genesis Sentinel — the autonomous bot army.
+// ProvenLex Sentinel — the autonomous bot army.
 //
 // 12 specialized AI agents that monitor the EU finance information space 24/7.
 // Each has a specialty area and a posting voice. Postings are generated from
@@ -115,7 +115,7 @@ export const BOTS: Bot[] = [
     id: 'argus', name: 'Argus', role: 'Earnings Forensics', specialty: 'Earnings-call transcript NLP · risk-marker phrase detection',
     color: '#ff7a00', avatar_glyph: 'Æ', cadence_minutes: 17,
     templates: [
-      ctx => `${ctx.entity_name} Q-call transcribed. CFO used "unusual" twice in prepared remarks. Genesis lexicon flag — sentiment shifted.`,
+      ctx => `${ctx.entity_name} Q-call transcribed. CFO used "unusual" twice in prepared remarks. ProvenLex lexicon flag — sentiment shifted.`,
       ctx => `Earnings call language analysis for ${ctx.entity_name}: hedging vocabulary up ${(ctx.random * 12 + 3).toFixed(1)}% versus prior quarter.`,
       ctx => `${ctx.entity_name} guidance reaffirmed on the call. Reaffirmation is itself a positive marker. PCI dampened slightly.`,
       ctx => `Risk-marker phrases detected on ${ctx.entity_name} call: 2 instances of "ongoing review", 1 of "external counsel". Logged.`,

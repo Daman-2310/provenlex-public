@@ -210,7 +210,7 @@ export default function CompliancePage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '28px' }}>
         <div style={{ width: 8, height: 8, borderRadius: '50%', background: connected ? '#22c55e' : connecting ? '#F5A524' : '#4b5563', boxShadow: connected ? '0 0 8px #22c55e' : 'none' }} />
-        <span style={{ color: '#c9a84c', fontWeight: 700, fontSize: '14px', letterSpacing: '0.12em' }}>GENESIS SWARM</span>
+        <span style={{ color: '#c9a84c', fontWeight: 700, fontSize: '14px', letterSpacing: '0.12em' }}>PROVENLEX</span>
         <span style={{ color: '#4b5563' }}>|</span>
         <span style={{ color: '#94a3b8', fontSize: '13px' }}>LUXEMBOURG COMPLIANCE REVIEW ENGINE</span>
         {auditSeq != null && <span style={{ marginLeft: 'auto', color: '#6366f1', fontSize: '11px' }}>AUDIT SEQ #{auditSeq}</span>}

@@ -1,4 +1,4 @@
-// GENESIS LIVE COMPLIANCE SCAN — deterministic, client-side, no backend, no LLM.
+// PROVENLEX LIVE COMPLIANCE SCAN — deterministic, client-side, no backend, no LLM.
 //
 // Reads a fund prospectus / fact-sheet (pasted text), extracts the limits the
 // document *declares for itself* plus its actual holdings, then checks those
@@ -410,7 +410,7 @@ export async function sealVerdict(result: ScanResult): Promise<string> {
 }
 
 // A clean, deliberately non-compliant sample so the demo always lands.
-export const SAMPLE_PROSPECTUS = `GENESIS LUX CREDIT OPPORTUNITIES FUND — SICAV-RAIF
+export const SAMPLE_PROSPECTUS = `PROVENLEX LUX CREDIT OPPORTUNITIES FUND — SICAV-RAIF
 Domicile: Luxembourg
 Structure: open-ended loan-originating alternative investment fund
 

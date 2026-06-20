@@ -85,7 +85,7 @@ export function detectChange(f: MonitoredFund, current: ScanResult): ChangeResul
 // Build the alert email for a regressed fund.
 export function alertEmail(f: MonitoredFund, change: ChangeResult): { subject: string; html: string; text: string } {
   const name = f.fundName ?? 'Your monitored fund'
-  const subject = `Genesis Swarm alert — ${name} is now ${change.newVerdict.toUpperCase()}`
+  const subject = `ProvenLex alert — ${name} is now ${change.newVerdict.toUpperCase()}`
   const findingsList = change.newCriticalFindings
     .map(x => `• ${x.title}: ${x.detail}`)
     .join('\n')

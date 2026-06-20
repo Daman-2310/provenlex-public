@@ -31,7 +31,7 @@ export default function Report01Page() {
 
         <div className="mb-10 pb-8" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
           <div className="text-[10px] uppercase tracking-[0.3em] text-[#10D982] font-mono font-bold mb-3">
-            GENESIS SWARM · READINESS REPORT 01 · 2026
+            PROVENLEX · READINESS REPORT 01 · 2026
           </div>
           <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white leading-tight mb-5">
             The 2027 AIFMD II Prospectus<br />
@@ -40,7 +40,7 @@ export default function Report01Page() {
           <div className="text-[12px] text-[rgba(255,255,255,0.6)] mb-1">
             <strong className="text-white">Daman Sharma</strong>
             <span className="mx-2">·</span>
-            Genesis Swarm
+            ProvenLex
             <span className="mx-2">·</span>
             <a href="mailto:daman.sharma.2310@gmail.com" className="text-[#10D982] hover:underline">daman.sharma.2310@gmail.com</a>
           </div>
@@ -166,7 +166,7 @@ export default function Report01Page() {
           </div>
           <pre className="text-[11px] font-mono text-[rgba(255,255,255,0.85)] bg-black/40 rounded p-3 overflow-x-auto">
 {`Sharma, D. (2026). "The 2027 AIFMD II Prospectus Readiness Report"
-(v1.0). Genesis Swarm, Luxembourg. 14 June 2026.`}
+(v1.0). ProvenLex, Luxembourg. 14 June 2026.`}
           </pre>
           <p className="text-[12px] text-[rgba(255,255,255,0.6)] leading-relaxed mt-4">
             Released under Creative Commons Attribution 4.0 International. Reproduce, distribute,

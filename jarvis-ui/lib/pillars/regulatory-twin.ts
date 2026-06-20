@@ -4,7 +4,7 @@
 // (CSSF, BaFin, FCA, AMF, ...) derived from PUBLISHED enforcement patterns —
 // NOT the psychographics of any identifiable individual. Modelling a named
 // human's behaviour would violate GDPR Art. 9/22 and invite defamation. We do
-// not do that, by design, here or anywhere in Genesis.
+// not do that, by design, here or anywhere in ProvenLex.
 //
 // The twin answers: "given THIS supervisor's published behaviour, how does
 // enforcement risk for a given breach profile differ from the EU baseline?"

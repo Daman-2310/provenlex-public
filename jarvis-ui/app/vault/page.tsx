@@ -190,7 +190,7 @@ export default function VaultPage() {
           <p className="text-[13px] text-[rgba(255,255,255,0.75)] leading-relaxed">
             A compliance officer&apos;s real fear isn&apos;t missing a breach — it&apos;s being unable to prove to CSSF that they did their job.
             This is the answer: an independent, cryptographically-sealed (SHA-256) record of every check, computed in your browser and exportable on demand.
-            That reframes Genesis from &ldquo;AI that detects&rdquo; to <span className="text-white">audit insurance</span> — a line funds already budget for.
+            That reframes ProvenLex from &ldquo;AI that detects&rdquo; to <span className="text-white">audit insurance</span> — a line funds already budget for.
           </p>
         </section>
       </div>

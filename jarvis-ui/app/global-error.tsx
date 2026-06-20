@@ -56,7 +56,7 @@ export default function GlobalError({
             lineHeight: 1.6,
             margin: '0 0 28px',
           }}>
-            The Genesis platform hit an unexpected error. The incident has been logged.
+            The ProvenLex platform hit an unexpected error. The incident has been logged.
             You can try again, or jump back to the home page.
           </p>
 

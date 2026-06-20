@@ -2,7 +2,7 @@
 //
 // Pulls live RSS / Atom feeds from EU+UK financial supervisors and normalises
 // them into a single typed list. This is the FIRST real-data pipeline in
-// Genesis — used by the Sentinel Vesta bot and exposed publicly at
+// ProvenLex — used by the Sentinel Vesta bot and exposed publicly at
 // /api/regulator-news.
 
 export interface RegulatorItem {
@@ -91,7 +91,7 @@ async function fetchOne(feed: RegulatorFeed, limit: number): Promise<RegulatorIt
     const res = await fetch(feed.url, {
       signal: ctrl.signal,
       headers: {
-        'User-Agent': 'Genesis-Swarm/1.0 (+https://genesis-swarm.vercel.app)',
+        'User-Agent': 'ProvenLex-Swarm/1.0 (+https://genesis-swarm.vercel.app)',
         Accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*',
       },
       // Cache for 15 min at the CDN edge

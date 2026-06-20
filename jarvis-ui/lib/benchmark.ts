@@ -1,4 +1,4 @@
-// GENESIS BENCHMARK — the data-flywheel / moat layer.
+// PROVENLEX BENCHMARK — the data-flywheel / moat layer.
 //
 // Every fund scanned contributes an anonymised metric sample to a local pool;
 // percentiles are computed against that pool merged with a seeded reference

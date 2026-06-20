@@ -175,7 +175,7 @@ export default function RadarPage() {
 
         {data && (
           <div className="text-[7px] text-center text-[rgba(255,255,255,0.15)] uppercase tracking-widest">
-            Last checked: {data.last_checked} · Genesis Swarm Regulatory Intelligence
+            Last checked: {data.last_checked} · ProvenLex Regulatory Intelligence
           </div>
         )}
       </div>

@@ -27,7 +27,7 @@ export default function RouteError({
           This page couldn&apos;t load.
         </h1>
         <p className="text-[rgba(255,255,255,0.65)] text-base leading-relaxed mb-6">
-          The route encountered an unexpected error. The rest of Genesis is still working —
+          The route encountered an unexpected error. The rest of ProvenLex is still working —
           try the action below or jump back to the home page.
         </p>
 

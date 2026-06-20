@@ -214,7 +214,7 @@ function DashboardInner() {
             <Sparkles className="w-4 h-4 text-black" />
           </div>
           <div className="leading-tight">
-            <div className="text-sm font-black tracking-[0.15em] text-white">GENESIS SWARM</div>
+            <div className="text-sm font-black tracking-[0.15em] text-white">PROVENLEX</div>
             <div className="text-[8px] uppercase tracking-[0.25em] text-[#10D982]">DASHBOARD</div>
           </div>
         </a>
@@ -414,7 +414,7 @@ function DashboardInner() {
                 <Key className="w-4 h-4 text-[#5B8DEF]" /> API Keys
               </h2>
               <p className="text-[11px] text-[rgba(255,255,255,0.45)] mt-1">
-                Embed Genesis Swarm into your stack. Rate-limited by plan.
+                Embed ProvenLex into your stack. Rate-limited by plan.
               </p>
             </div>
             <a href="/docs" className="flex items-center gap-1.5 px-3 py-2 rounded text-[10px] uppercase tracking-wider font-bold"

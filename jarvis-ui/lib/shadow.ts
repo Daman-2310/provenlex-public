@@ -24,7 +24,7 @@ export interface DivergenceReport {
   genesisCriticalCount: number
   caughtByBoth: Finding[]      // internal-contradiction breaches the incumbent also sees
   missedByLegacy: Finding[]    // statutory breaches the incumbent never looks for
-  delta: number                // extra criticals Genesis surfaces
+  delta: number                // extra criticals ProvenLex surfaces
   headline: string
 }
 
@@ -49,9 +49,9 @@ export function buildDivergence(result: ScanResult, profile: LegacyProfile = 'se
   if (delta === 0 && genesisCriticalCount === 0) {
     headline = 'No divergence — both processes agree the document is compliant.'
   } else if (legacyVerdict === 'compliant' && genesisVerdict === 'non-compliant') {
-    headline = `Your current process PASSES this document. Genesis flags ${genesisCriticalCount} statutory breach${genesisCriticalCount === 1 ? '' : 'es'} it never checks for.`
+    headline = `Your current process PASSES this document. ProvenLex flags ${genesisCriticalCount} statutory breach${genesisCriticalCount === 1 ? '' : 'es'} it never checks for.`
   } else {
-    headline = `Your current process catches ${legacyCriticalCount} of ${genesisCriticalCount}. Genesis surfaces ${delta} more — the AIFMD II statutory overlay your checklist isn't looking for.`
+    headline = `Your current process catches ${legacyCriticalCount} of ${genesisCriticalCount}. ProvenLex surfaces ${delta} more — the AIFMD II statutory overlay your checklist isn't looking for.`
   }
 
   return {
@@ -69,9 +69,9 @@ export function buildDivergence(result: ScanResult, profile: LegacyProfile = 'se
 
 // A prospectus that is perfectly self-consistent (obeys every limit it sets for
 // itself) yet breaches AIFMD II statute — the exact case where a self-
-// consistency / pre-AIFMD II review passes and Genesis does not. Used as the
+// consistency / pre-AIFMD II review passes and ProvenLex does not. Used as the
 // default document on the Shadow Mode page so the divergence is unmistakable.
-export const SHADOW_SAMPLE = `GENESIS LUX PRIVATE CREDIT FUND — SICAV-RAIF
+export const SHADOW_SAMPLE = `PROVENLEX LUX PRIVATE CREDIT FUND — SICAV-RAIF
 Domicile: Luxembourg
 Structure: open-ended loan-originating alternative investment fund
 

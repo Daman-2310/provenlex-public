@@ -3,8 +3,8 @@ import { ArrowLeft, ShieldCheck, Lock, Eye, GitBranch, Fingerprint, AlertCircle,
 import CosmicBackground from '@/components/CosmicBackground'
 
 export const metadata = {
-  title: 'Trust & Security · Genesis Swarm',
-  description: 'How Genesis Swarm handles data, what cryptography it uses, what is production vs reference implementation, and how to report a vulnerability.',
+  title: 'Trust & Security · ProvenLex',
+  description: 'How ProvenLex handles data, what cryptography it uses, what is production vs reference implementation, and how to report a vulnerability.',
 }
 
 const ACCENT = '#5B8DEF'
@@ -54,7 +54,7 @@ export default function SecurityPage() {
 
         <Section icon={<Fingerprint className="w-4 h-4" />} title="Cryptography">
           <p>• <b className="text-white">Integrity:</b> records are hashed with SHA-256 and chained; a vault rolls up into a binary <b className="text-white">Merkle root</b>, so any change to any record changes the root.</p>
-          <p>• <b className="text-white">Authorship:</b> the root can be signed with a real <b className="text-white">Ed25519</b> signature. The public key is served at <span className="font-mono text-[rgba(255,255,255,0.6)]">/api/sign</span> (GET) and any signature verifies with standard Ed25519 — no Genesis code required.</p>
+          <p>• <b className="text-white">Authorship:</b> the root can be signed with a real <b className="text-white">Ed25519</b> signature. The public key is served at <span className="font-mono text-[rgba(255,255,255,0.6)]">/api/sign</span> (GET) and any signature verifies with standard Ed25519 — no ProvenLex code required.</p>
           <p>• <b className="text-white">Provenance:</b> every verdict is stamped with the dated ruleset version (and a UTC timestamp) that produced it, so a result stays re-verifiable against a named body of rules even after the law changes.</p>
         </Section>
 

@@ -15,7 +15,7 @@
 Please report security issues via **private disclosure**:
 
 1. **Email**: daman.sharma.2310@gmail.com  
-   Subject: `[SECURITY] Genesis Swarm — <brief description>`
+   Subject: `[SECURITY] ProvenLex — <brief description>`
 2. **GitHub Security Advisories**: [Report here](https://github.com/Daman-2310/genesis-swarm/security/advisories/new)
 
 ### What to include

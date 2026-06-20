@@ -95,7 +95,7 @@ function RiskChart({ points }: { points: RiskPoint[] }) {
       </defs>
       <path d={area} fill="url(#risk-grad)" />
       <path d={path} fill="none" stroke="#F2566E" strokeWidth="1.5" strokeLinejoin="round" />
-      {/* Genesis Swarm first flag marker */}
+      {/* ProvenLex first flag marker */}
       {points.findIndex(p => p.risk_level === 'HIGH') > -1 && (() => {
         const idx = points.findIndex(p => p.risk_level === 'HIGH')
         return (
@@ -164,7 +164,7 @@ export default function WirecardTimeline() {
       <div className="px-4 py-4 border-b border-[rgba(242,86,110,0.1)]">
         <div className="text-[8px] uppercase tracking-widest text-[rgba(16,217,130,0.5)] mb-3 flex items-center gap-2">
           <Shield className="w-3 h-3" />
-          Genesis Swarm first flagged: <span className="text-[#10D982] font-bold">{data.first_flag_date}</span>
+          ProvenLex first flagged: <span className="text-[#10D982] font-bold">{data.first_flag_date}</span>
         </div>
         <div className="grid grid-cols-3 gap-4">
           <LeadTimeBadge days={data.lead_days_vs_kpmg}    label="KPMG couldn't verify €1.9B" />
@@ -178,7 +178,7 @@ export default function WirecardTimeline() {
         <div className="text-[8px] uppercase tracking-wider text-[rgba(242,86,110,0.4)] mb-1 flex justify-between">
           <span>Risk Score Progression (Jan 2019 → Jun 2020)</span>
           <span className="flex items-center gap-1">
-            <span className="w-2 h-0.5 bg-[#10D982] inline-block" /> First Genesis Swarm alert
+            <span className="w-2 h-0.5 bg-[#10D982] inline-block" /> First ProvenLex alert
           </span>
         </div>
         <RiskChart points={data.risk_progression} />
@@ -244,17 +244,17 @@ export default function WirecardTimeline() {
       <div className="px-4 py-3">
         <div className="text-[8px] uppercase tracking-wider text-[rgba(242,86,110,0.4)] mb-2 flex items-center gap-2">
           <Clock className="w-3 h-3" />
-          Real-world timeline vs Genesis Swarm
+          Real-world timeline vs ProvenLex
         </div>
         <div className="space-y-1.5 relative">
-          {/* Genesis Swarm flag line */}
+          {/* ProvenLex flag line */}
           <div className="flex items-center gap-2 py-1 px-2 rounded border border-[rgba(16,217,130,0.3)] bg-[rgba(16,217,130,0.05)]">
             <div className="w-1.5 h-1.5 rounded-full bg-[#10D982] shrink-0 animate-pulse" />
             <span className="text-[8px] font-mono text-[rgba(16,217,130,0.5)] shrink-0 w-20">
               {data.first_flag_date}
             </span>
             <span className="text-[8px] text-[#10D982] font-bold">
-              ▲ GENESIS SWARM FIRST ALERT — {firstDetection?.pattern?.replace('_', '-')} DETECTED
+              ▲ PROVENLEX FIRST ALERT — {firstDetection?.pattern?.replace('_', '-')} DETECTED
             </span>
           </div>
           {data.timeline.map((ev, i) => (

@@ -1,6 +1,6 @@
-# CSSF Circular 18/698 & DORA Chapter III — Genesis Swarm Control Mapping
+# CSSF Circular 18/698 & DORA Chapter III — ProvenLex Control Mapping
 
-> **Important**: This document maps Genesis Swarm's technical controls to regulatory
+> **Important**: This document maps ProvenLex's technical controls to regulatory
 > requirements. It is an engineering artifact intended to accelerate formal audit work.
 > It does not constitute legal advice or a certified compliance assessment.
 > Engage a qualified CSSF-regulated compliance officer for regulatory submissions.
@@ -13,7 +13,7 @@ Reference: [CSSF Circular 18/698](https://www.cssf.lu/en/Document/circular-cssf-
 
 ### Chapter 2 — ICT Risk Governance
 
-| CSSF Requirement | Paragraph | Genesis Swarm Control | Implementation File | Status |
+| CSSF Requirement | Paragraph | ProvenLex Control | Implementation File | Status |
 |---|---|---|---|---|
 | ICT risk appetite defined | 2.1.2 | Anomaly score thresholds (0–100) per bot type; configurable via env | `shared/config.py` | ✅ Implemented |
 | ICT risk register maintained | 2.1.3 | Merkle-chained audit ledger with every detection event | `consensus/sovereign_ledger.py` | ✅ Implemented |
@@ -22,7 +22,7 @@ Reference: [CSSF Circular 18/698](https://www.cssf.lu/en/Document/circular-cssf-
 
 ### Chapter 3 — ICT Asset Management
 
-| CSSF Requirement | Paragraph | Genesis Swarm Control | Implementation File | Status |
+| CSSF Requirement | Paragraph | ProvenLex Control | Implementation File | Status |
 |---|---|---|---|---|
 | Critical asset inventory | 3.1 | 11 specialist bots; each registers BOT_TYPE + data source | `shared/bot_base.py` | ✅ Implemented |
 | Dependency tracking | 3.2 | `requirements.txt` + `pip-audit` in CI | `requirements.txt`, `.github/workflows/ci.yml` | ✅ Implemented |
@@ -30,7 +30,7 @@ Reference: [CSSF Circular 18/698](https://www.cssf.lu/en/Document/circular-cssf-
 
 ### Chapter 4 — ICT Incident Management
 
-| CSSF Requirement | Paragraph | Genesis Swarm Control | Implementation File | Status |
+| CSSF Requirement | Paragraph | ProvenLex Control | Implementation File | Status |
 |---|---|---|---|---|
 | Incident classification | 4.1 | Four severity levels: INFO / WARNING / CRITICAL / EMERGENCY | `shared/alerting.py` | ✅ Implemented |
 | Incident detection | 4.2 | Online IsolationForest + z-score fallback, 5-min retrain window | `shared/online_learner.py` | ✅ Implemented |
@@ -40,7 +40,7 @@ Reference: [CSSF Circular 18/698](https://www.cssf.lu/en/Document/circular-cssf-
 
 ### Chapter 5 — Business Continuity
 
-| CSSF Requirement | Paragraph | Genesis Swarm Control | Implementation File | Status |
+| CSSF Requirement | Paragraph | ProvenLex Control | Implementation File | Status |
 |---|---|---|---|---|
 | RTO/RPO for critical systems | 5.1 | BotSupervisor restarts failed bots <60s; SLO endpoint tracks uptime | `shared/supervisor.py`, `/api/health/slo` | ✅ Implemented |
 | Backup and recovery | 5.2 | SQLite DB mounted on persistent Docker volume; periodic Merkle snapshot | `docker-compose.yml` — `cases-data` volume | ⚠️ Partial — offsite backup not automated |
@@ -48,7 +48,7 @@ Reference: [CSSF Circular 18/698](https://www.cssf.lu/en/Document/circular-cssf-
 
 ### Chapter 6 — Audit Logging
 
-| CSSF Requirement | Paragraph | Genesis Swarm Control | Implementation File | Status |
+| CSSF Requirement | Paragraph | ProvenLex Control | Implementation File | Status |
 |---|---|---|---|---|
 | Tamper-evident audit logs | 6.1 | SHA-256 Merkle chain; any modification invalidates chain | `shared/security/merkle_tree.py`, `consensus/sovereign_ledger.py` | ✅ Implemented |
 | Log completeness | 6.2 | Every bot cycle, consensus round, alert, and API call logged | `shared/logging_config.py` (structlog JSON) | ✅ Implemented |
@@ -73,7 +73,7 @@ Reference: [DORA Chapter III — ICT-related Incident Management, Classification
 Article 17 requires financial entities to establish and maintain a documented ICT incident
 management process covering detection, classification, notification, and response.
 
-| DORA Paragraph | Requirement Text (paraphrased) | Genesis Swarm Control | Evidence | Status |
+| DORA Paragraph | Requirement Text (paraphrased) | ProvenLex Control | Evidence | Status |
 |---|---|---|---|---|
 | Art. 17(1) | Establish and maintain a sound ICT incident management process | Case lifecycle API: `POST /api/cases` creates incident; status transitions OPEN → INVESTIGATING → RESOLVED → CLOSED | `api/server.py` — `/api/cases` endpoints | ✅ |
 | Art. 17(2)(a) | Early warning indicators and alerts | Anomaly scores broadcast via WebSocket in real-time; threshold breach → auto-case creation | `api/server.py` — WebSocket `/ws` | ✅ |
@@ -86,7 +86,7 @@ management process covering detection, classification, notification, and respons
 | Art. 17(6) | Report to senior management at least monthly | Monthly SLO summary available at `/api/health/slo`; PDF report exportable on demand | `api/server.py` — `GET /api/health/slo` | ⚠️ Automated monthly report not scheduled; ad-hoc only |
 | Art. 17(7) | Designated ICT security function responsible for incident management | Admin role owns incident escalation; no dedicated CISO function in prototype | RBAC admin role | ⚠️ No formal CISO/designated officer — prototype only |
 
-**Article 17 gap assessment**: Core detection and recording are solid. Gaps are in process formalisation (post-incident RCA workflow, monthly reporting cadence, designated officer). These are organisational gaps that Genesis Swarm provides tooling for but cannot close on its own.
+**Article 17 gap assessment**: Core detection and recording are solid. Gaps are in process formalisation (post-incident RCA workflow, monthly reporting cadence, designated officer). These are organisational gaps that ProvenLex provides tooling for but cannot close on its own.
 
 ---
 
@@ -94,7 +94,7 @@ management process covering detection, classification, notification, and respons
 
 Article 18 sets mandatory classification criteria financial entities must apply to determine whether an ICT incident qualifies as "major" requiring regulatory notification.
 
-| DORA Paragraph | Requirement Text (paraphrased) | Genesis Swarm Control | Evidence | Status |
+| DORA Paragraph | Requirement Text (paraphrased) | ProvenLex Control | Evidence | Status |
 |---|---|---|---|---|
 | Art. 18(1) | Classify ICT incidents applying all listed criteria | Alert classification engine evaluates all Art. 18(1)(a-f) criteria at case creation time | `shared/alerting.py` — `classify_severity()` | ✅ |
 | Art. 18(1)(a) | Number of clients/financial counterparts affected | Fund name and AUM stored per alert; multi-fund escalation tracked | `shared/alerting.py` — `fund_name`, `aum_exposure` fields | ✅ |
@@ -114,7 +114,7 @@ Article 18 sets mandatory classification criteria financial entities must apply 
 
 Article 19 sets three mandatory report deadlines: initial notification (4 hours), intermediate report (72 hours), final report (1 month).
 
-| DORA Paragraph | Requirement Text (paraphrased) | Genesis Swarm Control | Evidence | Status |
+| DORA Paragraph | Requirement Text (paraphrased) | ProvenLex Control | Evidence | Status |
 |---|---|---|---|---|
 | Art. 19(1) | Submit initial notification to competent authority within 4 hours of major incident classification | EMERGENCY alert dispatches email + Slack immediately (< 1 min); alert includes Merkle-signed incident ID for reference | `shared/alerting.py` — `_dispatch_emergency()` | ⚠️ Alert dispatched; structured ESMA template not yet implemented |
 | Art. 19(2) | Submit intermediate report within 72 hours containing updated information | PDF report with full alert timeline, Merkle root, bot snapshot; exportable on demand | `api/reports.py` — `GET /api/v1/report/pdf` | ⚠️ PDF covers content; requires operator to manually trigger export; no ESMA-format template |
@@ -132,13 +132,13 @@ Article 19 sets three mandatory report deadlines: initial notification (4 hours)
 
 Article 20 requires the ESAs to develop draft RTS to specify the content, format, and templates of reports under Article 19. It is a process article governing how the RTS are produced, not a direct obligation on financial entities.
 
-| DORA Paragraph | Requirement Text (paraphrased) | Genesis Swarm Implication | Status |
+| DORA Paragraph | Requirement Text (paraphrased) | ProvenLex Implication | Status |
 |---|---|---|---|
-| Art. 20(1) | ESAs to develop common reporting templates via RTS | Genesis Swarm must update reporting format once final RTS is published | ⚠️ Monitoring ESMA publication; architecture supports parameterised templates |
-| Art. 20(2) | ESAs to take into account ENISA and ECB frameworks when developing templates | Genesis Swarm's severity classification is designed to be compatible with ENISA cyber risk taxonomy | ⚠️ Compatibility assumed; formal alignment not verified |
+| Art. 20(1) | ESAs to develop common reporting templates via RTS | ProvenLex must update reporting format once final RTS is published | ⚠️ Monitoring ESMA publication; architecture supports parameterised templates |
+| Art. 20(2) | ESAs to take into account ENISA and ECB frameworks when developing templates | ProvenLex's severity classification is designed to be compatible with ENISA cyber risk taxonomy | ⚠️ Compatibility assumed; formal alignment not verified |
 | Art. 20(3) | Review and update classification criteria at least every 3 years | Roadmap: quarterly DORA mapping review | ⚠️ No formal review schedule yet; this document is v1.0 |
 
-**Article 20 gap assessment**: This article has no immediate technical obligations — it tasks the ESAs. The obligation on Genesis Swarm is to monitor for published RTS and update templates accordingly. A review note is added to this document's footer.
+**Article 20 gap assessment**: This article has no immediate technical obligations — it tasks the ESAs. The obligation on ProvenLex is to monitor for published RTS and update templates accordingly. A review note is added to this document's footer.
 
 ---
 
@@ -146,13 +146,13 @@ Article 20 requires the ESAs to develop draft RTS to specify the content, format
 
 Article 21 establishes an optional centralised hub model for reporting, allowing financial entities to report through a single competent authority that distributes to others.
 
-| DORA Paragraph | Requirement Text (paraphrased) | Genesis Swarm Control | Status |
+| DORA Paragraph | Requirement Text (paraphrased) | ProvenLex Control | Status |
 |---|---|---|---|
 | Art. 21(1) | Member States may designate a single point of contact for centralised reporting | Architecture allows webhook to route to a single regulatory endpoint | ⚠️ Configurable via `GENESIS_REPORT_WEBHOOK_URL`; no specific implementation for any member state hub |
-| Art. 21(2) | Competent authority to distribute reports to relevant ESAs and other authorities | Out of scope for Genesis Swarm — this is a regulatory authority obligation | N/A |
-| Art. 21(3) | Financial entities remain responsible for compliance regardless of centralised hub | Genesis Swarm maintains its own audit trail independent of any reporting hub | `consensus/sovereign_ledger.py` | ✅ |
+| Art. 21(2) | Competent authority to distribute reports to relevant ESAs and other authorities | Out of scope for ProvenLex — this is a regulatory authority obligation | N/A |
+| Art. 21(3) | Financial entities remain responsible for compliance regardless of centralised hub | ProvenLex maintains its own audit trail independent of any reporting hub | `consensus/sovereign_ledger.py` | ✅ |
 
-**Article 21 gap assessment**: Primarily a supervisory architecture article. Genesis Swarm's obligation is to be capable of directing reports to a single endpoint — this is satisfied by the configurable webhook. No immediate gaps.
+**Article 21 gap assessment**: Primarily a supervisory architecture article. ProvenLex's obligation is to be capable of directing reports to a single endpoint — this is satisfied by the configurable webhook. No immediate gaps.
 
 ---
 
@@ -160,7 +160,7 @@ Article 21 establishes an optional centralised hub model for reporting, allowing
 
 The following DORA obligations are not covered by this mapping but are relevant to a complete DORA self-assessment:
 
-| DORA Chapter | Articles | Topic | Genesis Swarm Status |
+| DORA Chapter | Articles | Topic | ProvenLex Status |
 |---|---|---|---|
 | Chapter II | Art. 5–16 | ICT risk management framework | ⚠️ Partial — risk governance, asset management, and BCM covered in CSSF §1 above; formal ICT risk framework policy document not yet written |
 | Chapter IV | Art. 24–27 | Digital operational resilience testing | ✅ Chaos tests (`tests/chaos/`), PBFT fault injection (`tests/benchmarks/`); no formal TLPT engagement |
@@ -220,6 +220,6 @@ For each implemented control, auditors can request the following artifacts:
 
 ---
 
-*Mapping prepared by Genesis Swarm engineering team — 2026-05-12.*
+*Mapping prepared by ProvenLex engineering team — 2026-05-12.*
 *DORA Article 17–21 expanded to full paragraph-level self-assessment in v0.4.1.*
 *Next review date: 2026-08-12 (quarterly). Update when ESMA/EBA DORA RTS are finalised.*

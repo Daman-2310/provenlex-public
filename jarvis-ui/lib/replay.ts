@@ -1,6 +1,6 @@
 // Historical fraud-collapse timelines for the Replay engine.
 // Each case has a month-by-month signal-emergence record — what the
-// 11 Genesis bots WOULD have detected if running at that time.
+// 11 ProvenLex bots WOULD have detected if running at that time.
 
 export interface ReplayMonth {
   month: string           // YYYY-MM

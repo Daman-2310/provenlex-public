@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 
 /**
- * GENESIS COSMIC BACKGROUND — flowing aurora edition.
+ * PROVENLEX COSMIC BACKGROUND — flowing aurora edition.
  *
  * Deep parallax starfield + drifting aurora/energy clouds (large additive
  * gradient sprites that morph, rotate and pulse) + cursor-reactive dust.

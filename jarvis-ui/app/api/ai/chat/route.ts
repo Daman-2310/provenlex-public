@@ -33,12 +33,12 @@ const KB: { match: RegExp; answer: string }[] = [
   {
     match: /\bdora\b|ict|vendor register/i,
     answer:
-      'DORA (Art. 28 ICT third-party register; in force 17 Jan 2025, with the register obligation tracked toward the 2027 milestone) is a checklist item — Genesis flags presence/absence of required disclosures, it does not opine on adequacy.',
+      'DORA (Art. 28 ICT third-party register; in force 17 Jan 2025, with the register obligation tracked toward the 2027 milestone) is a checklist item — ProvenLex flags presence/absence of required disclosures, it does not opine on adequacy.',
   },
   {
     match: /\bsfdr\b|art(?:icle)?\.?\s*[689]\b|disclosure/i,
     answer:
-      'SFDR is handled as a classification check (Art. 6 / 8 / 9). Genesis surfaces which disclosures the prospectus claims and whether the mandatory statements are present — it does not grade sustainability substance.',
+      'SFDR is handled as a classification check (Art. 6 / 8 / 9). ProvenLex surfaces which disclosures the prospectus claims and whether the mandatory statements are present — it does not grade sustainability substance.',
   },
   {
     match: /sanction|ofac|sdn|screen/i,
@@ -52,7 +52,7 @@ function respond(userMsg: string): string {
   const body = hit
     ? hit.answer
     : 'This console is a deterministic lookup, not an AI assistant — it does not generate compliance opinions. To get an actual verdict on a document, paste it into the deterministic scan at /scan (runs in your browser, no upload, no LLM).'
-  return `${body}\n\n— Genesis Swarm · deterministic engine · no LLM, nothing sent externally. ${DISCLAIMER}`
+  return `${body}\n\n— ProvenLex · deterministic engine · no LLM, nothing sent externally. ${DISCLAIMER}`
 }
 
 export async function POST(req: NextRequest) {

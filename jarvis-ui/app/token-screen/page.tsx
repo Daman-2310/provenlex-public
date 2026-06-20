@@ -91,7 +91,7 @@ export default function TokenScreenPage() {
             </span>
           </h1>
           <p className="text-[rgba(255,255,255,0.55)] text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
-            Paste any token contract. Genesis Swarm reads it on-chain, detects the standard
+            Paste any token contract. ProvenLex reads it on-chain, detects the standard
             (ERC-20 / ERC-3643 / T-REX), checks pause state + identity registry + compliance module,
             scores it against AIFMD II transferability and OFAC enforcement.
           </p>

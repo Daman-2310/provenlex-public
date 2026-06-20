@@ -4,7 +4,7 @@ import CosmicBackground from '@/components/CosmicBackground'
 import LoopConsole from './LoopConsole'
 
 export const metadata = {
-  title: 'The Genesis Engine · 7-Pillar Architecture · Genesis Swarm',
+  title: 'The ProvenLex Engine · 7-Pillar Architecture · ProvenLex',
   description: 'Law as deterministic, verifier-gated software. Code-to-Law synthesis, ZK privacy vaults, autonomous red-teaming, synthetic precedent, topological loophole mapping, institutional enforcement twins, kinetic compliance — one control loop.',
 }
 
@@ -45,7 +45,7 @@ export default function ArchitecturePage() {
           </Link>
           <div className="w-px h-4 bg-[rgba(255,255,255,0.1)]" />
           <Cpu className="w-4 h-4 text-[#5B8DEF]" />
-          <span className="text-sm font-bold tracking-[0.18em] text-[#5B8DEF]">THE GENESIS ENGINE</span>
+          <span className="text-sm font-bold tracking-[0.18em] text-[#5B8DEF]">THE PROVENLEX ENGINE</span>
           <span className="ml-auto text-[9px] uppercase tracking-wider text-[rgba(255,255,255,0.35)]">
             7 pillars · one verifier-gated loop
           </span>
@@ -66,7 +66,7 @@ export default function ArchitecturePage() {
             </span>
           </h1>
           <p className="text-[rgba(255,255,255,0.65)] text-base max-w-3xl mx-auto leading-relaxed">
-            Most RegTech is a chatbot over a PDF. The Genesis Engine treats regulation as a typed,
+            Most RegTech is a chatbot over a PDF. The ProvenLex Engine treats regulation as a typed,
             content-addressed obligation graph and compliance as a continuously-evaluated predicate.
             Seven pillars, one control loop, verifier-gated so the model never decides compliance —
             it only proposes, and a solver or a human ratifies. Everything below is{' '}

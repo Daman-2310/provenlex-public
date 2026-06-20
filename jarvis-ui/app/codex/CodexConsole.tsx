@@ -72,7 +72,7 @@ export default function CodexConsole() {
       <div className="px-4 py-3" style={{ background: 'rgba(91,141,239,0.06)', borderBottom: '1px solid rgba(91,141,239,0.15)' }}>
         <div className="flex items-center gap-2 flex-wrap">
           <Sparkles className="w-3.5 h-3.5 text-[#5B8DEF]" />
-          <span className="text-[10px] uppercase tracking-wider font-bold text-[#5B8DEF]">Genesis Codex · live model</span>
+          <span className="text-[10px] uppercase tracking-wider font-bold text-[#5B8DEF]">ProvenLex Codex · live model</span>
           <span className="ml-auto text-[9px] text-[rgba(255,255,255,0.4)] font-mono">streaming · Server-Sent Events</span>
         </div>
       </div>
@@ -119,7 +119,7 @@ export default function CodexConsole() {
       <div className="px-4 py-3 flex items-center gap-3" style={{ background: 'rgba(0,0,0,0.4)', borderTop: '1px solid rgba(91,141,239,0.15)' }}>
         <textarea value={question} onChange={e => setQuestion(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); ask() } }}
-          placeholder="Ask Genesis Codex about EU compliance, AIFMD/UCITS/SFDR/Solvency II, historical EU collapses…"
+          placeholder="Ask ProvenLex Codex about EU compliance, AIFMD/UCITS/SFDR/Solvency II, historical EU collapses…"
           rows={2}
           className="flex-1 bg-black/40 outline-none text-white text-[13px] px-3 py-2 rounded border border-[rgba(91,141,239,0.2)] focus:border-[rgba(91,141,239,0.6)] resize-y" />
         <button onClick={ask} disabled={loading || !question.trim()}
