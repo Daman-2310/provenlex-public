@@ -10,7 +10,7 @@ export const runtime = 'nodejs'
 export const maxDuration = 30
 
 const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET
-const BASE = 'https://genesis-swarm.vercel.app'
+const BASE = 'https://provenlex.vercel.app'
 
 function verifySlackSignature(body: string, sig: string | null, ts: string | null): boolean {
   if (!SLACK_SIGNING_SECRET || !sig || !ts) return false

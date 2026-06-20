@@ -4,11 +4,11 @@
 
 **Deterministic AIFMD II / UCITS prospectus compliance — in the browser, with no LLM.**
 
-[Live scanner](https://genesis-swarm.vercel.app/scan) ·
-[2027 AIFMD II Readiness Report](https://genesis-swarm.vercel.app/research/report-01-aifmd2-readiness) ·
-[Trust & security](https://genesis-swarm.vercel.app/security)
+[Live scanner](https://provenlex.vercel.app/scan) ·
+[2027 AIFMD II Readiness Report](https://provenlex.vercel.app/research/report-01-aifmd2-readiness) ·
+[Trust & security](https://provenlex.vercel.app/security)
 
-📐 **The versioned standard:** [ProvenLex Ruleset Specification v2026.1](./RULESET.md) · [live, interactive version](https://genesis-swarm.vercel.app/ruleset)
+📐 **The versioned standard:** [ProvenLex Ruleset Specification v2026.1](./RULESET.md) · [live, interactive version](https://provenlex.vercel.app/ruleset)
 
 Source-available under PolyForm Noncommercial 1.0.0
 
@@ -16,7 +16,7 @@ Source-available under PolyForm Noncommercial 1.0.0
 
 ---
 
-> **Note:** This is a representative source snapshot for inspection — the deterministic engine, its test suite, and the brand are kept current here; the surrounding app may lag the live build at https://genesis-swarm.vercel.app. Full or current source review is available to serious counterparties on request.
+> **Note:** This is a representative source snapshot for inspection — the deterministic engine, its test suite, and the brand are kept current here; the surrounding app may lag the live build at https://provenlex.vercel.app. Full or current source review is available to serious counterparties on request.
 
 ## What this is
 
@@ -58,7 +58,7 @@ limits and internal consistency. It does **not** make structural or qualitative 
 (for example, whether a loan-originating AIF ought to be closed-ended). It is an aid to
 review, not a substitute for your advisor or the primary text, and several AIFMD II
 details remain subject to ESMA's final RTS/ITS — always verify against the regulation.
-The [Trust page](https://genesis-swarm.vercel.app/security) states plainly which parts are
+The [Trust page](https://provenlex.vercel.app/security) states plainly which parts are
 production-grade and which are reference implementations.
 
 ## What's in this repository
@@ -70,10 +70,10 @@ production-grade and which are reference implementations.
 
 ## Links
 
-- Live scanner — <https://genesis-swarm.vercel.app/scan>
-- 2027 AIFMD II Readiness Report — <https://genesis-swarm.vercel.app/research/report-01-aifmd2-readiness>
-- Why deterministic (field note) — <https://genesis-swarm.vercel.app/research/note-01-consistent-isnt-compliant>
-- Trust & security — <https://genesis-swarm.vercel.app/security>
+- Live scanner — <https://provenlex.vercel.app/scan>
+- 2027 AIFMD II Readiness Report — <https://provenlex.vercel.app/research/report-01-aifmd2-readiness>
+- Why deterministic (field note) — <https://provenlex.vercel.app/research/note-01-consistent-isnt-compliant>
+- Trust & security — <https://provenlex.vercel.app/security>
 
 ## License
 

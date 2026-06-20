@@ -63,7 +63,7 @@ export default function EmbedDocsPage() {
           <CodeBlock
             language="html"
             code={`<iframe
-  src="https://genesis-swarm.vercel.app/embed/${SAMPLE_LEI}"
+  src="https://provenlex.vercel.app/embed/${SAMPLE_LEI}"
   width="320" height="120"
   style="border:0; background:transparent;"
   loading="lazy"
@@ -92,9 +92,9 @@ export default function EmbedDocsPage() {
           <div className="text-[11px] uppercase tracking-[0.2em] text-[#5B8DEF] font-black mb-4">Examples</div>
           <div className="space-y-3">
             <Example title="Light theme, small size, no link"
-              code={`<iframe src="https://genesis-swarm.vercel.app/embed/${SAMPLE_LEI}?theme=light&size=sm&link=false" width="260" height="100" style="border:0; background:transparent;"></iframe>`} />
+              code={`<iframe src="https://provenlex.vercel.app/embed/${SAMPLE_LEI}?theme=light&size=sm&link=false" width="260" height="100" style="border:0; background:transparent;"></iframe>`} />
             <Example title="Large dark badge on hero section"
-              code={`<iframe src="https://genesis-swarm.vercel.app/embed/${SAMPLE_LEI}?size=lg" width="400" height="150" style="border:0; background:transparent;"></iframe>`} />
+              code={`<iframe src="https://provenlex.vercel.app/embed/${SAMPLE_LEI}?size=lg" width="400" height="150" style="border:0; background:transparent;"></iframe>`} />
           </div>
         </section>
 

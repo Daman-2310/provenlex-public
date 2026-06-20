@@ -148,7 +148,7 @@ export default function ResearchPage() {
 {`Sharma, D. (2026). "Consistent Isn't Compliant: Teaching Software to
 Read Fund Prospectuses." ProvenLex Field Note NOTE-01.
 Luxembourg.
-URL: https://genesis-swarm.vercel.app/research/note-01-consistent-isnt-compliant`}
+URL: https://provenlex.vercel.app/research/note-01-consistent-isnt-compliant`}
           </pre>
           <p className="text-[12px] text-[rgba(255,255,255,0.6)] leading-relaxed mt-4">
             Field notes are released under Creative Commons Attribution 4.0

@@ -91,7 +91,7 @@ async function fetchOne(feed: RegulatorFeed, limit: number): Promise<RegulatorIt
     const res = await fetch(feed.url, {
       signal: ctrl.signal,
       headers: {
-        'User-Agent': 'ProvenLex-Swarm/1.0 (+https://genesis-swarm.vercel.app)',
+        'User-Agent': 'ProvenLex-Swarm/1.0 (+https://provenlex.vercel.app)',
         Accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*',
       },
       // Cache for 15 min at the CDN edge

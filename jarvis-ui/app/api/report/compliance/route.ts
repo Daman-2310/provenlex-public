@@ -199,7 +199,7 @@ export async function POST(req: NextRequest) {
   // Footer brand
   page.drawText('PROVENLEX RegTech AI - Luxembourg', { x: 40, y: 30, size: 8, font: helvBold, color: C.green })
   page.drawText('CSSF-aligned - DORA + AIFMD II + SFDR ready', { x: 40, y: 18, size: 7, font: helv, color: C.dim })
-  page.drawText(`Page 1 of 1 - genesis-swarm.vercel.app`, { x: width - 220, y: 18, size: 7, font: mono, color: C.dim })
+  page.drawText(`Page 1 of 1 - provenlex.vercel.app`, { x: width - 220, y: 18, size: 7, font: mono, color: C.dim })
 
   const pdfBytes = await pdfDoc.save()
 

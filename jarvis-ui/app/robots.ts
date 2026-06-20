@@ -17,7 +17,7 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
       },
     ],
-    sitemap: 'https://genesis-swarm.vercel.app/sitemap.xml',
-    host: 'https://genesis-swarm.vercel.app',
+    sitemap: 'https://provenlex.vercel.app/sitemap.xml',
+    host: 'https://provenlex.vercel.app',
   }
 }

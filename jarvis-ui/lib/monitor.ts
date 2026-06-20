@@ -93,12 +93,12 @@ export function alertEmail(f: MonitoredFund, change: ChangeResult): { subject: s
     `${change.reason}\n\n` +
     `Fund: ${name}\nNew verdict: ${change.newVerdict} (${change.newCriticalCount} critical)\n\n` +
     `${findingsList || 'No critical findings.'}\n\n` +
-    `Re-run the full scan: https://genesis-swarm.vercel.app/scan`
+    `Re-run the full scan: https://provenlex.vercel.app/scan`
   const html =
     `<p><strong>${change.reason}</strong></p>` +
     `<p>Fund: <strong>${escapeHtml(name)}</strong><br/>New verdict: <strong>${change.newVerdict}</strong> (${change.newCriticalCount} critical)</p>` +
     `<ul>${change.newCriticalFindings.map(x => `<li><strong>${escapeHtml(x.title)}:</strong> ${escapeHtml(x.detail)}</li>`).join('') || '<li>No critical findings.</li>'}</ul>` +
-    `<p><a href="https://genesis-swarm.vercel.app/scan">Re-run the full scan →</a></p>`
+    `<p><a href="https://provenlex.vercel.app/scan">Re-run the full scan →</a></p>`
   return { subject, html, text }
 }
 

@@ -10,13 +10,13 @@ import SmoothScroll from '@/components/SmoothScroll'
 import { Analytics } from '@vercel/analytics/next'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://genesis-swarm.vercel.app'),
+  metadataBase: new URL('https://provenlex.vercel.app'),
   title: 'ProvenLex — Deterministic compliance for European funds',
   description: 'Deterministic compliance tooling for European funds. It reads a fund prospectus and checks it against AIFMD II in the browser — no LLM, so every verdict is reproducible and re-verifiable. Source-available.',
   openGraph: {
     type: 'website',
     siteName: 'ProvenLex',
-    url: 'https://genesis-swarm.vercel.app',
+    url: 'https://provenlex.vercel.app',
     title: 'ProvenLex — Deterministic compliance for European funds',
     description: 'Reads a fund prospectus and checks it against AIFMD II in the browser — no LLM, reproducible and re-verifiable. Source-available.',
   },

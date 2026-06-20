@@ -113,7 +113,7 @@ export default function RulesetPage() {
           <pre className="text-[11px] font-mono text-[rgba(255,255,255,0.85)] bg-black/40 rounded p-3 overflow-x-auto">
 {`Sharma, D. (2026). "The ProvenLex Ruleset Specification v${RULESET.version}."
 ProvenLex. Effective ${RULESET.effective}.
-URL: https://genesis-swarm.vercel.app/ruleset`}
+URL: https://provenlex.vercel.app/ruleset`}
           </pre>
           <p className="text-[12px] text-[rgba(255,255,255,0.6)] leading-relaxed mt-4">
             Sources: {RULESET.sources.join(' · ')}. Released under Creative Commons Attribution 4.0.

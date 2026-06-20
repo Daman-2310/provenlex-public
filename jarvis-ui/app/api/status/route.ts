@@ -28,7 +28,7 @@ async function probe(label: string, fn: () => Promise<{ ok: boolean; detail?: st
 export async function GET() {
   const [ofac, gleif, fx] = await Promise.all([
     probe('OFAC', async () => {
-      const r = await fetch('https://genesis-swarm.vercel.app/api/real/sanctions?q=ROSNEFT', { cache: 'no-store' })
+      const r = await fetch('https://provenlex.vercel.app/api/real/sanctions?q=ROSNEFT', { cache: 'no-store' })
       return { ok: r.ok, detail: r.ok ? '18,976 entities indexed' : `HTTP ${r.status}` }
     }),
     probe('GLEIF', async () => {

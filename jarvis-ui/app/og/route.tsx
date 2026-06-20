@@ -112,7 +112,7 @@ export async function GET(req: NextRequest) {
             color: 'rgba(255,255,255,0.55)',
             fontFamily: 'monospace',
           }}>
-            genesis-swarm.vercel.app
+            provenlex.vercel.app
           </div>
         </div>
       </div>

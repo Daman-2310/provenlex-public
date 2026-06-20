@@ -27,7 +27,7 @@ export default function TermsPage() {
         <p className="text-[rgba(255,255,255,0.5)] text-[12px] mb-10">Last updated: 14 June 2026 · Effective immediately</p>
 
         <Section h="1. Acceptance of Terms">
-          <p>By accessing or using ProvenLex (the &ldquo;Service&rdquo;) at genesis-swarm.vercel.app, you agree to be bound by these Terms of Service (&ldquo;Terms&rdquo;). If you do not agree, do not use the Service.</p>
+          <p>By accessing or using ProvenLex (the &ldquo;Service&rdquo;) at provenlex.vercel.app, you agree to be bound by these Terms of Service (&ldquo;Terms&rdquo;). If you do not agree, do not use the Service.</p>
         </Section>
 
         <Section h="2. The Service">

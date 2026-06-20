@@ -109,7 +109,7 @@ export default function ExtensionPage() {
         <section className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {[
             { Icon: Globe, t: 'Works everywhere', d: 'LinkedIn, Bloomberg, FT, Twitter, any site. <all_urls> permission scope.' },
-            { Icon: Shield, t: 'Zero telemetry', d: 'Selection text is sent only to genesis-swarm.vercel.app. Source available.' },
+            { Icon: Shield, t: 'Zero telemetry', d: 'Selection text is sent only to provenlex.vercel.app. Source available.' },
             { Icon: MousePointer2, t: 'Two activation modes', d: 'Selection floating button OR right-click "Screen with ProvenLex".' },
             { Icon: Search, t: 'Real OFAC data', d: 'Live US Treasury SDN list — 18,976 entities, ~800ms response.' },
           ].map(f => (

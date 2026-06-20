@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-const BASE = 'https://genesis-swarm.vercel.app'
+const BASE = 'https://provenlex.vercel.app'
 
 // Only the real, live, honest pages are advertised to search engines.
 // The retired theater routes (book / watchlist / obituary / mirror / twin /

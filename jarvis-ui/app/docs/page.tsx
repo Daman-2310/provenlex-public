@@ -18,7 +18,7 @@ interface Endpoint {
   examples: Record<Lang, string>
 }
 
-const BASE = 'https://genesis-swarm.vercel.app/api/v1'
+const BASE = 'https://provenlex.vercel.app/api/v1'
 
 const ENDPOINTS: Endpoint[] = [
   {
