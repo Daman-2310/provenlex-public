@@ -1,14 +1,3 @@
----
-title: Genesis Swarm API
-emoji: 🏦
-colorFrom: blue
-colorTo: yellow
-sdk: docker
-pinned: false
-app_port: 8000
-license: other
----
-
 <div align="center">
 
 # Genesis Swarm
@@ -75,10 +64,9 @@ production-grade and which are reference implementations.
 ## What's in this repository
 
 - **`jarvis-ui/`** — the product: the Next.js application and the deterministic compliance
-  engine behind the live scanner. This is the production-grade part.
-- Python API, Docker, and infrastructure files — supporting scaffolding and reference
-  implementations, not the system of record. Treat anything outside the deterministic
-  engine as a reference implementation unless the Trust page says otherwise.
+  engine behind the live scanner. Client-side, no LLM in the decision path.
+- **`RULESET.md`** — the Genesis Ruleset Specification: the versioned, citable AIFMD II / UCITS limits the engine enforces, each bound to its statutory source.
+- `CSSF_MAPPING.md`, `SECURITY.md`, `CONTRIBUTING.md`, `CHANGELOG.md` — mapping, trust, and notes.
 
 ## Links
 
