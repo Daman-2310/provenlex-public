@@ -3,6 +3,7 @@
 import {
   ShieldCheck, ShieldAlert, AlertTriangle, Landmark, FileText, Building2,
 } from 'lucide-react'
+import Link from 'next/link'
 import type { ScanResult } from '@/lib/scan-engine'
 
 // ── Institutional Emerald verdict surface ────────────────────────────────────
@@ -32,6 +33,7 @@ function BasisBadge({ basis }: { basis: 'own-prospectus' | 'eu-statutory' }) {
 export default function ScanVerdict({ result }: { result: ScanResult }) {
   const pass = result.compliant
   const accent = pass ? '#10D982' : '#F2566E'
+  const insufficient = result.findings.some(f => f.code === 'INSUFFICIENT_DATA')
   const facts: [string, string][] = [
     ['Structure', result.doc.structure.replace('_', '-')],
     ['Leverage cap', result.doc.declaredLeverageCapPct != null ? `${result.doc.declaredLeverageCapPct}%` : 'not stated'],
@@ -142,6 +144,22 @@ export default function ScanVerdict({ result }: { result: ScanResult }) {
           )
         })}
       </div>
+
+      {/* Honesty badge: frame INSUFFICIENT_DATA as a deliberate architectural choice. */}
+      {insufficient && (
+        <div className="rounded-xl p-3.5 flex items-start gap-2.5"
+          style={{ background: 'rgba(91,141,239,0.08)', border: '1px solid rgba(91,141,239,0.3)' }}>
+          <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5" style={{ color: '#5B8DEF' }} />
+          <div className="text-[11px] leading-snug" style={{ color: '#C7CDD2' }}>
+            <span className="font-bold text-white">This is not a guess — it&apos;s by design.</span> When a document&apos;s
+            structure can&apos;t be read cleanly (tables and footnotes flatten on extraction), ProvenLex returns
+            &ldquo;insufficient data&rdquo; instead of fabricating a verdict — no LLM, no hallucinated number.{' '}
+            <Link href="/research/note-02-extraction-is-the-hard-part" className="font-bold hover:underline" style={{ color: '#5B8DEF' }}>
+              Why this is a deliberate architectural choice →
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
