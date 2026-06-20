@@ -19,6 +19,8 @@ license: other
 [2027 AIFMD II Readiness Report](https://genesis-swarm.vercel.app/research/report-01-aifmd2-readiness) ·
 [Trust & security](https://genesis-swarm.vercel.app/security)
 
+📐 **The versioned standard:** [Genesis Ruleset Specification v2026.1](./RULESET.md) · [live, interactive version](https://genesis-swarm.vercel.app/ruleset)
+
 Source-available under PolyForm Noncommercial 1.0.0
 
 </div>
