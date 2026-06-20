@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import './globals.css'
-import TickerBar from '@/components/TickerBar'
 import CommandPalette from '@/components/CommandPalette'
 import PwaRegister from '@/components/PwaRegister'
 import RevealObserver from '@/components/RevealObserver'
@@ -67,12 +66,11 @@ export default function RootLayout({
         {/* No-JS fallback: never leave reveal-targets stuck invisible. */}
         <noscript><style>{`[data-reveal]{opacity:1 !important;transform:none !important;}`}</style></noscript>
       </head>
-      <body className="min-h-screen bg-genesis-bg text-genesis-green font-mono antialiased grid-lines" style={{ paddingBottom: 36 }}>
+      <body className="min-h-screen bg-genesis-bg text-genesis-green font-mono antialiased grid-lines">
         <main>{children}</main>
         <SmoothScroll />
         <RevealObserver />
         <Analytics />
-        <TickerBar />
         <CommandPalette />
         <PwaRegister />
       </body>
