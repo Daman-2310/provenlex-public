@@ -27,10 +27,10 @@ export default function PlaygroundPage() {
       </header>
 
       <main className="relative max-w-3xl mx-auto px-6 py-12">
-        <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight mb-4">
+        <h1 className="font-sans normal-case text-3xl sm:text-4xl font-black tracking-tight leading-tight mb-4 text-white">
           See AIFMD II actually bite.
         </h1>
-        <p className="text-[15px] text-[rgba(255,255,255,0.65)] leading-relaxed mb-8 max-w-2xl">
+        <p className="font-sans normal-case text-[15px] text-[rgba(255,255,255,0.65)] leading-relaxed mb-8 max-w-2xl">
           Drag the dials and watch the <strong className="text-white">real deterministic engine</strong> rule in
           real time — the same one behind the scanner. The key lesson is the
           <strong className="text-white"> loan-originating</strong> toggle: AIFMD II&apos;s 175/300% leverage,
@@ -40,7 +40,7 @@ export default function PlaygroundPage() {
 
         <RulePlayground />
 
-        <p className="mt-8 text-[12px] text-[rgba(255,255,255,0.4)] leading-relaxed">
+        <p className="font-sans normal-case mt-8 text-[12px] text-[rgba(255,255,255,0.4)] leading-relaxed">
           This is an aid to understanding, not legal advice; several AIFMD II details remain subject to ESMA&apos;s
           final RTS/ITS. To check a real document, paste or upload it on the{' '}
           <Link href="/scan" className="text-[#10D982] hover:underline">scanner</Link>, or read the{' '}

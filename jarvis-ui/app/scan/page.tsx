@@ -204,7 +204,7 @@ export default function ScanPage() {
         <div className="text-center mb-8">
           <h1 className="font-black tracking-tight mb-4" style={{ fontSize: 'clamp(2rem, 5.5vw, 4rem)', lineHeight: 0.96 }}>
             <span className="text-white">Paste a prospectus.</span><br />
-            <span style={{ background: 'linear-gradient(90deg, #10D982 0%, #5B8DEF 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <span style={{ color: '#10D982' }}>
               Watch it get judged against EU law.
             </span>
           </h1>

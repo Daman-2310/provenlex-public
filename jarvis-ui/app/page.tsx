@@ -315,7 +315,7 @@ function Hero() {
             <TiltCard key={label}
               className="rounded-2xl px-4 py-6 text-center card-hover"
               style={{ background: 'rgba(14,16,20,0.7)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(8px)' }}>
-              <div className="font-black tracking-tight text-white" style={{ fontSize: 'clamp(1.15rem, 2.2vw, 1.75rem)' }}>{value}</div>
+              <div className="font-black tracking-tight text-white whitespace-nowrap" style={{ fontSize: 'clamp(1.05rem, 2vw, 1.5rem)' }}>{value}</div>
               <div className="text-[9.5px] uppercase tracking-[0.18em] text-[rgba(255,255,255,0.55)] mt-1.5">{label}</div>
             </TiltCard>
           ))}
