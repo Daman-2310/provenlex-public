@@ -185,15 +185,8 @@ function Hero() {
       {/* Slow emerald aurora wash — premium, performant, reduced-motion safe */}
       <div className="absolute inset-0 pointer-events-none aurora-hero" aria-hidden="true" />
 
-      {/* Animated gradient blobs — desktop only; they animate blur(90-110px) which stutters phones */}
-      <div className="absolute inset-0 pointer-events-none hidden md:block">
-        <div className="absolute top-[10%] -left-32 w-[500px] h-[500px] rounded-full opacity-[0.2]"
-          style={{ background: 'radial-gradient(circle, #10D982 0%, transparent 70%)', filter: 'blur(90px)', animation: 'float1 20s ease-in-out infinite' }} />
-        <div className="absolute bottom-[5%] -right-32 w-[600px] h-[600px] rounded-full opacity-[0.16]"
-          style={{ background: 'radial-gradient(circle, #5B8DEF 0%, transparent 70%)', filter: 'blur(100px)', animation: 'float2 24s ease-in-out infinite' }} />
-        <div className="absolute top-[40%] left-[40%] w-[400px] h-[400px] rounded-full opacity-[0.07]"
-          style={{ background: 'radial-gradient(circle, #F2566E 0%, transparent 70%)', filter: 'blur(110px)', animation: 'float3 28s ease-in-out infinite' }} />
-      </div>
+      {/* Animated gradient blobs removed — institutional restraint. The single
+          aurora wash above carries the ambient emerald; no floating neon orbs. */}
 
       {/* Cinematic bloom-lit 3D consensus mesh — the product's core claim, filmic */}
       <CinematicHero3D className="absolute inset-0 pointer-events-none" />
