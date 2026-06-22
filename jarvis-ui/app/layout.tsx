@@ -46,6 +46,37 @@ export const viewport: Viewport = {
   themeColor: '#10D982',
 }
 
+// Structured data: lets a "ProvenLex" search resolve to a recognized organisation
+// + tool, with the right description and links — a cleaner, more authoritative
+// branded result for a CO who searches the name before replying.
+const JSON_LD = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': 'https://provenlex.vercel.app/#org',
+      name: 'ProvenLex',
+      url: 'https://provenlex.vercel.app',
+      logo: 'https://provenlex.vercel.app/icon-512.svg',
+      description:
+        'Deterministic AIFMD II / UCITS prospectus compliance tooling for European funds — no LLM in the decision path; every verdict reproducible, cited and sealed.',
+      founder: { '@type': 'Person', name: 'Daman Sharma' },
+      sameAs: ['https://github.com/Daman-2310/provenlex-public'],
+    },
+    {
+      '@type': 'SoftwareApplication',
+      name: 'ProvenLex',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      url: 'https://provenlex.vercel.app/scan',
+      isAccessibleForFree: true,
+      description:
+        'Reads a fund prospectus and checks it against the AIFMD II and UCITS quantitative limits in the browser. No LLM in the decision path; every verdict is reproducible, cited to the exact article, and SHA-256 sealed.',
+      publisher: { '@id': 'https://provenlex.vercel.app/#org' },
+    },
+  ],
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -65,6 +96,10 @@ export default function RootLayout({
         />
         {/* No-JS fallback: never leave reveal-targets stuck invisible. */}
         <noscript><style>{`[data-reveal]{opacity:1 !important;transform:none !important;}`}</style></noscript>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+        />
       </head>
       <body className="min-h-screen bg-genesis-bg text-[#E7ECEF] font-sans antialiased">
         <main>{children}</main>
