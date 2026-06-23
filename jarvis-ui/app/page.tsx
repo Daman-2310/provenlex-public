@@ -228,13 +228,7 @@ function Hero() {
           <span className="text-white">Paste a prospectus.</span>
           <br />
           <span className="text-white">See </span>
-          <span className="gradient-sheen" style={{
-            background: 'linear-gradient(90deg, #10D982 0%, #6FF0B8 50%, #10D982 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            textShadow: 'none',
-          }}>every breach</span>
+          <span style={{ color: '#10D982' }}>every breach</span>
           <br />
           <span className="text-white">in 10 seconds.</span>
         </h1>

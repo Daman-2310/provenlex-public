@@ -25,6 +25,9 @@ export const metadata: Metadata = {
     description: 'Deterministic AIFMD II checks, in the browser. No LLM, reproducible, source-available.',
   },
   manifest: '/manifest.json',
+  verification: {
+    google: 'g6Rb4TvCAjsaodaU_eAVWxMd8j6qZbStafeKsCgulRk',
+  },
   icons: {
     icon: [
       // Monogram favicon: a "P" mark in the brand emerald — no emoji glyph.
