@@ -23,6 +23,7 @@ const STATIC_PAGES: Array<{ path: string; priority: number; changeFrequency: Met
   { path: '/pricing',                                    priority: 0.7, changeFrequency: 'monthly' },
   { path: '/research',                                   priority: 0.7, changeFrequency: 'monthly' },
   { path: '/research/report-01-aifmd2-readiness',        priority: 0.8, changeFrequency: 'monthly' },
+  { path: '/research/note-03-the-number-that-misleads',   priority: 0.7, changeFrequency: 'yearly' },
   { path: '/research/note-02-extraction-is-the-hard-part', priority: 0.7, changeFrequency: 'yearly' },
   { path: '/playground',                                 priority: 0.8, changeFrequency: 'monthly' },
   { path: '/research/note-01-consistent-isnt-compliant', priority: 0.6, changeFrequency: 'yearly' },

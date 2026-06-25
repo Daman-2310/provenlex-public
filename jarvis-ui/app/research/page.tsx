@@ -9,6 +9,16 @@ export const metadata = {
 
 const PAPERS = [
   {
+    id: 'note-03-the-number-that-misleads',
+    number: 'NOTE-03',
+    title: 'The Number That Misleads: How Real Prospectuses Disclose Leverage, and Why the Scariest Figure Means the Least',
+    date: '2026-06-25',
+    abstract:
+      "Findings from running a deterministic extraction over seven real public Luxembourg prospectuses. Leverage method is disclosed well; but the most visible leverage number — gross/VaR leverage, sometimes 500% — is the one most likely to be misread as an AIFMD II breach, while the figure that maps to the cap is often absent. Loan-origination classification is the hinge that decides whether the limits apply at all, and the funds the rules target most are the least publicly transparent. Read leverage by method, not by percent sign.",
+    tags: ['AIFMD II', 'leverage', 'disclosure', 'deterministic'],
+    pages: 2,
+  },
+  {
     id: 'note-02-extraction-is-the-hard-part',
     number: 'NOTE-02',
     title: 'Extraction Is the Hard Part: Why Automated AIFMD II Checking Is Harder Than the AI Vendors Admit',
