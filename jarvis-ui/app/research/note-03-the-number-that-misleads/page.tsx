@@ -5,7 +5,7 @@ import CosmicBackground from '@/components/CosmicBackground'
 export const metadata = {
   title: 'NOTE-03 · The Number That Misleads — how real prospectuses disclose leverage, and why the scariest figure means the least',
   description:
-    'A practitioner field note from running a deterministic extraction over seven real public Luxembourg fund prospectuses. Leverage method is disclosed well; but the most visible leverage number — gross/VaR leverage, sometimes 500% — is the one most likely to be misread as an AIFMD II breach, while the figure that maps to the cap is often absent. Why reading leverage requires knowing the method, not pattern-matching a percent sign.',
+    'A practitioner field note from running a deterministic extraction over eleven real public Luxembourg fund prospectuses. Leverage method is disclosed well; but the most visible leverage number — gross/VaR leverage, sometimes 400–650% — is the one most likely to be misread as an AIFMD II breach, while the figure that maps to the cap is often absent (and for an alternative fund, deferred to a separate sub-fund supplement entirely). Why reading leverage requires knowing the method, not pattern-matching a percent sign.',
 }
 
 export default function Note03Page() {
@@ -50,11 +50,11 @@ export default function Note03Page() {
         </div>
 
         <Section h="Abstract">
-          <P>{`I ran seven real, public Luxembourg fund prospectuses through the same deterministic text extraction the scanner uses, and recorded how each discloses leverage, loan-origination status, risk retention and concentration. The headline: leverage method is disclosed well — every document named its method. But the leverage number that is most visible — gross or value-at-risk leverage, in places 500% — is the one most likely to be misread as an AIFMD II breach, while the figure that actually maps to the cap is frequently not stated as a single headline at all. Reading a prospectus for leverage is not pattern-matching a percent sign near the word "leverage." It requires knowing the method — which is exactly the judgment a language model fakes and a deterministic, method-aware check gets right. This is a disclosure-clarity field note, not a compliance assessment of any fund.`}</P>
+          <P>{`I ran eleven real, public Luxembourg fund prospectuses through the same deterministic text extraction the scanner uses, and recorded how each discloses leverage, loan-origination status, risk retention and concentration. The headline: leverage method is disclosed well — every document named its method. But the leverage number that is most visible — gross or value-at-risk leverage, in places stated as 400% rising to 650% — is the one most likely to be misread as an AIFMD II breach, while the figure that actually maps to the cap is frequently not stated as a single headline at all. For the one alternative fund in the sample, the leverage figure was not in the prospectus at all — it is deferred to a separate sub-fund supplement. Reading a prospectus for leverage is not pattern-matching a percent sign near the word "leverage." It requires knowing the method — exactly the judgment a language model fakes and a deterministic, method-aware check gets right. This is a disclosure-clarity field note, not a compliance assessment of any fund.`}</P>
         </Section>
 
         <Section h="1. What I did">
-          <P>{`Seven public prospectuses from real managers — large UCITS SICAVs, a SIF, an FIS — downloaded and text-extracted with an open library. No OCR, no model. Then a deterministic keyword pass for each disclosure point, recording what appeared in the extracted main text. The sample is small and selection-biased toward large publishers, for a reason I come back to at the end.`}</P>
+          <P>{`Eleven public prospectuses from real managers — large UCITS SICAVs, a SIF, an FIS, and a SICAV-RAIF — downloaded and text-extracted with an open library. No OCR, no model. Then a deterministic keyword pass for each disclosure point, recording what appeared in the extracted main text. The sample is small and selection-biased toward large publishers, for a reason I come back to at the end.`}</P>
           <P>{`A note on what this is and is not: it measures disclosure clarity and machine-readability, not compliance. "Not surfaced" means a statement did not appear in the extracted text — never that it is missing from the document or that a fund is in breach. No fund is named.`}</P>
         </Section>
 
@@ -63,7 +63,7 @@ export default function Note03Page() {
         </Section>
 
         <Section h="3. The most visible number is the most misleading">
-          <P>{`The funds that use absolute VaR disclose an expected or maximum gross leverage figure — and in several it reads 500%. To anyone scanning for "the leverage number," that looks like a three-to-five-times breach of the AIFMD II loan-origination caps: 175% of NAV for open-ended funds, 300% for closed-ended. It is not a breach. Gross and VaR leverage are a different measure from the commitment-method ratio those caps are written against, and high gross figures are normal for a fund that uses derivatives.`}</P>
+          <P>{`The funds that use absolute VaR disclose an expected or maximum gross leverage figure — and in several it reads between 400% and 500%; one states it plainly as "Expected leverage: 400%," noted as possibly rising to 650%. To anyone scanning for "the leverage number," that looks like a four-to-five-times breach of the AIFMD II loan-origination caps: 175% of NAV for open-ended funds, 300% for closed-ended. It is not a breach. Gross and VaR leverage are a different measure from the commitment-method ratio those caps are written against, and high gross figures are normal for a fund that uses derivatives.`}</P>
           <P>{`Meanwhile the funds that use the commitment method often disclose no single headline leverage number at all — it is implicit in their cap. So the most machine-visible number is the one most likely to be mis-flagged, and the number that maps to the rule is frequently the one that is absent.`}</P>
           <P>{`This is the entire argument for keeping a model out of the decision path, in one data point. A tool that pattern-matches a percent sign near the word "leverage" — which is, under the hood, what a language model does — will confidently flag a compliant VaR fund as a 500% breach. A deterministic check that knows which method it is reading will not, because the method is the whole point. Read leverage by method, not by percent sign.`}</P>
         </Section>
@@ -73,12 +73,17 @@ export default function Note03Page() {
           <P>{`This matters because AIFMD II's leverage, retention and concentration limits for loan originators bind only loan-originating AIFs. The classification decides whether the limits apply at all. Get it wrong in one direction and you miss a real breach; get it wrong in the other and you raise a false breach against a perfectly compliant fund — and one false breach is enough for a compliance officer to stop trusting a tool. The hard part is rarely the arithmetic. It is knowing which rules are even in scope.`}</P>
         </Section>
 
-        <Section h="5. The transparency paradox">
+        <Section h="5. For an alternative fund, the number may not be in the prospectus at all">
+          <P>{`The sample's one alternative fund — a SICAV-RAIF, the kind of structure AIFMD II's loan-origination regime is written for — does not state its leverage in the prospectus. The umbrella says each sub-fund "will set a maximum level of leverage… as indicated in the respective Sub-Fund Particulars." The figure, the concentration limits and any retention statement live in a separate supplement the prospectus points to.`}</P>
+          <P>{`So a scan of the main document surfaces nothing — not because anything is hidden, but because it is structurally elsewhere. The consequence is sharp: automated single-document extraction systematically under-reads alternative funds, which are precisely the structures the new limits target. A complete check has to follow the umbrella to its supplements; a tool that reads only the prospectus will quietly report "nothing found" on the funds that matter most.`}</P>
+        </Section>
+
+        <Section h="6. The transparency paradox">
           <P>{`There is a structural reason this sample skews to large UCITS. The funds AIFMD II targets most directly — loan-originating private-credit RAIFs and SIFs — publish their prospectuses privately, to professional investors. They are not web-downloadable. A public sample necessarily under-represents exactly the funds the new rules are written for.`}</P>
           <P>{`That selection bias is itself a finding: the funds where the limits bite hardest are the least publicly transparent — which is precisely where a fast, private, in-browser check that never sends a document anywhere has the most to offer.`}</P>
         </Section>
 
-        <Section h="6. Conclusion">
+        <Section h="7. Conclusion">
           <P>{`Every pattern here is a place a confident wrong answer does damage: a false "500% breach," a general fund mis-classified as an originator, a statement that is elsewhere in a document read as "missing." Determinism does not make those mistakes look authoritative. It shows its working, cites the line it read, and — when it cannot read a document cleanly — says so instead of guessing.`}</P>
           <P>{`The rules were never the hard part, and they were never the moat. Reading the document honestly is. I am building this in the open, from India, aimed at Luxembourg. If you work in fund compliance and think I have read any of this wrong, I genuinely want to hear it — that is worth more to me than agreement.`}</P>
         </Section>

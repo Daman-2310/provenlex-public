@@ -14,7 +14,7 @@ const PAPERS = [
     title: 'The Number That Misleads: How Real Prospectuses Disclose Leverage, and Why the Scariest Figure Means the Least',
     date: '2026-06-25',
     abstract:
-      "Findings from running a deterministic extraction over seven real public Luxembourg prospectuses. Leverage method is disclosed well; but the most visible leverage number — gross/VaR leverage, sometimes 500% — is the one most likely to be misread as an AIFMD II breach, while the figure that maps to the cap is often absent. Loan-origination classification is the hinge that decides whether the limits apply at all, and the funds the rules target most are the least publicly transparent. Read leverage by method, not by percent sign.",
+      "Findings from running a deterministic extraction over eleven real public Luxembourg prospectuses. Leverage method is disclosed well; but the most visible leverage number — gross/VaR leverage, sometimes 400–650% — is the one most likely to be misread as an AIFMD II breach, while the figure that maps to the cap is often absent. For an alternative fund (RAIF), the number isn't in the prospectus at all — it's deferred to a sub-fund supplement, so single-document scans under-read the very structures the rules target. Read leverage by method, not by percent sign.",
     tags: ['AIFMD II', 'leverage', 'disclosure', 'deterministic'],
     pages: 2,
   },
