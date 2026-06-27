@@ -170,17 +170,36 @@ export function extractDocument(raw: string): ExtractedDoc {
     ?? firstMatch(text, /(\d{1,2}(?:\.\d+)?)\s?(?:%|per\s?cent\.?|percent)[^.\n]{0,30}?retention/i)
   if (ret) provenance.push(`retention ← line ${ret.lineNo}: "${ret.line}"`)
 
-  // Holdings: lines like "Acme Corp — 22%", "Position: Beta SA  30% of NAV".
+  // Holdings only exist in an actual portfolio/holdings listing. A PROSPECTUS
+  // states LIMITS, not holdings — so gate extraction to a genuine holdings
+  // section. Without this gate, once table extraction improved, every fee or
+  // allocation table row became a phantom "holding" and a false breach — the
+  // NOTE-02 over-flagging failure mode at scale (a compliant fund's prospectus
+  // reporting hundreds of "single-issuer breaches"). A prospectus has no such
+  // section, so it now correctly yields no holdings and no phantom breaches;
+  // fact sheets / annual reports (which do list holdings) still work.
+  const HOLDINGS_SECTION =
+    /\b(?:indicative\s+portfolio|portfolio\s+of\s+investments|portfolio\s+holdings|schedule\s+of\s+investments|statement\s+of\s+investments|top\s+\d{1,3}\s+holdings|largest\s+holdings)\b|portfolio\s*\(\s*%/i
   const holdings: Holding[] = []
-  for (const line of text.split('\n')) {
-    const hm = /^[\s•\-*]*([A-Za-z][A-Za-z0-9 .,&'/()-]{2,60}?)\s*[—:\-–]?\s*(\d{1,2}(?:\.\d+)?)\s?%/.exec(line.trim())
-    if (hm) {
-      const name = hm[1].replace(/[—:\-–]+$/, '').trim()
-      const weightPct = parseFloat(hm[2])
-      // Skip lines that are clearly the limit declarations we already parsed.
-      if (/leverage|retention|concentration|maximum|no more than|cap/i.test(name)) continue
-      if (weightPct > 0 && weightPct <= 100 && name.length >= 3) holdings.push({ name, weightPct })
-    }
+  let inHoldings = false
+  let sinceMarker = 0
+  for (const rawLine of text.split('\n')) {
+    const line = rawLine.trim()
+    const isHeader =
+      HOLDINGS_SECTION.test(line) ||
+      // a short standalone "Holdings" / "Holdings:" / "Holdings (% of NAV)" header
+      // (length-bounded so prose containing the word "holdings" never triggers it)
+      (line.length <= 40 && /^holdings\b\s*[:.]?\s*(?:\([^)]*\))?\s*$/i.test(line))
+    if (isHeader) { inHoldings = true; sinceMarker = 0; continue }
+    if (!inHoldings) continue
+    if (++sinceMarker > 200) { inHoldings = false; continue } // bound the block
+    const hm = /^[\s•\-*]*([A-Za-z][A-Za-z0-9 .,&'/()-]{2,60}?)\s*[—:\-–]?\s*(\d{1,2}(?:\.\d+)?)\s?%/.exec(line)
+    if (!hm) continue
+    const name = hm[1].replace(/[—:\-–]+$/, '').trim()
+    const weightPct = parseFloat(hm[2])
+    // Skip lines that are clearly the limit declarations we already parsed.
+    if (/leverage|retention|concentration|maximum|no more than|cap/i.test(name)) continue
+    if (weightPct > 0 && weightPct <= 100 && name.length >= 3) holdings.push({ name, weightPct })
   }
 
   return {

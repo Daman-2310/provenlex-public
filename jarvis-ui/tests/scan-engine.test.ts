@@ -165,6 +165,28 @@ describe('scan-engine — applicability gating (NO false positives)', () => {
   it('keeps the loan-originating sample non-compliant (regression)', () => {
     expect(scanCompliance(extractDocument(SAMPLE_PROSPECTUS)).compliant).toBe(false)
   })
+
+  // Regression for the false-positive catastrophe found stress-testing real
+  // prospectuses: once table extraction improved, fee/allocation table rows were
+  // being read as portfolio holdings and flagged as single-issuer breaches.
+  // A prospectus has no holdings section, so it must yield zero holdings.
+  it('does NOT read a prospectus fee/allocation table as holdings (no phantom breaches)', () => {
+    const d = extractDocument([
+      'Global Equity Fund SICAV — a UCITS',
+      'No more than 10% of net assets in any single issuer.',
+      'Maximum Annual Fees',
+      'Class   Management   Distribution   Performance',
+      'A       1.50%        0.75%          15%',
+      'E       1.05%        —              15%',
+      'Geographic allocation',
+      'United States   45%',
+      'Japan           12%',
+      'Technology      22%',
+    ].join('\n'))
+    expect(d.holdings.length).toBe(0)
+    const res = scanCompliance(d)
+    expect(res.findings.some(f => f.code === 'UCITS_SINGLE_ISSUER_BREACH')).toBe(false)
+  })
 })
 
 describe('scan-engine — real-world legalese extraction', () => {
