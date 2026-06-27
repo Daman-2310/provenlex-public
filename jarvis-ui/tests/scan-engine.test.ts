@@ -187,6 +187,26 @@ describe('scan-engine — applicability gating (NO false positives)', () => {
     const res = scanCompliance(d)
     expect(res.findings.some(f => f.code === 'UCITS_SINGLE_ISSUER_BREACH')).toBe(false)
   })
+
+  // Regression: a gross/VaR "expected leverage" figure (NOTE-03) must NOT be
+  // compared to the commitment-method 175/300% cap — that would be a false breach.
+  it('does NOT flag a gross/VaR expected-leverage figure as a statutory breach', () => {
+    const d = extractDocument([
+      'Acme Direct Lending Fund — SICAV-RAIF, open-ended, a loan-originating AIF.',
+      'Global exposure is measured using the absolute VaR approach.',
+      'Expected leverage: 400% (may be higher, not expected to exceed 650%).',
+    ].join('\n'))
+    const r = scanCompliance(d)
+    expect(r.findings.some(f => f.code === 'PROSPECTUS_LEVERAGE_EXCEEDS_STATUTE' && f.severity === 'critical')).toBe(false)
+    expect(r.findings.some(f => f.code === 'LEVERAGE_BASIS_NOT_COMPARABLE')).toBe(true)
+  })
+
+  // ...but a real COMMITMENT-method cap over the limit IS still a breach.
+  it('STILL flags a commitment-method leverage cap over the statutory limit', () => {
+    const d = extractDocument('Beta Lending Fund — open-ended loan-originating AIF.\nMaximum leverage of 220% of NAV (commitment method).')
+    const r = scanCompliance(d)
+    expect(r.findings.some(f => f.code === 'PROSPECTUS_LEVERAGE_EXCEEDS_STATUTE' && f.severity === 'critical')).toBe(true)
+  })
 })
 
 describe('scan-engine — real-world legalese extraction', () => {

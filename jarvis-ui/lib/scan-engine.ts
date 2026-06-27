@@ -60,6 +60,7 @@ export interface ExtractedDoc {
   isUCITS?: boolean
   loanOriginating?: boolean
   declaredLeverageCapPct: number | null
+  leverageBasis?: 'commitment' | 'gross' | 'unknown'
   declaredConcentrationCapPct: number | null
   declaredRetentionPct: number | null
   holdings: Holding[]
@@ -153,6 +154,18 @@ export function extractDocument(raw: string): ExtractedDoc {
   const lev = levHit && !LOSS_CONTEXT.test(levHit.line) ? levHit : null
   if (lev) provenance.push(`leverage cap ← line ${lev.lineNo}: "${lev.line}"`)
 
+  // Leverage measurement BASIS. The AIFMD II 175/300% caps are written on the
+  // COMMITMENT method. A gross / VaR "expected leverage" figure (often 300-650%,
+  // and normal for a derivative-using fund) is a different measure and must NOT
+  // be compared to those caps — doing so is the exact NOTE-03 misread. Only an
+  // explicitly gross/VaR figure is treated as non-comparable; anything else
+  // (commitment or unstated) compares as a cap, since that is how caps are drafted.
+  let leverageBasis: 'commitment' | 'gross' | 'unknown' = 'unknown'
+  if (lev) {
+    if (/commitment\s+(?:method|approach)/i.test(lev.line)) leverageBasis = 'commitment'
+    else if (/\bgross\b|\bVaR\b|value\s+at\s+risk|expected\s+(?:level\s+of\s+)?leverage|gross\s+exposure/i.test(lev.line)) leverageBasis = 'gross'
+  }
+
   // Declared single-issuer / single-investment / single-borrower concentration cap.
   // Handles "no more than 20% ... single issuer", "limitation of 30% ... in any single
   // investment", "shall not invest more than 10% ... in any one company", and
@@ -208,6 +221,7 @@ export function extractDocument(raw: string): ExtractedDoc {
     isUCITS,
     loanOriginating,
     declaredLeverageCapPct: lev?.value ?? null,
+    leverageBasis,
     declaredConcentrationCapPct: conc?.value ?? null,
     declaredRetentionPct: ret?.value ?? null,
     holdings,
@@ -268,7 +282,17 @@ export function scanCompliance(doc: ExtractedDoc): Omit<ScanResult, 'doc'> {
   //    general AIF / PE / hedge fund can legitimately run far higher leverage, so we
   //    must NOT assert a breach against it (that would be a false positive).
   if (doc.declaredLeverageCapPct != null) {
-    if (loanOriginating) {
+    if (loanOriginating && doc.leverageBasis === 'gross') {
+      findings.push({
+        code: 'LEVERAGE_BASIS_NOT_COMPARABLE',
+        severity: 'warning',
+        basis: 'eu-statutory',
+        title: 'Leverage disclosed on a gross / VaR basis',
+        detail: `Declared leverage ${doc.declaredLeverageCapPct}% is stated on a gross / value-at-risk basis. AIFMD II's ${statutoryLeverage}% cap is written on the commitment method, so this figure is not directly comparable — confirm the commitment-method leverage before concluding. Gross / VaR figures of several hundred percent are normal and not, by themselves, a breach.`,
+        observed: doc.declaredLeverageCapPct,
+        limit: statutoryLeverage,
+      })
+    } else if (loanOriginating) {
       const over = doc.declaredLeverageCapPct > statutoryLeverage + 1e-9
       findings.push({
         code: 'PROSPECTUS_LEVERAGE_EXCEEDS_STATUTE',
