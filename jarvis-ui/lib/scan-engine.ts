@@ -66,6 +66,8 @@ export interface ExtractedDoc {
   declaredRetentionPct: number | null
   holdings: Holding[]
   provenance: string[]   // the exact source lines each value came from
+  truncated?: boolean    // true if the document exceeded the scan cap (partial analysis)
+  totalChars?: number    // full character length of the document (for coverage disclosure)
 }
 
 export type Severity = 'critical' | 'warning' | 'ok'
@@ -108,12 +110,20 @@ function firstMatch(text: string, re: RegExp, scale = 1): { value: number; line:
   return { value, line, lineNo }
 }
 
-// Bound the work the extraction regexes do — a prospectus is well under this;
-// the cap stops a pathologically large paste/PDF from hanging the main thread.
-const MAX_SCAN_CHARS = 500_000
+// Bound the work the extraction regexes do. Measured (2026-06-27): a full 2.1M-char,
+// 593-page umbrella prospectus scans in ~28ms — so the old 500k cap (which truncated
+// big umbrella docs to ~the first 140 pages) was ~6x too cautious; there was no real
+// freeze to guard against. Raised to 5M (~1,400 pages, ~70ms worst case) so every
+// realistic prospectus is read in full. This stays a generous guard against a truly
+// pathological multi-MB paste, and SCAN_COVERAGE_PARTIAL honestly discloses any
+// document that still exceeds it. (Council verdict: measure before architecting.)
+const MAX_SCAN_CHARS = 5_000_000
 
 export function extractDocument(raw: string): ExtractedDoc {
-  const text = raw.replace(/\r/g, '').slice(0, MAX_SCAN_CHARS)
+  const clean = raw.replace(/\r/g, '')
+  const totalChars = clean.length
+  const text = clean.slice(0, MAX_SCAN_CHARS)
+  const truncated = totalChars > MAX_SCAN_CHARS
   const provenance: string[] = []
 
   // Fund name: first "... Fund ..." / SICAV / SICAF / RAIF line.
@@ -227,6 +237,8 @@ export function extractDocument(raw: string): ExtractedDoc {
     declaredRetentionPct: ret?.value ?? null,
     holdings,
     provenance,
+    truncated,
+    totalChars,
   }
 }
 
@@ -275,6 +287,24 @@ export function fromManualEntry(m: ManualEntry): ExtractedDoc {
 
 export function scanCompliance(doc: ExtractedDoc): Omit<ScanResult, 'doc'> {
   const findings: Finding[] = []
+
+  // Honesty: if the document exceeded the scan cap, disclose the partial coverage
+  // PROMINENTLY. Silently analysing ~40% of an umbrella prospectus and presenting
+  // findings that look complete is a brand breach — so the truncation is surfaced,
+  // not hidden. (Council verdict, 2026-06-27: the silence was the bug, not the cap.)
+  if (doc.truncated && doc.totalChars) {
+    const pct = Math.round((MAX_SCAN_CHARS / doc.totalChars) * 100)
+    findings.push({
+      code: 'SCAN_COVERAGE_PARTIAL',
+      severity: 'warning',
+      basis: 'own-prospectus',
+      title: 'Partial document — not every page was analysed',
+      detail: `This is a large document: only the first ${MAX_SCAN_CHARS.toLocaleString()} of ${doc.totalChars.toLocaleString()} characters (~${pct}%) were analysed; later sections were not scanned. In an umbrella prospectus the binding limits often sit in sub-fund supplements toward the back — re-run on the relevant section, or split the document, before relying on this result.`,
+      observed: pct,
+      limit: 100,
+    })
+  }
+
   const loanOriginating = doc.loanOriginating === true
   const statutoryLeverage = doc.structure === 'closed_ended'
     ? STATUTORY.LEVERAGE_CAP_CLOSED_PCT : STATUTORY.LEVERAGE_CAP_OPEN_PCT
