@@ -39,7 +39,7 @@ Cash and equivalents — 10%`)
     expect(codes(r)).toContain('PROSPECTUS_LEVERAGE_EXCEEDS_STATUTE') // 220 > 175
     expect(codes(r)).toContain('RETENTION_BELOW_STATUTORY_MINIMUM')   // 2 < 5
     expect(codes(r)).toContain('OWN_CONCENTRATION_BREACH')            // 26/17/21 > 15
-    expect(codes(r)).toContain('STATUTORY_CONCENTRATION_BREACH')      // 26/21 > 20
+    expect(codes(r)).toContain('STATUTORY_CONCENTRATION_REVIEW')      // 26/21 > 20, but ordinary corporates → confirm-type review, not a definitive breach
   })
 
   it('open-ended loan-orig within all limits → COMPLIANT', () => {

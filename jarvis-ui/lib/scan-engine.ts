@@ -211,7 +211,7 @@ export function extractDocument(raw: string): ExtractedDoc {
     const name = hm[1].replace(/[—:\-–]+$/, '').trim()
     const weightPct = parseFloat(hm[2])
     // Skip lines that are clearly the limit declarations we already parsed.
-    if (/leverage|retention|concentration|maximum|no more than|cap/i.test(name)) continue
+    if (/leverage|retention|concentration|maximum|no more than|\bcap\b/i.test(name)) continue
     if (weightPct > 0 && weightPct <= 100 && name.length >= 3) holdings.push({ name, weightPct })
   }
 
@@ -348,12 +348,28 @@ export function scanCompliance(doc: ExtractedDoc): Omit<ScanResult, 'doc'> {
       })
     }
     if (loanOriginating && h.weightPct > STATUTORY.SINGLE_ISSUER_CONCENTRATION_PCT + 1e-9) {
-      findings.push({
+      // AIFMD II's 20% single-borrower limit binds ONLY where the borrower is a
+      // financial undertaking, another AIF, or a UCITS — not an ordinary corporate
+      // borrower. Assert a definitive breach only when the name signals such a
+      // borrower; otherwise flag for review (type isn't determinable from a name
+      // alone, so we bias to the honest "confirm" rather than a false critical).
+      // Verify against AIFMD II Art. 15 before relying.
+      const financialBorrower =
+        /\b(?:bank|banque|banco|credit|crédit|financ|insur|assur|securit|leasing|sicav|sicaf|ucits|fund|aif|fcp)\b|\(fi\)|asset\s+manage/i.test(h.name)
+      findings.push(financialBorrower ? {
         code: 'STATUTORY_CONCENTRATION_BREACH',
         severity: 'critical',
         basis: 'eu-statutory',
         title: `${h.name} exceeds the AIFMD II single-borrower limit`,
-        detail: `${h.name} is ${h.weightPct}% of NAV, above the ${STATUTORY.SINGLE_ISSUER_CONCENTRATION_PCT}% single-borrower limit AIFMD II sets for a loan-originating AIF. (No such statutory cap applies to a general AIF — this check runs only because the document identifies as loan-originating.)`,
+        detail: `${h.name} is ${h.weightPct}% of NAV, above the ${STATUTORY.SINGLE_ISSUER_CONCENTRATION_PCT}% limit AIFMD II sets for a loan-originating AIF's exposure to a single financial-undertaking / AIF / UCITS borrower.`,
+        observed: h.weightPct,
+        limit: STATUTORY.SINGLE_ISSUER_CONCENTRATION_PCT,
+      } : {
+        code: 'STATUTORY_CONCENTRATION_REVIEW',
+        severity: 'warning',
+        basis: 'eu-statutory',
+        title: `${h.name} is above 20% — confirm the borrower type`,
+        detail: `${h.name} is ${h.weightPct}% of NAV. AIFMD II's ${STATUTORY.SINGLE_ISSUER_CONCENTRATION_PCT}% single-borrower limit applies only where the borrower is a financial undertaking, another AIF, or a UCITS — not an ordinary corporate borrower. Confirm the borrower type before treating this as a breach.`,
         observed: h.weightPct,
         limit: STATUTORY.SINGLE_ISSUER_CONCENTRATION_PCT,
       })

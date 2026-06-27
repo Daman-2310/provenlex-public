@@ -207,6 +207,18 @@ describe('scan-engine — applicability gating (NO false positives)', () => {
     const r = scanCompliance(d)
     expect(r.findings.some(f => f.code === 'PROSPECTUS_LEVERAGE_EXCEEDS_STATUTE' && f.severity === 'critical')).toBe(true)
   })
+
+  // The 20% single-borrower limit is scoped to financial-undertaking / AIF / UCITS
+  // borrowers: an ordinary corporate over 20% is a "confirm type" review; a
+  // financial-undertaking borrower over 20% is a definitive breach.
+  it('scopes the 20% single-borrower limit to financial-undertaking borrowers', () => {
+    const corp = scanCompliance(extractDocument('X Lending — open-ended loan-originating AIF.\nNo more than 40% in any single issuer.\nHoldings:\nAtlas Manufacturing — 25%'))
+    expect(corp.findings.some(f => f.code === 'STATUTORY_CONCENTRATION_BREACH')).toBe(false)
+    expect(corp.findings.some(f => f.code === 'STATUTORY_CONCENTRATION_REVIEW' && f.severity === 'warning')).toBe(true)
+
+    const fin = scanCompliance(extractDocument('Y Lending — open-ended loan-originating AIF.\nNo more than 40% in any single issuer.\nHoldings:\nMeridian Capital Bank — 25%'))
+    expect(fin.findings.some(f => f.code === 'STATUTORY_CONCENTRATION_BREACH' && f.severity === 'critical')).toBe(true)
+  })
 })
 
 describe('scan-engine — real-world legalese extraction', () => {
