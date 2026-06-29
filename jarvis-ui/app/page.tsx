@@ -111,7 +111,7 @@ function Nav() {
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
         <a href="/" className="flex items-center gap-2.5 shrink-0">
           <div className="w-7 h-7 rounded-md flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg, #10D982 0%, #0B9E63 100%)', boxShadow: '0 0 18px rgba(16,217,130,0.5)' }}>
+            style={{ background: 'linear-gradient(135deg, #10D982 0%, #0B9E63 100%)', boxShadow: '0 6px 18px rgba(0,0,0,0.28)' }}>
             <Sparkles className="w-4 h-4 text-black" />
           </div>
           <div className="leading-tight">
@@ -132,7 +132,7 @@ function Nav() {
             style={{
               background: 'linear-gradient(135deg, #10D982 0%, #0B9E63 100%)',
               color: '#000',
-              boxShadow: '0 0 20px rgba(16,217,130,0.35), 0 4px 16px rgba(16,217,130,0.2)',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.30)',
             }}>
             Request a pilot <ArrowRight className="w-3 h-3" />
           </a>
@@ -165,7 +165,7 @@ function Nav() {
                 style={{
                   background: 'linear-gradient(135deg, #10D982 0%, #0B9E63 100%)',
                   color: '#000',
-                  boxShadow: '0 0 16px rgba(16,217,130,0.3)',
+                  boxShadow: '0 6px 16px rgba(0,0,0,0.25)',
                 }}>
                 Request a pilot →
               </a>
@@ -250,7 +250,7 @@ function Hero() {
             style={{
               background: 'linear-gradient(135deg, #10D982 0%, #0B9E63 100%)',
               color: '#04130b',
-              boxShadow: '0 1px 0 rgba(255,255,255,0.18) inset, 0 8px 24px rgba(16,217,130,0.16)',
+              boxShadow: '0 1px 0 rgba(255,255,255,0.12) inset, 0 8px 24px rgba(0,0,0,0.30)',
             }}>
             <ScanLine className="w-4 h-4 shrink-0" />
             Scan a prospectus — live
@@ -347,7 +347,7 @@ function Problem() {
           <h2 className="font-black tracking-tight text-white" style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)' }}>
             The rules are already
             <br />
-            <span className="text-[#F2566E]" style={{ textShadow: '0 0 22px rgba(242,86,110,0.18)' }}>
+            <span className="text-[#F2566E]" style={{ textShadow: 'none' }}>
               in force.
             </span>
           </h2>
@@ -470,7 +470,7 @@ function ROICalculator() {
           <h2 className="font-black tracking-tight text-white" style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)' }}>
             What ProvenLex could save
             <br />
-            <span className="text-[#10D982]" style={{ textShadow: '0 0 22px rgba(16,217,130,0.18)' }}>
+            <span className="text-[#10D982]" style={{ textShadow: 'none' }}>
               a fund your size.
             </span>
           </h2>
@@ -510,7 +510,7 @@ function ROICalculator() {
               style={{ background: 'rgba(16,217,130,0.05)', border: '1px solid rgba(16,217,130,0.2)' }}>
               <div className="text-[9px] uppercase tracking-[0.2em] text-[rgba(16,217,130,0.6)] font-bold mb-2">Annual Savings</div>
               <div className="font-black tabular-nums text-[#10D982] text-3xl md:text-4xl"
-                style={{ textShadow: '0 0 12px rgba(16,217,130,0.3)' }}>
+                style={{ textShadow: 'none' }}>
                 €{annualSavings.toLocaleString()}
               </div>
               <div className="text-[10px] text-[rgba(255,255,255,0.4)] mt-1">vs manual quarterly audit</div>
@@ -519,7 +519,7 @@ function ROICalculator() {
               style={{ background: 'rgba(91,141,239,0.05)', border: '1px solid rgba(91,141,239,0.2)' }}>
               <div className="text-[9px] uppercase tracking-[0.2em] text-[rgba(91,141,239,0.6)] font-bold mb-2">Hours Saved</div>
               <div className="font-black tabular-nums text-[#5B8DEF] text-3xl md:text-4xl"
-                style={{ textShadow: '0 0 12px rgba(91,141,239,0.3)' }}>
+                style={{ textShadow: 'none' }}>
                 {hours.toLocaleString()}
               </div>
               <div className="text-[10px] text-[rgba(255,255,255,0.4)] mt-1">compliance team workload</div>
@@ -536,7 +536,7 @@ function ROICalculator() {
               style={{
                 background: 'linear-gradient(135deg, #10D982 0%, #0B9E63 100%)',
                 color: '#000',
-                boxShadow: '0 0 24px rgba(16,217,130,0.4)',
+                boxShadow: '0 8px 22px rgba(0,0,0,0.25)',
               }}>
               Request a pilot <ArrowRight className="w-4 h-4" />
             </a>
@@ -642,7 +642,7 @@ function Pricing() {
                   style={{
                     background: 'linear-gradient(135deg, #10D982 0%, #0B9E63 100%)',
                     color: '#000',
-                    boxShadow: '0 0 16px rgba(16,217,130,0.5)',
+                    boxShadow: '0 6px 16px rgba(0,0,0,0.28)',
                   }}>
                   Most Popular
                 </div>
@@ -681,7 +681,7 @@ function Pricing() {
                 style={t.featured ? {
                   background: 'linear-gradient(135deg, #10D982 0%, #0B9E63 100%)',
                   color: '#000',
-                  boxShadow: '0 0 24px rgba(16,217,130,0.35)',
+                  boxShadow: '0 8px 22px rgba(0,0,0,0.25)',
                 } : {
                   background: 'rgba(255,255,255,0.05)',
                   border: '1px solid rgba(255,255,255,0.15)',
@@ -727,7 +727,7 @@ function FinalCTA() {
             style={{
               background: 'linear-gradient(135deg, #10D982 0%, #0B9E63 100%)',
               color: '#04130b',
-              boxShadow: '0 1px 0 rgba(255,255,255,0.18) inset, 0 10px 30px rgba(16,217,130,0.18)',
+              boxShadow: '0 1px 0 rgba(255,255,255,0.12) inset, 0 10px 30px rgba(0,0,0,0.32)',
             }}>
             Request a pilot <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </a>

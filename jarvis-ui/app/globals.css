@@ -112,20 +112,21 @@ body {
 }
 
 /* ─── Glow Utilities (tamed) ─────────────────────────────────── */
+/* Glow halos removed (instrument look) — keep a crisp 1px semantic ring only. */
 .glow-green {
-  box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.18), 0 0 16px rgba(var(--accent-rgb), 0.16);
+  box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.3);
 }
 
 .glow-red {
-  box-shadow: 0 0 0 1px rgba(var(--danger-rgb), 0.22), 0 0 16px rgba(var(--danger-rgb), 0.18);
+  box-shadow: 0 0 0 1px rgba(var(--danger-rgb), 0.35);
 }
 
 .glow-blue {
-  box-shadow: 0 0 0 1px rgba(var(--cool-rgb), 0.2), 0 0 16px rgba(var(--cool-rgb), 0.16);
+  box-shadow: 0 0 0 1px rgba(var(--cool-rgb), 0.3);
 }
 
 .glow-amber {
-  box-shadow: 0 0 0 1px rgba(var(--warn-rgb), 0.22), 0 0 16px rgba(var(--warn-rgb), 0.16);
+  box-shadow: 0 0 0 1px rgba(var(--warn-rgb), 0.35);
 }
 
 /* ─── Terminal Borders ───────────────────────────────────────── */
@@ -442,7 +443,7 @@ body {
 
 /* ─── Section Label Glow (tamed) ─────────────────────────────── */
 .section-label-glow {
-  text-shadow: 0 0 8px currentColor;
+  text-shadow: none;
 }
 
 /* ─── Ambient Section BG ─────────────────────────────────────── */
@@ -478,9 +479,9 @@ body {
 /* Slow-drifting emerald aurora — a soft, premium wash behind the hero. */
 .aurora-hero {
   background:
-    radial-gradient(40% 55% at 22% 28%, rgba(var(--accent-rgb), 0.16) 0%, transparent 70%),
-    radial-gradient(36% 50% at 78% 30%, rgba(var(--cool-rgb), 0.12) 0%, transparent 70%),
-    radial-gradient(45% 60% at 50% 85%, rgba(var(--accent-rgb), 0.1) 0%, transparent 75%);
+    radial-gradient(40% 55% at 22% 28%, rgba(var(--accent-rgb), 0.05) 0%, transparent 70%),
+    radial-gradient(36% 50% at 78% 30%, rgba(var(--cool-rgb), 0.04) 0%, transparent 70%),
+    radial-gradient(45% 60% at 50% 85%, rgba(var(--accent-rgb), 0.03) 0%, transparent 75%);
   filter: blur(28px);
   background-size: 200% 200%;
   animation: aurora-drift 24s ease-in-out infinite;
