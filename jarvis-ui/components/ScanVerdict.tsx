@@ -1,8 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { sealVerdict } from '@/lib/scan-engine'
 import type { ScanResult } from '@/lib/scan-engine'
 
 // ── Compliance-opinion result surface ────────────────────────────────────────
@@ -34,14 +32,6 @@ export default function ScanVerdict({ result }: { result: ScanResult }) {
   if (result.criticalCount > 0) { verdict = 'NON-COMPLIANT'; vColor = '#F2566E' }
   else if (insufficient) { verdict = 'INSUFFICIENT DATA'; vColor = '#5B8DEF' }
   else if (result.findings.length === 0) { verdict = 'NO CHECKABLE LIMITS FOUND'; vColor = '#7C8894' }
-
-  // Real SHA-256 seal, computed by the engine — never fabricated.
-  const [seal, setSeal] = useState<string | null>(null)
-  useEffect(() => {
-    let alive = true
-    sealVerdict(result).then(h => { if (alive) setSeal(h) }).catch(() => {})
-    return () => { alive = false }
-  }, [result])
 
   const params: [string, string][] = [
     ['Structure', result.doc.structure.replace('_', '-')],
@@ -133,13 +123,6 @@ export default function ScanVerdict({ result }: { result: ScanResult }) {
         </div>
       )}
 
-      {/* Seal / signature block — the real, reproducible SHA-256 */}
-      <div className="px-5 py-4 text-[9px] leading-relaxed text-[#7C8894]" style={{ borderTop: border, background: 'rgba(255,255,255,0.015)' }}>
-        <div className="uppercase tracking-[0.22em] text-[#5A646E] mb-1.5">Seal</div>
-        <div className="break-all">SHA-256 · <span className="text-[#A7AFB8]">{seal ?? 'computing…'}</span></div>
-        <div className="mt-1">Ruleset v{result.rulesetVersion} · effective {result.rulesetEffective} · {ts} UTC</div>
-        <div className="mt-1.5 text-[#5A646E]">Deterministic verdict, reproducible against the named ruleset. Information only — not legal advice.</div>
-      </div>
     </div>
   )
 }
