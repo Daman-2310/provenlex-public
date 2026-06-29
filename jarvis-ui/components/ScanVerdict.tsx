@@ -1,165 +1,145 @@
 'use client'
 
-import {
-  ShieldCheck, ShieldAlert, AlertTriangle, Landmark, FileText, Building2,
-} from 'lucide-react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { sealVerdict } from '@/lib/scan-engine'
 import type { ScanResult } from '@/lib/scan-engine'
 
-// ── Institutional Emerald verdict surface ────────────────────────────────────
-// The product's money moment: verdict banner → extracted facts → findings.
-// Board-ready and restrained — one emerald accent, semantic red/amber for
-// verdicts only. All data is the live, deterministic ScanResult; nothing here
-// is decorative.
+// ── Compliance-opinion result surface ────────────────────────────────────────
+// Council verdict (2026-06-28): the output must read like a filable compliance
+// opinion, not a SaaS dashboard. Austere, monospace data, hard borders, numbered
+// findings each cited to its article, and the REAL SHA-256 seal as a signature
+// block. Nothing decorative; nothing fabricated. ("Ugly-useful, not pretty-useless.")
 
-const SEV = {
-  critical: { c: '#F2566E', Icon: ShieldAlert,    label: 'Critical' },
-  warning:  { c: '#F5A524', Icon: AlertTriangle,  label: 'Warning' },
-  ok:       { c: '#10D982', Icon: ShieldCheck,     label: 'Pass' },
-} as const
+const SEV: Record<string, { label: string; c: string }> = {
+  critical: { label: 'CRITICAL', c: '#F2566E' },
+  warning:  { label: 'WARNING',  c: '#F5A524' },
+  ok:       { label: 'PASS',     c: '#10D982' },
+}
 
-function BasisBadge({ basis }: { basis: 'own-prospectus' | 'eu-statutory' }) {
-  const isStat = basis === 'eu-statutory'
-  const c = isStat ? '#5B8DEF' : '#93A1AD'
-  const Icon = isStat ? Landmark : FileText
-  return (
-    <span className="inline-flex items-center gap-1 text-[8px] uppercase tracking-[0.14em] font-bold px-1.5 py-0.5 rounded"
-      style={{ color: c, background: `${c}14`, border: `1px solid ${c}44` }}>
-      <Icon className="w-2.5 h-2.5" /> {isStat ? 'AIFMD II statute' : 'own prospectus'}
-    </span>
-  )
+// Each finding's statutory source, exactly as the versioned ruleset records it.
+function citationFor(code: string): string {
+  if (code.startsWith('UCITS')) return 'UCITS · Dir 2009/65/EC, Art. 52'
+  if (code.startsWith('OWN_')) return "Fund's own declared cap"
+  if (code === 'INSUFFICIENT_DATA') return '—'
+  if (code === 'SCAN_COVERAGE_PARTIAL') return 'Coverage notice'
+  return 'AIFMD II · Dir 2011/61/EU, Art. 15'
 }
 
 export default function ScanVerdict({ result }: { result: ScanResult }) {
-  const pass = result.compliant
-  const accent = pass ? '#10D982' : '#F2566E'
   const insufficient = result.findings.some(f => f.code === 'INSUFFICIENT_DATA')
-  const facts: [string, string][] = [
+
+  let verdict = 'NO CRITICAL BREACHES'
+  let vColor = '#10D982'
+  if (result.criticalCount > 0) { verdict = 'NON-COMPLIANT'; vColor = '#F2566E' }
+  else if (insufficient) { verdict = 'INSUFFICIENT DATA'; vColor = '#5B8DEF' }
+  else if (result.findings.length === 0) { verdict = 'NO CHECKABLE LIMITS FOUND'; vColor = '#7C8894' }
+
+  // Real SHA-256 seal, computed by the engine — never fabricated.
+  const [seal, setSeal] = useState<string | null>(null)
+  useEffect(() => {
+    let alive = true
+    sealVerdict(result).then(h => { if (alive) setSeal(h) }).catch(() => {})
+    return () => { alive = false }
+  }, [result])
+
+  const params: [string, string][] = [
     ['Structure', result.doc.structure.replace('_', '-')],
-    ['Leverage cap', result.doc.declaredLeverageCapPct != null ? `${result.doc.declaredLeverageCapPct}%` : 'not stated'],
-    ['Risk retention', result.doc.declaredRetentionPct != null ? `${result.doc.declaredRetentionPct}%` : 'not stated'],
-    ['Concentration cap', result.doc.declaredConcentrationCapPct != null ? `${result.doc.declaredConcentrationCapPct}%` : 'not stated'],
+    ['Leverage cap', result.doc.declaredLeverageCapPct != null ? `${result.doc.declaredLeverageCapPct}%` : '—'],
+    ['Risk retention', result.doc.declaredRetentionPct != null ? `${result.doc.declaredRetentionPct}%` : '—'],
+    ['Concentration', result.doc.declaredConcentrationCapPct != null ? `${result.doc.declaredConcentrationCapPct}%` : '—'],
   ]
 
+  const ts = new Date(result.checkedAt).toISOString().slice(0, 19).replace('T', ' ')
+  const border = '1px solid rgba(255,255,255,0.14)'
+  const hair = '1px solid rgba(255,255,255,0.07)'
+
   return (
-    <div className="space-y-5">
-      {/* ── Verdict banner ─────────────────────────────────────────────── */}
-      <div className="relative rounded-2xl p-5 flex items-center gap-4 overflow-hidden"
-        style={{
-          background: pass
-            ? 'linear-gradient(100deg, rgba(16,217,130,0.10) 0%, rgba(16,217,130,0.02) 60%)'
-            : 'linear-gradient(100deg, rgba(242,86,110,0.12) 0%, rgba(242,86,110,0.02) 60%)',
-          border: `1px solid ${accent}55`,
-          boxShadow: `inset 0 1px 0 ${accent}22`,
-        }}>
-        <span aria-hidden className="absolute left-0 top-0 bottom-0 w-1" style={{ background: accent }} />
-        <div className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center"
-          style={{ background: `${accent}1a`, border: `1px solid ${accent}55` }}>
-          {pass
-            ? <ShieldCheck className="w-6 h-6" style={{ color: accent }} />
-            : <ShieldAlert className="w-6 h-6" style={{ color: accent }} />}
+    <div className="font-mono text-[#C7CDD2]" style={{ border, background: '#0A0C10' }}>
+      {/* Document header */}
+      <div className="px-5 py-4" style={{ borderBottom: border }}>
+        <div className="flex items-center justify-between text-[9px] uppercase tracking-[0.22em] text-[#7C8894]">
+          <span>Compliance Findings · AIFMD II / UCITS</span>
+          <span>Ruleset v{result.rulesetVersion}</span>
         </div>
-        <div className="min-w-0">
-          <div className="text-lg font-black tracking-tight leading-tight" style={{ color: accent }}>
-            {pass
-              ? 'No critical breaches detected'
-              : `${result.criticalCount} critical ${result.criticalCount === 1 ? 'breach' : 'breaches'} detected`}
-          </div>
-          <div className="text-[11px] mt-0.5" style={{ color: '#93A1AD' }}>
-            <span style={{ color: '#E7ECEF' }}>{result.doc.fundName ?? 'Unnamed fund'}</span>
-            {' · '}{result.doc.structure.replace('_', '-')}
-            {' · '}{result.warningCount} warning{result.warningCount === 1 ? '' : 's'}
-            {' · '}scanned {new Date(result.checkedAt).toLocaleTimeString()}
-          </div>
+        <div className="mt-3 font-sans text-[17px] font-bold tracking-tight text-white">
+          {result.doc.fundName ?? 'Unnamed fund'}
+        </div>
+        <div className="mt-1 text-[10px] text-[#7C8894]">
+          {result.doc.structure.replace('_', '-')} · scanned {ts} UTC
         </div>
       </div>
 
-      {/* ── Extracted facts ────────────────────────────────────────────── */}
-      <div className="rounded-2xl p-4" style={{ background: 'rgba(14,16,20,0.7)', border: '1px solid rgba(255,255,255,0.08)' }}>
-        <div className="text-[10px] uppercase tracking-[0.2em] font-black mb-3" style={{ color: '#10D982' }}>
-          What the scanner read from the document
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {facts.map(([k, v]) => (
-            <div key={k}>
-              <div className="text-[8px] uppercase tracking-wider" style={{ color: '#93A1AD' }}>{k}</div>
-              <div className="font-mono font-bold tabular-nums" style={{ color: '#E7ECEF' }}>{v}</div>
+      {/* Determination */}
+      <div className="px-5 py-4 flex items-baseline gap-3" style={{ borderBottom: border, borderLeft: `3px solid ${vColor}` }}>
+        <span className="text-[9px] uppercase tracking-[0.22em] text-[#7C8894]">Determination</span>
+        <span className="text-[17px] font-bold tracking-tight" style={{ color: vColor }}>{verdict}</span>
+        <span className="text-[11px] text-[#93A1AD] ml-auto whitespace-nowrap">{result.criticalCount} critical · {result.warningCount} warning</span>
+      </div>
+
+      {/* Parameters read from the document */}
+      <div className="px-5 py-4" style={{ borderBottom: border }}>
+        <div className="text-[9px] uppercase tracking-[0.22em] text-[#7C8894] mb-2">Parameters read from the document</div>
+        <div className="grid grid-cols-2 md:grid-cols-4">
+          {params.map(([k, v]) => (
+            <div key={k} className="py-2 pr-3" style={{ borderTop: hair }}>
+              <div className="text-[8px] uppercase tracking-wider text-[#7C8894]">{k}</div>
+              <div className="text-[14px] font-bold tabular-nums text-white">{v}</div>
             </div>
           ))}
         </div>
         {result.doc.holdings.length > 0 && (
-          <div className="mt-3 pt-3 border-t border-[rgba(255,255,255,0.06)]">
-            <div className="text-[8px] uppercase tracking-wider mb-1.5 flex items-center gap-1" style={{ color: '#93A1AD' }}>
-              <Building2 className="w-2.5 h-2.5" /> {result.doc.holdings.length} holdings extracted
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {result.doc.holdings.map((h, i) => {
-                const over = h.weightPct > 20
-                return (
-                  <span key={i} className="text-[10px] font-mono tabular-nums px-2 py-0.5 rounded"
-                    style={{
-                      background: over ? 'rgba(242,86,110,0.12)' : 'rgba(255,255,255,0.04)',
-                      border: `1px solid ${over ? 'rgba(242,86,110,0.4)' : 'rgba(255,255,255,0.1)'}`,
-                      color: over ? '#F2566E' : '#93A1AD',
-                    }}>
-                    {h.name} {h.weightPct}%
-                  </span>
-                )
-              })}
-            </div>
+          <div className="text-[9px] text-[#7C8894] mt-2 pt-2" style={{ borderTop: hair }}>
+            {result.doc.holdings.length} holding{result.doc.holdings.length === 1 ? '' : 's'} extracted
           </div>
         )}
       </div>
 
-      {/* ── Findings ───────────────────────────────────────────────────── */}
-      <div className="space-y-2">
-        <div className="text-[10px] uppercase tracking-[0.2em] font-black" style={{ color: '#10D982' }}>Findings</div>
+      {/* Findings — numbered, cited */}
+      <div className="px-5 py-4">
+        <div className="text-[9px] uppercase tracking-[0.22em] text-[#7C8894] mb-1">Findings</div>
         {result.findings.length === 0 && (
-          <div className="text-[11px]" style={{ color: '#93A1AD' }}>
-            No checkable limits were found in the text. Paste a document that states leverage / retention / concentration
-            limits, or load the sample.
-          </div>
+          <div className="text-[11px] text-[#7C8894] py-2">No checkable limits were found in the text.</div>
         )}
-        {result.findings.map((f, i) => {
-          const sev = SEV[f.severity as keyof typeof SEV] ?? SEV.ok
-          const { c, Icon } = sev
-          return (
-            <div key={i} className="relative rounded-xl p-3.5 pl-4 overflow-hidden"
-              style={{ background: `${c}0c`, border: `1px solid ${c}33` }}>
-              <span aria-hidden className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: c }} />
-              <div className="flex items-start gap-2.5">
-                <Icon className="w-4 h-4 shrink-0 mt-0.5" style={{ color: c }} />
+        <ol>
+          {result.findings.map((f, i) => {
+            const sev = SEV[f.severity] ?? SEV.ok
+            return (
+              <li key={i} className="py-3 flex gap-3" style={{ borderTop: hair, borderLeft: `3px solid ${sev.c}`, paddingLeft: 12 }}>
+                <span className="text-[10px] tabular-nums text-[#7C8894] pt-0.5 w-5 shrink-0">{String(i + 1).padStart(2, '0')}</span>
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span className="text-[12px] font-bold" style={{ color: c }}>{f.title}</span>
-                    <BasisBadge basis={f.basis} />
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[8.5px] font-bold tracking-[0.14em] px-1.5 py-0.5" style={{ color: sev.c, border: `1px solid ${sev.c}55` }}>{sev.label}</span>
+                    <span className="font-sans text-[12.5px] font-bold text-white">{f.title}</span>
                   </div>
-                  <div className="text-[11px] leading-snug" style={{ color: '#C7CDD2' }}>{f.detail}</div>
-                  <div className="text-[9px] font-mono tabular-nums mt-1" style={{ color: '#93A1AD' }}>
-                    observed {f.observed}% · limit {f.limit}% · {f.code}
+                  <div className="font-sans text-[11px] leading-snug text-[#A7AFB8] mt-1.5">{f.detail}</div>
+                  <div className="text-[9px] text-[#7C8894] mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5">
+                    <span>§ {citationFor(f.code)}</span>
+                    {f.limit > 0 && <span>observed {f.observed}% · limit {f.limit}%</span>}
+                    <span className="text-[#5A646E]">{f.code}</span>
                   </div>
                 </div>
-              </div>
-            </div>
-          )
-        })}
+              </li>
+            )
+          })}
+        </ol>
       </div>
 
-      {/* Honesty badge: frame INSUFFICIENT_DATA as a deliberate architectural choice. */}
+      {/* Insufficient-data honesty note */}
       {insufficient && (
-        <div className="rounded-xl p-3.5 flex items-start gap-2.5"
-          style={{ background: 'rgba(91,141,239,0.08)', border: '1px solid rgba(91,141,239,0.3)' }}>
-          <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5" style={{ color: '#5B8DEF' }} />
-          <div className="text-[11px] leading-snug" style={{ color: '#C7CDD2' }}>
-            <span className="font-bold text-white">This is not a guess — it&apos;s by design.</span> When a document&apos;s
-            structure can&apos;t be read cleanly (tables and footnotes flatten on extraction), ProvenLex returns
-            &ldquo;insufficient data&rdquo; instead of fabricating a verdict — no LLM, no hallucinated number.{' '}
-            <Link href="/research/note-02-extraction-is-the-hard-part" className="font-bold hover:underline" style={{ color: '#5B8DEF' }}>
-              Why this is a deliberate architectural choice →
-            </Link>
-          </div>
+        <div className="px-5 py-3 font-sans text-[10px] leading-snug text-[#A7AFB8]" style={{ borderTop: border, background: 'rgba(91,141,239,0.05)' }}>
+          <span className="font-bold text-white">Not a guess — by design.</span> Where a document can&apos;t be read cleanly, ProvenLex returns &ldquo;insufficient data&rdquo; rather than fabricate a verdict.{' '}
+          <Link href="/research/note-02-extraction-is-the-hard-part" className="underline" style={{ color: '#5B8DEF' }}>Why this matters →</Link>
         </div>
       )}
+
+      {/* Seal / signature block — the real, reproducible SHA-256 */}
+      <div className="px-5 py-4 text-[9px] leading-relaxed text-[#7C8894]" style={{ borderTop: border, background: 'rgba(255,255,255,0.015)' }}>
+        <div className="uppercase tracking-[0.22em] text-[#5A646E] mb-1.5">Seal</div>
+        <div className="break-all">SHA-256 · <span className="text-[#A7AFB8]">{seal ?? 'computing…'}</span></div>
+        <div className="mt-1">Ruleset v{result.rulesetVersion} · effective {result.rulesetEffective} · {ts} UTC</div>
+        <div className="mt-1.5 text-[#5A646E]">Deterministic verdict, reproducible against the named ruleset. Information only — not legal advice.</div>
+      </div>
     </div>
   )
 }
