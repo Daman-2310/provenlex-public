@@ -1,116 +1,67 @@
 <div align="center">
 
-# ProvenLex
+# AIFMD II · UCITS — Open Rule Registry
 
-**Deterministic AIFMD II / UCITS prospectus compliance — in the browser, with no LLM.**
+**The public, versioned, citable interpretation of the AIFMD II and UCITS quantitative limits — with a deterministic reference implementation you can run in your own browser.**
 
-[Live scanner](https://provenlex.vercel.app/scan) ·
-[2027 AIFMD II Readiness Report](https://provenlex.vercel.app/research/report-01-aifmd2-readiness) ·
-[Trust & security](https://provenlex.vercel.app/security)
+[The registry →](./RULESET.md) · [Interactive version](https://provenlex.vercel.app/ruleset) · [Reference scanner](https://provenlex.vercel.app/scan)
 
-📐 **The versioned standard:** [ProvenLex Ruleset Specification v2026.1](./RULESET.md) · [live, interactive version](https://provenlex.vercel.app/ruleset)
-
-Source-available under PolyForm Noncommercial 1.0.0
+The registry (`RULESET.md`) is **CC-BY 4.0** — cite it, fork it, build on it. The reference implementation is source-available under PolyForm Noncommercial 1.0.0.
 
 </div>
 
 ---
 
-> **Note:** This is a representative source snapshot for inspection — the deterministic engine, its test suite, and the brand are kept current here; the surrounding app may lag the live build at https://provenlex.vercel.app. Full or current source review is available to serious counterparties on request.
-
 ## What this is
 
-ProvenLex reads a fund prospectus and checks it against the **AIFMD II and UCITS
-quantitative limits** — leverage caps, risk retention, single-issuer / single-borrower
-concentration — in seconds, entirely client-side. For every finding it cites the exact
-rule and the source line, so you can see precisely where a document breaches the law or
-its own declared caps.
+A compliance verdict on a fund prospectus is only worth anything if you can say **which rules produced it, on what date, and prove they were not changed afterwards.** This repository exists to make that possible in the open.
 
-It is built for Luxembourg AIFMs and management companies — especially smaller houses
-carrying the same AIFMD II obligation as the largest, on a fraction of the budget.
+It holds two things:
 
-## The design rule: no LLM in the decision path
+1. **The registry** — [`RULESET.md`](./RULESET.md): the AIFMD II loan-origination limits (175% / 300% leverage on the commitment method, 5% risk retention, the 20% single-borrower limit) and the UCITS diversification limits (10% single-issuer, 5/10/40), each written as a plain, testable rule and **bound to its statutory source**. Versioned (`v2026.2`) and SHA-256 sealed, so any change is detectable.
 
-Every verdict is produced by deterministic rules and arithmetic — **no large language
-model decides anything.** The same document always produces the same verdict. There is
-no model to hallucinate, and nothing you submit is uploaded or sent to an AI provider,
-because there is no code path to one. A compliance officer cannot put their name behind
-"the AI said so" — so this is the only kind of automation built into the decision path.
+2. **A reference implementation** — [`jarvis-ui/`](./jarvis-ui): a deterministic engine that runs the registry over a real prospectus, entirely in the browser, and returns a verdict that cites each finding to its rule and seals the result against the exact registry version that produced it.
 
-## How to verify it yourself
+The registry is the standard. The engine is one honest way to apply it.
 
-This repository is source-available precisely so a technical reviewer can confirm all of
-the above — no NDA required:
+## Why a registry, not just a tool
 
-- **The engine:** [`jarvis-ui/lib/scan-engine.ts`](jarvis-ui/lib/scan-engine.ts) — the
-  extraction logic and the statutory limits (AIFMD II 175% / 300% leverage on the
-  commitment method, 5% retention, 20% single-borrower; UCITS 5/10/40 + 10% single-issuer)
-  as plain, readable code.
-- **The tests** verify the engine against worked examples.
-- **Provenance:** every verdict is SHA-256 sealed and stamped with the dated ruleset
-  version (currently `2026.1`) that produced it — so a result stays re-verifiable against
-  a named body of rules even after the law moves on.
+AIFMD II is a moving target — ESMA and CSSF guidance, Q&A, and the final RTS/ITS will shift interpretations for years. A private tool that hard-codes today's reading goes quietly stale. A public, versioned registry does the opposite: a verdict sealed under `v2026.2` stays re-verifiable against exactly that body of rules even after the law moves on — and the reading itself can be argued, corrected, and improved in the open, by the people who actually practise this.
+
+## Contribute — tell me where it's wrong
+
+This is the part that matters.
+
+**If you work in Luxembourg fund compliance — a Conducting Officer, a fund lawyer, a Big-Four compliance desk — and a rule in this registry is wrong, too narrow, or missing, that is the single most useful thing you can tell me.**
+
+- Open an [issue](https://github.com/Daman-2310/provenlex-public/issues): *"GS-CON-1 reads the 20% limit too broadly — here's the article I'd cite,"* and I'll act on it.
+- Or a pull request against [`RULESET.md`](./RULESET.md).
+- Every accepted change is versioned and credited in [`CHANGELOG.md`](./CHANGELOG.md).
+
+I would rather be corrected in public than confidently wrong in private. That is the entire point of doing this in the open.
+
+## The one design rule: no LLM in the decision path
+
+Every verdict is produced by deterministic rules and arithmetic — no large language model decides anything. The same document always produces the same verdict; there is nothing to hallucinate, and nothing you submit is uploaded, because there is no code path to a server or a model. A Conducting Officer cannot put their name behind "the AI said so" — so this is the only kind of automation in the decision path.
+
+When a document cannot be read cleanly, the engine returns `INSUFFICIENT_DATA` rather than guess. The reasoning is set out in [*Extraction Is the Hard Part*](https://provenlex.vercel.app/research/note-02-extraction-is-the-hard-part).
+
+## Verify it yourself — no NDA
+
+- **The rules:** [`RULESET.md`](./RULESET.md) — each bound to Directive (EU) 2024/927; Directive 2011/61/EU, Art. 15 & 23; Directive 2009/65/EC, Art. 52.
+- **The engine:** [`jarvis-ui/lib/scan-engine.ts`](jarvis-ui/lib/scan-engine.ts) — the limits and the extraction logic as plain, readable code.
+- **The tests:** worked examples the engine is re-checked against on every change.
+- **The seal:** every verdict is SHA-256 sealed and stamped with the dated registry version, so a result stays re-verifiable against a named body of rules even after the law moves on.
 
 ## Honest limits
 
-Deterministic checking reaches **quantitative** questions — declared-versus-statutory
-limits and internal consistency. It does **not** make structural or qualitative judgments
-(for example, whether a loan-originating AIF ought to be closed-ended). It is an aid to
-review, not a substitute for your advisor or the primary text, and several AIFMD II
-details remain subject to ESMA's final RTS/ITS — always verify against the regulation.
-The [Trust page](https://provenlex.vercel.app/security) states plainly which parts are
-production-grade and which are reference implementations.
-
-## Technical FAQ
-
-**How is text extracted from a PDF?**
-Client-side, via [`unpdf`](https://github.com/unjs/unpdf) (a browser/serverless build of
-pdf.js) for PDFs, [`mammoth`](https://github.com/mwilliamson/mammoth.js) for `.docx`, and
-the native File API for `.txt`. It is lazy-imported so it never bloats the initial bundle.
-Everything runs in your browser — the document never leaves your machine, and there is no
-code path that uploads it to a server or an AI provider.
-
-**What is the main limitation of that approach?**
-The PDF *text layer* flattens structure. Tables, multi-column layouts and footnotes —
-exactly where the leverage, retention and concentration figures live in a real
-prospectus — collapse into linear text. The numbers are present, but reliably pairing
-each one with its meaning is the hard part, and holding tables frequently extract empty.
-This is documented in detail in
-[NOTE-02 — *Extraction Is the Hard Part*](https://provenlex.vercel.app/research/note-02-extraction-is-the-hard-part).
-
-**So what happens when a document cannot be read cleanly?**
-The engine returns `INSUFFICIENT_DATA` — it fails *loud*, never inventing a verdict — and
-offers a manual-entry path where a person supplies the figure and the *same* deterministic
-rules run on it. A confident wrong "compliant" is worse than an honest "cannot judge."
-
-**Do you run OCR on scanned / image PDFs?**
-No. A scanned PDF yields little or no selectable text; the tool says so and asks you to
-paste the text, rather than guessing a verdict from garbage.
-
-**Is there any AI / LLM anywhere in the decision path?**
-No. Rules and arithmetic only; every verdict is reproducible and SHA-256 sealed. There is
-no code path to any model provider.
-
-## What's in this repository
-
-- **`jarvis-ui/`** — the product: the Next.js application and the deterministic compliance
-  engine behind the live scanner. Client-side, no LLM in the decision path.
-- **`RULESET.md`** — the ProvenLex Ruleset Specification: the versioned, citable AIFMD II / UCITS limits the engine enforces, each bound to its statutory source.
-- `CSSF_MAPPING.md`, `SECURITY.md`, `CONTRIBUTING.md`, `CHANGELOG.md` — mapping, trust, and notes.
-
-## Links
-
-- Live scanner — <https://provenlex.vercel.app/scan>
-- 2027 AIFMD II Readiness Report — <https://provenlex.vercel.app/research/report-01-aifmd2-readiness>
-- Why deterministic (field note) — <https://provenlex.vercel.app/research/note-01-consistent-isnt-compliant>
-- Trust & security — <https://provenlex.vercel.app/security>
+Deterministic checking reaches **quantitative** questions — declared-versus-statutory limits and internal consistency. It does not make structural or qualitative judgments (for example, whether a loan-originating AIF ought to be closed-ended). It is an aid to review, not a substitute for the primary text or your advisor, and several AIFMD II details remain subject to ESMA's final RTS/ITS. The [Trust page](https://provenlex.vercel.app/security) states plainly which parts are production-grade and which are reference implementations.
 
 ## License
 
-Source-available under the **PolyForm Noncommercial License 1.0.0** — read, run, verify,
-and modify for any noncommercial purpose; commercial use is not granted. See
-[LICENSE](LICENSE). For a commercial licence, contact daman.sharma.2310@gmail.com.
+- **Registry (`RULESET.md`)** — Creative Commons Attribution 4.0. Cite it, fork it, embed it.
+- **Reference implementation (`jarvis-ui/`)** — PolyForm Noncommercial 1.0.0. Read, run, and verify freely; commercial use on request.
 
 ## Contact
 
-Daman Sharma · <daman.sharma.2310@gmail.com>
+Daman Sharma · <daman.sharma.2310@gmail.com> · provenlex.vercel.app
